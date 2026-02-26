@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<title>LifeLink – Flajer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .flyer {
+    width: 148mm;
+    min-height: 210mm;
+    background: linear-gradient(160deg, #001535 0%, #002050 50%, #00172e 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 80px rgba(0, 174, 174, 0.25), 0 30px 80px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 26px 22px;
+  }
+
+  /* Background decoration */
+  .flyer::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,174,174,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .flyer::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,87,168,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── TOP: LOGO + BRAND ── */
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 18px;
+    position: relative;
+    z-index:2;
+  }
+
+  .logo-wrap {
+    width: 72px; height: 72px;
+    background: rgba(0,174,174,0.1);
+    border: 1.5px solid rgba(0,174,174,0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    box-shadow: 0 0 24px rgba(0,174,174,0.3);
+  }
+
+  .logo-wrap img {
+    width: 48px; height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 8px rgba(0,220,220,0.6));
+  }
+
+  .brand-name {
+    font-size: 38pt;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .brand-name .white { color: #ffffff; }
+  .brand-name .teal  { color: #00DCDC; }
+
+  .tagline {
+    font-size: 8.5pt;
+    font-weight: 400;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.5;
+    max-width: 200px;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── WATCH VISUAL ── */
+  .watch-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 10px 0 14px;
+    height: 120px;
+    z-index: 2;
+  }
+
+  .watch-ring-outer {
+    position: absolute;
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,174,174,0.2);
+    animation: pulse-ring 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.06); opacity: 0.1; }
+  }
+
+  .watch-body {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #1a2a4a, #0d1a30);
+    border: 3px solid rgba(0,174,174,0.5);
+    box-shadow:
+      0 0 0 6px rgba(0,174,174,0.06),
+      0 0 30px rgba(0,174,174,0.3),
+      inset 0 0 20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 3;
+  }
+
+  .watch-time {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+
+  .watch-data {
+    display: flex;
+    gap: 6px;
+    margin-top: 3px;
+  }
+
+  .watch-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .w-red { background: #ff4d6a; box-shadow: 0 0 4px #ff4d6a; }
+  .w-teal { background: #00DCDC; box-shadow: 0 0 4px #00DCDC; }
+  .w-blue { background: #4d9fff; box-shadow: 0 0 4px #4d9fff; }
+
+  .watch-bpm-label {
+    font-size: 6pt;
+    color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Floating cards */
+  .fc {
+    position: absolute;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 5px 9px;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 4;
+    white-space: nowrap;
+  }
+
+  .fc-bpm { top: 8px; left: 0px; }
+  .fc-spo2 { bottom: 8px; left: -4px; }
+  .fc-gps { top: 18px; right: -4px; }
+
+  .fc-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .fc-red { background: #ff4d6a; box-shadow: 0 0 5px #ff4d6a; }
+  .fc-green { background: #00d48a; box-shadow: 0 0 5px #00d48a; }
+  .fc-blue { background: #4d9fff; box-shadow: 0 0 5px #4d9fff; }
+
+  .fc-text {
+    font-size: 7pt;
+    font-weight: 600;
+    color: #fff;
+  }
+  .fc-label {
+    font-size: 5.5pt;
+    color: rgba(255,255,255,0.55);
+    display: block;
+    line-height: 1;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,174,174,0.5), transparent);
+    margin: 6px 0;
+  }
+
+  /* ── FEATURES ── */
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 12px 0 10px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .feat {
+    background: rgba(0,174,174,0.07);
+    border: 1px solid rgba(0,174,174,0.2);
+    border-radius: 8px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+
+  .feat-icon {
+    font-size: 20px;
+    margin-bottom: 5px;
+    display: block;
+    filter: drop-shadow(0 0 4px rgba(0,220,220,0.5));
+  }
+
+  .feat-title {
+    font-size: 7pt;
+    font-weight: 700;
+    color: #00DCDC;
+    line-height: 1.3;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .feat-desc {
+    font-size: 6pt;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.3;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: auto;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .school-line {
+    font-size: 7pt;
+    font-weight: 500;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+  }
+
+  .school-line span {
+    color: rgba(255,255,255,0.3);
+    margin: 0 5px;
+  }
+
+  .url-line {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #00DCDC;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 16px rgba(0,220,220,0.6);
+  }
+
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  .badge {
+    background: rgba(0,174,174,0.12);
+    border: 1px solid rgba(0,174,174,0.25);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 6.5pt;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.3px;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: #001535; margin: 0; padding: 0; }
+    .flyer {
+      box-shadow: none;
+      border-radius: 0;
+      width: 148mm;
+      min-height: 210mm;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="flyer">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-wrap">
+      <img src="LifeLink_WebSite/img/lifelink_logo.png" alt="LifeLink Logo">
+    </div>
+    <div class="brand-name">
+      <span class="white">Life</span><span class="teal">Link</span>
+    </div>
+    <p class="tagline">Pametan sat koji čuva zdravlje,<br>detektuje padove i automatski poziva pomoć</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- WATCH -->
+  <div class="watch-section">
+    <div class="watch-ring-outer"></div>
+
+    <!-- Floating card: BPM -->
+    <div class="fc fc-bpm">
+      <div class="fc-dot fc-red"></div>
+      <div>
+        <span class="fc-text">72 BPM</span>
+        <span class="fc-label">Puls</span>
+      </div>
+    </div>
+
+    <!-- Floating card: SpO2 -->
+    <div class="fc fc-spo2">
+      <div class="fc-dot fc-green"></div>
+      <div>
+        <span class="fc-text">95% SpO2</span>
+        <span class="fc-label">Kiseonik</span>
+      </div>
+    </div>
+
+    <!-- Floating card: GPS -->
+    <div class="fc fc-gps">
+      <div class="fc-dot fc-blue"></div>
+      <div>
+        <span class="fc-text">GPS Lock</span>
+        <span class="fc-label">Lokacija</span>
+      </div>
+    </div>
+
+    <!-- Watch body -->
+    <div class="watch-body">
+      <div class="watch-time">10:42</div>
+      <div class="watch-data">
+        <div class="watch-dot w-red"></div>
+        <div class="watch-dot w-teal"></div>
+        <div class="watch-dot w-blue"></div>
+      </div>
+      <div class="watch-bpm-label">LifeLink</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- BADGES -->
+  <div class="badge-row">
+    <div class="badge">ESP32-S3</div>
+    <div class="badge">SIM800L GSM</div>
+    <div class="badge">AMOLED 466×466</div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="features">
+    <div class="feat">
+      <span class="feat-icon">🛡️</span>
+      <span class="feat-title">3-Fazna Detekcija Pada</span>
+      <span class="feat-desc">QMI8658 IMU + SVM algoritam, eliminacija lažnih alarma</span>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">📡</span>
+      <span class="feat-title">Automatski SMS Alert</span>
+      <span class="feat-desc">GPS lokacija + vitali poslati bez pametnog telefona</span>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">❤️</span>
+      <span class="feat-title">Vitalni Parametri 24/7</span>
+      <span class="feat-desc">MAX30102 – puls i SpO2 u realnom vremenu</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="divider"></div>
+  <div class="footer">
+    <p class="school-line">
+      Učenička Kompanija
+      <span>•</span>
+      Tehnička škola Pirot
+      <span>•</span>
+      2025/26
+    </p>
+    <div class="url-line">lifelink.tsp.edu.rs</div>
+  </div>
+
+</div>
+
+</body>
+</html>
