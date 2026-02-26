@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeLink – Kompanijski Izveštaj 2024/25</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --accent: #0057A8;
+    --accent-light: #E8F1FB;
+    --teal: #00AEAE;
+    --dark: #111827;
+    --mid: #374151;
+    --muted: #6B7280;
+    --border: #D1D5DB;
+    --page-w: 210mm;
+    --page-h: 297mm;
+    --margin: 18mm;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 9.5pt;
+    color: var(--dark);
+    background: #e5e7eb;
+  }
+
+  /* ── PAGE SHELL ── */
+  .page {
+    width: var(--page-w);
+    min-height: var(--page-h);
+    background: #fff;
+    margin: 10mm auto;
+    padding: var(--margin);
+    position: relative;
+    page-break-after: always;
+    box-shadow: 0 4px 24px rgba(0,0,0,.18);
+  }
+
+  /* ══════════════════════════════════════
+     PAGE 1 – NASLOVNA STRANA
+  ══════════════════════════════════════ */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--page-h);
+    padding: var(--margin);
+    background: linear-gradient(160deg, #0057A8 0%, #003d7a 60%, #001f3f 100%);
+    color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(0,174,174,.22);
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.06);
+  }
+
+  .cover-logo-wrap {
+    background: rgba(255,255,255,.12);
+    border: 2px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    width: 120px; height: 120px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    backdrop-filter: blur(4px);
+  }
+
+  .cover-logo-icon {
+    font-size: 52px;
+    line-height: 1;
+  }
+
+  .cover h1 {
+    font-size: 42pt;
+    font-weight: 800;
+    letter-spacing: 4px;
+    margin-bottom: 6px;
+  }
+
+  .cover .tagline {
+    font-size: 11pt;
+    font-weight: 300;
+    color: rgba(255,255,255,.85);
+    letter-spacing: 1.5px;
+    margin-bottom: 32px;
+  }
+
+  .cover-divider {
+    width: 60px; height: 3px;
+    background: var(--teal);
+    border-radius: 2px;
+    margin: 0 auto 32px;
+  }
+
+  .cover .badge {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 20px;
+    padding: 6px 20px;
+    font-size: 9pt;
+    font-weight: 500;
+    letter-spacing: .8px;
+    margin-bottom: 36px;
+    text-transform: uppercase;
+  }
+
+  .cover-info-box {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 12px;
+    padding: 22px 36px;
+    width: 100%;
+    max-width: 420px;
+    backdrop-filter: blur(4px);
+  }
+
+  .cover-info-box table { width: 100%; border-collapse: collapse; }
+  .cover-info-box td {
+    padding: 5px 8px;
+    font-size: 9pt;
+    vertical-align: top;
+    color: rgba(255,255,255,.9);
+  }
+  .cover-info-box td:first-child {
+    font-weight: 600;
+    color: var(--teal);
+    white-space: nowrap;
+    padding-right: 14px;
+    width: 1%;
+  }
+
+  .cover-bottom {
+    position: absolute;
+    bottom: var(--margin);
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: rgba(255,255,255,.5);
+    letter-spacing: .5px;
+  }
+
+  /* ══════════════════════════════════════
+     COMMON INNER-PAGE LAYOUT
+  ══════════════════════════════════════ */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+
+  .page-header .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-header .brand-icon {
+    width: 30px; height: 30px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .page-header .brand-name {
+    font-size: 13pt;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .page-header .doc-meta {
+    font-size: 7.5pt;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* SECTION ── */
+  .section { margin-bottom: 14px; }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+
+  .section-num {
+    background: var(--accent);
+    color: #fff;
+    font-size: 7.5pt;
+    font-weight: 700;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .section-title h2 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .6px;
+  }
+
+  .section-body {
+    padding-left: 28px;
+    line-height: 1.55;
+  }
+
+  p { margin-bottom: 5px; }
+
+  /* COLUMN LAYOUTS */
+  .col2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .col3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  /* CARD BOXES */
+  .card {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 8px 10px;
+  }
+
+  .card.teal {
+    background: #E0F7F7;
+    border-left-color: var(--teal);
+  }
+
+  .card h4 {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+
+  .card.teal h4 { color: var(--teal); }
+
+  .card p { font-size: 8.5pt; margin: 0; }
+
+  /* HIGHLIGHT PILL */
+  .pill {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 7.5pt;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 2px 9px;
+    margin: 1px 2px;
+    letter-spacing: .3px;
+  }
+  .pill.teal { background: var(--teal); }
+  .pill.gray { background: var(--mid); }
+  .pill.green { background: #059669; }
+  .pill.orange { background: #D97706; }
+
+  /* TABLE */
+  table.report {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin-bottom: 8px;
+  }
+  table.report th {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    padding: 5px 8px;
+    text-align: left;
+    font-size: 8pt;
+    letter-spacing: .3px;
+  }
+  table.report td {
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.report tr:nth-child(even) td { background: #F9FAFB; }
+
+  /* FINANCIAL TABLE */
+  table.fin {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin-bottom: 8px;
+  }
+  table.fin th {
+    background: var(--dark);
+    color: #fff;
+    padding: 5px 8px;
+    text-align: right;
+    font-size: 8pt;
+  }
+  table.fin th:first-child { text-align: left; }
+  table.fin td {
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  table.fin td:first-child { text-align: left; font-weight: 500; }
+  table.fin tr:last-child td { font-weight: 700; border-top: 2px solid var(--dark); border-bottom: none; }
+  table.fin tr:nth-child(even) td { background: #F9FAFB; }
+  table.fin .pos { color: #059669; }
+  table.fin .neg { color: #DC2626; }
+
+  /* ORG CHART */
+  .org-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0;
+  }
+
+  .org-row { display: flex; gap: 10px; justify-content: center; }
+
+  .org-box {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 7.5pt;
+    font-weight: 600;
+    text-align: center;
+    min-width: 80px;
+  }
+
+  .org-box.sub {
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    font-weight: 500;
+  }
+
+  .org-line {
+    width: 1px;
+    height: 10px;
+    background: var(--border);
+    margin: 0 auto;
+  }
+
+  .org-hline {
+    width: 70%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* PHASE FLOW */
+  .phase-flow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin: 6px 0;
+  }
+
+  .phase-box {
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: center;
+  }
+
+  .phase-arrow {
+    font-size: 12pt;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* INFO STRIP */
+  .info-strip {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--teal) 100%);
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .info-strip .metric { flex: 1; text-align: center; }
+  .info-strip .metric .val { font-size: 16pt; font-weight: 800; }
+  .info-strip .metric .lbl { font-size: 7pt; opacity: .85; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* MENTOR BOX */
+  .mentor-box {
+    background: #F9FAFB;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-style: italic;
+    font-size: 9pt;
+    line-height: 1.6;
+    color: var(--mid);
+  }
+
+  .mentor-sig {
+    margin-top: 10px;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 8.5pt;
+    color: var(--accent);
+  }
+
+  /* UL styling */
+  ul.report-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 4px 0;
+  }
+  ul.report-list li {
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 3px;
+    font-size: 8.5pt;
+    line-height: 1.5;
+  }
+  ul.report-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 8pt;
+  }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; }
+    .cover { min-height: 297mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     STRANA 1 – NASLOVNA
+══════════════════════════════════════════════════════ -->
+<div class="page cover">
+  <div class="cover-logo-wrap">
+    <span class="cover-logo-icon">🔗</span>
+  </div>
+
+  <h1>LifeLink</h1>
+  <div class="tagline">Pametan sat koji čuva zdravlje, detektuje padove<br>i automatski poziva pomoć</div>
+  <div class="cover-divider"></div>
+  <div class="badge">Učenička Kompanija &nbsp;·&nbsp; Školska godina 2024/25</div>
+
+  <div class="cover-info-box">
+    <table>
+      <tr>
+        <td>Tim:</td>
+        <td><strong>[Ime tima]</strong></td>
+      </tr>
+      <tr>
+        <td>Članovi:</td>
+        <td>[Ime Prezime]<br>[Ime Prezime]<br>[Ime Prezime]</td>
+      </tr>
+      <tr>
+        <td>Razred:</td>
+        <td>IV-1</td>
+      </tr>
+      <tr>
+        <td>Škola:</td>
+        <td>Tehnička škola Pirot</td>
+      </tr>
+      <tr>
+        <td>Nastavnik-mentor:</td>
+        <td>Boban Blagojević,<br>dipl. ing. elektrotehnike</td>
+      </tr>
+      <tr>
+        <td>Biznis mentor:</td>
+        <td>[Ime Prezime Biznis Mentora]</td>
+      </tr>
+      <tr>
+        <td>Školska godina:</td>
+        <td>2024 / 2025</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="cover-bottom">
+    Junior Achievement Serbia – Program Učenička Kompanija &nbsp;|&nbsp; Regionalno takmičenje 2025
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     STRANA 2 – SEK. 1 (REZIME) + SEK. 2 (KOMPANIJSKI PREGLED)
+══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand">
+      <div class="brand-icon">🔗</div>
+      <span class="brand-name">LIFELINK</span>
+    </div>
+    <div class="doc-meta">Kompanijski izveštaj &nbsp;·&nbsp; Regionalno takmičenje 2024/25<br>Tehnička škola Pirot &nbsp;·&nbsp; IV-1 razred</div>
+  </div>
+
+  <!-- ── 1. REZIME ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">1</div>
+      <h2>Rezime</h2>
+    </div>
+    <div class="section-body">
+      <div class="info-strip">
+        <div class="metric"><div class="val">3</div><div class="lbl">Platforme</div></div>
+        <div class="metric"><div class="val">7</div><div class="lbl">Komponenti</div></div>
+        <div class="metric"><div class="val">5s</div><div class="lbl">Reakcija alarm</div></div>
+        <div class="metric"><div class="val">2G</div><div class="lbl">GSM Autonomija</div></div>
+      </div>
+
+      <div class="col2">
+        <div class="card">
+          <h4>🎯 Misija</h4>
+          <p>Pružiti starijim i ugroženim licima autonomnu sigurnosnu zaštitu ugrađenu u pametni sat koji ne zahteva pametni telefon za slanje hitnih poziva.</p>
+        </div>
+        <div class="card teal">
+          <h4>👁 Vizija</h4>
+          <p>Postati standardno rešenje za zdravstvenu bezbednost upotrebom dostupnih embedded tehnologija – kombinacijom biometrije, IMU senzora i GSM komunikacije.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:6px;">
+        <strong>Proizvod:</strong> LifeLink je pametni sat baziran na <span class="pill">ESP32-S3</span> mikrokontroleru sa <span class="pill teal">AMOLED ekranom 466×466px</span> koji autonomno prati vitalne parametre, detektuje padove 3-faznim algoritmom i šalje SMS sa GPS lokacijom putem ugrađenog <span class="pill">SIM800L GSM modula</span> – bez potrebe za pametnim telefonom.<br><br>
+        <strong>Finansijski rezime:</strong> Prototipska investicija iznosi <strong>~8.500 RSD</strong> u hardverskim komponentama. Projektovana prodajna cena kompleta iznosi <strong>15.000 RSD</strong>. Bruto marža po jedinici: <strong>~43%</strong>.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── 2. KOMPANIJSKI PREGLED ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">2</div>
+      <h2>Kompanijski pregled</h2>
+    </div>
+    <div class="section-body">
+      <p><strong>Svrha kompanije:</strong> LifeLink postoji da reši realan i rastući problem – starija lica u Srbiji (>20% populacije) su posebno ugrožena padom, koji je vodeći uzrok telesnih povreda ove populacije. Dostupna rešenja (Life Alert, Apple Watch) su skupocena i zahtevaju smartphone. LifeLink nudi cenovnopristupačno, autonomno rešenje.</p>
+
+      <p><strong>Nastanak i razvoj ideje:</strong> Ideja je nastala zapažanjem da su postojeći pametni satovi previše skupi i vezani za ekosistem pametnog telefona. Tim je postavio pitanje – <em>„Može li se ovakva zaštita ugraditi u pristupačan, autonoman uređaj?"</em> Odgovor je potražen u embedded sistemima otvorene arhitekture.</p>
+
+      <div class="col2" style="margin-top:6px;">
+        <div>
+          <strong style="font-size:8.5pt;">Trenutni status:</strong><br>
+          <ul class="report-list">
+            <li>Funkcionalan hardverski prototip</li>
+            <li>Kompletiran ESP32-S3 firmware (ESP-IDF)</li>
+            <li>Cross-platform Flutter mobilna aplikacija</li>
+            <li>Prezentacioni web sajt kompanije</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:8.5pt;">Problem koji kompanija rešava:</strong><br>
+          <ul class="report-list">
+            <li>Kasna reakcija na padove starih lica</li>
+            <li>Potreba za dodatnim telefonom pri pozivu pomoći</li>
+            <li>Visoka cena komercijalnih alternativa</li>
+            <li>Nedostatak lokalnih, prilagođenih rešenja</li>
+          </ul>
+        </div>
+      </div>
+
+      <p style="margin-top:5px;"><strong>Celokupna strategija i ciljevi:</strong> Fokus na segmentu starijih i osetljivih korisnika. Kratkoročno: finalizacija prototipa i lokalna prodaja. Dugoročno: sertifikacija medicinskog IoT uređaja i skaliranje.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     STRANA 3 – SEK. 3 (PROIZVOD) + SEK. 4 (POSLOVANJE)
+══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand">
+      <div class="brand-icon">🔗</div>
+      <span class="brand-name">LIFELINK</span>
+    </div>
+    <div class="doc-meta">Kompanijski izveštaj &nbsp;·&nbsp; Regionalno takmičenje 2024/25<br>Tehnička škola Pirot &nbsp;·&nbsp; IV-1 razred</div>
+  </div>
+
+  <!-- ── 3. PROIZVOD ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">3</div>
+      <h2>Proizvod</h2>
+    </div>
+    <div class="section-body">
+      <p>LifeLink pametni sat integriše tri funkcionalna sistema u jednom nošenom uređaju malog faktora forme:</p>
+
+      <table class="report">
+        <tr>
+          <th>Sistem</th>
+          <th>Tehnologija</th>
+          <th>Prednost u odnosu na konkurenciju</th>
+        </tr>
+        <tr>
+          <td><strong>Detekcija pada (3-fazna)</strong></td>
+          <td>QMI8658 IMU + SVM algoritam</td>
+          <td>Eliminacija lažnih alarma (θ > 60° orijentacija + 5s mirovanje)</td>
+        </tr>
+        <tr>
+          <td><strong>Zdravstveni monitoring</strong></td>
+          <td>MAX30102 optički senzor + FFT</td>
+          <td>Hardware-akcelerovana FFT analiza u realnom vremenu (100 Hz)</td>
+        </tr>
+        <tr>
+          <td><strong>GSM SOS (autonomno)</strong></td>
+          <td>SIM800L + UART AT komande</td>
+          <td>Radi BEZ pametnog telefona, SMS sa Google Maps GPS linkom</td>
+        </tr>
+      </table>
+
+      <div class="phase-flow">
+        <div class="phase-box">📉 Slobodan pad<br><small>SVM &lt; 0.6g</small></div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-box">💥 Udarac<br><small>SVM &gt; 3.5g / 500ms</small></div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-box">⏱ Mirovanje<br><small>5 sekundi + θ &gt; 60°</small></div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-box">📲 SMS alarm<br><small>GPS + BPM</small></div>
+      </div>
+
+      <div class="col2" style="margin-top:6px;">
+        <div class="card">
+          <h4>💰 Formiranje cene</h4>
+          <p>Cena komponenti: ~8.500 RSD. Prodajna cena kompleta: <strong>15.000 RSD</strong>. Metod: troškovni + analiza sličnih IoT nosivnih uređaja na tržištu.</p>
+        </div>
+        <div class="card teal">
+          <h4>🚀 Inovativnost</h4>
+          <p>LifeLink je jedino rešenje na lokalnom tržištu koje kombinuje 3-faznu detekciju pada, merenje vitala i GSM SOS <em>bez aplikacije</em> – u prihvatljivoj cenovnoj kategoriji.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4. POSLOVANJE ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">4</div>
+      <h2>Poslovanje</h2>
+    </div>
+    <div class="section-body">
+      <div class="col2">
+        <div>
+          <strong style="font-size:8.5pt;">Plan proizvodnje i isporuke:</strong>
+          <ul class="report-list">
+            <li>Nabavka komponenti putem lokalnih i online elektroničkih distributera</li>
+            <li>Ručna montaža i lemljenje prototipa od strane članova tima</li>
+            <li>Programiranje i flešovanje firmware-a (ESP-IDF toolchain)</li>
+            <li>Testiranje i kalibracija senzora pre isporuke</li>
+            <li>Pakovanje: zaštitna kutija + dokumentacija + firmware link</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:8.5pt;">Troškovi i ulaganja:</strong>
+          <table class="fin" style="font-size:7.5pt;">
+            <tr><th>Stavka</th><th>RSD</th></tr>
+            <tr><td>ESP32-S3 AMOLED sat (pločica)</td><td>5.500</td></tr>
+            <tr><td>SIM800L GSM modul</td><td>800</td></tr>
+            <tr><td>MAX30102 senzor</td><td>400</td></tr>
+            <tr><td>Kondenzatori, kablovi, alat</td><td>600</td></tr>
+            <tr><td>SIM kartica + aktivacija</td><td>300</td></tr>
+            <tr><td>Pakovanje i materijali</td><td>400</td></tr>
+            <tr><td class="pos"><strong>UKUPNO (1 kom.)</strong></td><td class="pos"><strong>8.000</strong></td></tr>
+          </table>
+          <p style="font-size:7.5pt; margin-top:2px;">Marža: <strong>~6.500 RSD/kom (43%)</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     STRANA 4 – SEK. 5 (TRŽIŠTE) + SEK. 6 (PRODAJA) + SEK. 7 (MENADŽMENT)
+══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand">
+      <div class="brand-icon">🔗</div>
+      <span class="brand-name">LIFELINK</span>
+    </div>
+    <div class="doc-meta">Kompanijski izveštaj &nbsp;·&nbsp; Regionalno takmičenje 2024/25<br>Tehnička škola Pirot &nbsp;·&nbsp; IV-1 razred</div>
+  </div>
+
+  <!-- ── 5. TRŽIŠTE I MARKETING ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">5</div>
+      <h2>Tržište i marketing strategija</h2>
+    </div>
+    <div class="section-body">
+      <div class="col2">
+        <div>
+          <strong style="font-size:8.5pt;">Analiza tržišta:</strong>
+          <ul class="report-list">
+            <li><strong>Primarna ciljna grupa:</strong> Starija lica (65+), osobe sa hroničnim oboljenjima, porodice staratelja</li>
+            <li><strong>Veličina segmenta:</strong> ~1,5 miliona lica 65+ u Srbiji</li>
+            <li><strong>Geografski fokus:</strong> Pirot i okolina (lokalna prodaja), Srbija (online)</li>
+            <li><strong>Osluškivanje potreba:</strong> Intervjui sa učenicima čiji su roditelji/bake i deke stariji bez pratnje</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:8.5pt;">Konkurencija i pozicioniranje:</strong>
+          <table class="report" style="font-size:7.5pt; margin-top:3px;">
+            <tr><th>Rešenje</th><th>Cena</th><th>Autonomija</th></tr>
+            <tr><td>Apple Watch</td><td>~70.000 RSD</td><td>❌ Treba iPhone</td></tr>
+            <tr><td>Life Alert (uvoz)</td><td>~30.000 RSD</td><td>✅</td></tr>
+            <tr><td><strong>LifeLink</strong></td><td><strong>15.000 RSD</strong></td><td>✅ <strong>Bez telefona</strong></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top:5px;">
+        <strong style="font-size:8.5pt;">Marketing kanali:</strong>
+        <span class="pill">Prezentacioni web sajt</span>
+        <span class="pill teal">Školske izložbe</span>
+        <span class="pill gray">Lokalne zdravstvene institucije</span>
+        <span class="pill green">Društvene mreže</span>
+        <span class="pill orange">Usmena preporuka</span>
+      </div>
+
+      <p style="margin-top:5px; font-size:8.5pt;">Specifičnost LifeLink-a na tržištu: autonomni GSM rad bez smartphone aplikacije, prihvatljiva cena i lokalna podrška. Dodatna vrednost – prateća Flutter mobilna aplikacija dostupna besplatno za one koji žele napredni BLE monitoring.</p>
+    </div>
+  </div>
+
+  <!-- ── 6. UNAPREĐENJE PRODAJE ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">6</div>
+      <h2>Unapređenje prodaje</h2>
+    </div>
+    <div class="section-body">
+      <div class="col2">
+        <div>
+          <strong style="font-size:8.5pt;">Prodajna strategija:</strong>
+          <ul class="report-list">
+            <li>Direktna prodaja na školskim sajmovima i takmičenjima</li>
+            <li>Prezentacije u lokalnim domovima zdravlja i domovima za stare</li>
+            <li>Online prodaja putem web sajta (lifelink-watch.github.io)</li>
+            <li>Poklon demonstracije za potencijalne staratelje</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:8.5pt;">Ciljevi i trenutno stanje prodaje:</strong>
+          <table class="fin" style="font-size:7.5pt; margin-top:3px;">
+            <tr><th>Period</th><th>Cilj (kom.)</th></tr>
+            <tr><td>Q1 (oktobar–decembar)</td><td>2 – testni korisnici</td></tr>
+            <tr><td>Q2 (januar–mart)</td><td>5 – sajmovi/takmičenja</td></tr>
+            <tr><td>Q3 (april–jun)</td><td>8 – direktna prodaja</td></tr>
+            <tr><td><strong>Godišnji cilj</strong></td><td><strong>15 jedinica</strong></td></tr>
+          </table>
+          <p style="font-size:7.5pt;">Realizovano: <strong>[X kom.]</strong> &nbsp;|&nbsp; Prihodi: <strong>[X RSD]</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 7. MENADŽMENT ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">7</div>
+      <h2>Menadžment / Upravljanje</h2>
+    </div>
+    <div class="section-body">
+      <div class="org-chart">
+        <div class="org-row"><div class="org-box">[CEO – Direktor tima]</div></div>
+        <div class="org-line"></div>
+        <div class="org-row">
+          <div class="org-box sub">Hardver &amp; Firmware<br><small>[Ime]</small></div>
+          <div class="org-box sub">Mobilna aplikacija<br><small>[Ime]</small></div>
+          <div class="org-box sub">Marketing &amp; Prodaja<br><small>[Ime]</small></div>
+        </div>
+      </div>
+
+      <div class="col2" style="margin-top:6px;">
+        <div>
+          <strong style="font-size:8.5pt;">Kanali komunikacije:</strong>
+          <ul class="report-list">
+            <li>Nedeljni sastanci tima (Google Meet / uživo)</li>
+            <li>Git repozitorijum za verzionisanje koda (GitHub)</li>
+            <li>Zajednički Google Drive za dokumentaciju</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:8.5pt;">Poteškoće tokom školske godine:</strong>
+          <ul class="report-list">
+            <li>GSM modul – nestabilno napajanje pri peak struji 2A → <em>rešeno filtrom kondenzatora</em></li>
+            <li>Kalibracija detekcije pada – lažni alarmi → <em>rešeno 3-faznim algoritmom + θ proverom</em></li>
+            <li>Usklađivanje FreeRTOS taskova na dva jezgra</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     STRANA 5 – SEK. 8 (UTISAK+PROFITABILNOST) + SEK. 9 (BUDUĆNOST) + SEK. 10 (FINANSIJE)
+══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand">
+      <div class="brand-icon">🔗</div>
+      <span class="brand-name">LIFELINK</span>
+    </div>
+    <div class="doc-meta">Kompanijski izveštaj &nbsp;·&nbsp; Regionalno takmičenje 2024/25<br>Tehnička škola Pirot &nbsp;·&nbsp; IV-1 razred</div>
+  </div>
+
+  <!-- ── 8. CELOKUPAN UTISAK I PROFITABILNOST ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">8</div>
+      <h2>Celokupan utisak i profitabilnost poslovanja</h2>
+    </div>
+    <div class="section-body">
+      <div class="col2">
+        <div>
+          <p>Tim LifeLink ocenjuje poslovnu godinu kao <strong>tehnički izuzetno uspešnu</strong>, uz izazove u prodajnom segmentu tipične za prvu godinu prototipske kompanije.</p>
+          <strong style="font-size:8.5pt; display:block; margin-top:5px;">Ključne donesene odluke i uticaj:</strong>
+          <ul class="report-list">
+            <li><strong>Prelazak sa GA6-B na SIM800L</strong> – poboljšana stabilnost napajanja i potpuna mrežna pokrivenost</li>
+            <li><strong>Direktno napajanje baterijom</strong> (bez boost konvertora) – uklonjen izvor nestabilnosti</li>
+            <li><strong>Softverski automatski recovery</strong> – pouzdanost sistema ↑ značajno</li>
+            <li><strong>Dodavanje Flutter aplikacije</strong> – proširenje tržišnog segmenta</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:8.5pt;">Struktura troškova (1 jedinica):</strong>
+          <table class="fin" style="font-size:7.5pt; margin-top:3px;">
+            <tr><th>Stavka</th><th>RSD</th></tr>
+            <tr><td>Fiksni troškovi (alat, razvojna oprema)</td><td class="neg">2.000</td></tr>
+            <tr><td>Varijabilni troškovi/kom. (komponente)</td><td class="neg">8.000</td></tr>
+            <tr><td>Prodajna cena</td><td class="pos">15.000</td></tr>
+            <tr><td><strong>Bruto marža/kom.</strong></td><td class="pos"><strong>7.000 (47%)</strong></td></tr>
+            <tr><td><strong>Neto marža/kom.</strong></td><td class="pos"><strong>5.000 (33%)</strong></td></tr>
+          </table>
+          <p style="font-size:7.5pt;">Tačka pokrića: <strong>1 jedinica</strong> pokriva sve fiksne troškove prototipa. Profit utiče na reinvesticiju u 3D štampanje kućišta i sledeću razvojnu iteraciju.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 9. BUDUĆNOST KOMPANIJE ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">9</div>
+      <h2>Budućnost kompanije</h2>
+    </div>
+    <div class="section-body">
+      <div class="col2">
+        <div>
+          <strong style="font-size:8.5pt;">Investicioni potencijal i trendovi:</strong>
+          <ul class="report-list">
+            <li>Globalno tržište nosive zdravstvene elektronike raste 15% godišnje</li>
+            <li>Srbija – starenje populacije čini ovaj segment sve važnijim</li>
+            <li>Integracija AI/TinyML (Edge Impulse) za preciznije raspoznavanje padova</li>
+            <li>Mogućnost IoT cloud integracije (AWS IoT / Firebase)</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:8.5pt;">Plan daljeg razvoja:</strong>
+          <ul class="report-list">
+            <li>🏠 Namensko 3D štampano vodootporno kućište</li>
+            <li>😴 Deep Sleep mod za optimizaciju baterije (ciljno: 3+ dana)</li>
+            <li>🧠 TinyML model za klasifikaciju vrsta pada (Edge Impulse)</li>
+            <li>📡 GPS modul (LC76G I²C) za direktnu lokalizaciju bez telefona</li>
+            <li>🏥 Pilot program sa lokalnim domovima zdravlja</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:6px; font-size:8.5pt;">Strategija opstanka: sklapanje partnerstva sa gerontološkim centrima u Pirotu, plaćanje pretplate na SIM uslugu i tehničku podršku, te potencijalno licenciranje algoritma detekcije pada produkcijskim proizvođačima pametnih satova.</p>
+    </div>
+  </div>
+
+  <!-- ── 10. PREGLED FINANSIJA ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">10</div>
+      <h2>Pregled finansija</h2>
+    </div>
+    <div class="section-body">
+      <div class="col2">
+        <div>
+          <strong style="font-size:8.5pt; display:block; margin-bottom:4px;">Bilans uspeha (školska god. 2024/25)</strong>
+          <table class="fin" style="font-size:7.5pt;">
+            <tr><th>Opis</th><th>RSD</th></tr>
+            <tr><td>Prihodi od prodaje ([X] kom.)</td><td class="pos">[X × 15.000]</td></tr>
+            <tr><td>Troškovi materijala</td><td class="neg">[X × 8.000]</td></tr>
+            <tr><td>Fiksni troškovi (alat, org.)</td><td class="neg">2.000</td></tr>
+            <tr><td>Administrativni troškovi</td><td class="neg">500</td></tr>
+            <tr><td><strong>Neto rezultat</strong></td><td class="pos"><strong>[Iznos RSD]</strong></td></tr>
+          </table>
+        </div>
+        <div>
+          <strong style="font-size:8.5pt; display:block; margin-bottom:4px;">Bilans stanja (na dan [datum])</strong>
+          <table class="fin" style="font-size:7.5pt;">
+            <tr><th>Aktiva</th><th>RSD</th></tr>
+            <tr><td>Gotovina i sredstva plaćanja</td><td>[Iznos]</td></tr>
+            <tr><td>Zalihe (komponente/poluproizvodi)</td><td>[Iznos]</td></tr>
+            <tr><td>Osnovna sredstva (alat, oprema)</td><td>2.000</td></tr>
+            <tr><td><strong>Ukupna aktiva</strong></td><td><strong>[Ukupno]</strong></td></tr>
+          </table>
+          <table class="fin" style="font-size:7.5pt; margin-top:4px;">
+            <tr><th>Pasiva</th><th>RSD</th></tr>
+            <tr><td>Uloženi kapital članova</td><td>[Iznos]</td></tr>
+            <tr><td>Zadržana dobit</td><td>[Iznos]</td></tr>
+            <tr><td><strong>Ukupna pasiva</strong></td><td><strong>[Ukupno]</strong></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     STRANA 6 – SEK. 11 (IZVEŠTAJ MENTORA) + ZAKLJUČAK
+══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="brand">
+      <div class="brand-icon">🔗</div>
+      <span class="brand-name">LIFELINK</span>
+    </div>
+    <div class="doc-meta">Kompanijski izveštaj &nbsp;·&nbsp; Regionalno takmičenje 2024/25<br>Tehnička škola Pirot &nbsp;·&nbsp; IV-1 razred</div>
+  </div>
+
+  <!-- ── 11. IZVEŠTAJ NASTAVNIKA MENTORA ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-num">11</div>
+      <h2>Izveštaj nastavnika-mentora</h2>
+    </div>
+    <div class="section-body">
+      <div class="mentor-box">
+        <p>Učenička kompanija LifeLink nastala je kao rezultat iskrene znatiželje i volje učenika IV-1 razreda da reše konkretan, svakodnevni problem na tehničan i inovativan način. Kao mentor koji prati rad tima od samog početka, mogu sa ponosom reći da su učenici pokazali nivo tehničke zrelosti i istrajnosti koji daleko prevazilazi ono što se tipično očekuje na ovom uzrastu.</p>
+        <br>
+        <p>Tim je samostalno savladao složene tehnologije – od ESP-IDF embedded programiranja i FreeRTOS višenitnog rada, preko DSP algoritmike za analizu biometrijskog signala (FFT), do razvoja cross-platform mobilne Flutter aplikacije. Posebno me je impresioniralo to što su učenici svaki tehnički problem – kao što je bila nestabilnost GSM napajanja – rešili metodičnim pristupom: analizom uzroka, istraživanjem dokumentacije i eksperimentalnim verifikacijom rešenja.</p>
+        <br>
+        <p>Rad na projektu pomogao je učenicima da razviju ne samo tehničke veštine, već i timski duh, sposobnost prezentacije ideje i razumevanje poslovnih aspekata – od kalkulacije cene do tržišnog pozicioniranja. LifeLink je pravi primer kako škola može biti polazna tačka za inovaciju koja ima realnu primenu u zajednici.</p>
+        <div class="mentor-sig">
+          Boban Blagojević, dipl. ing. elektrotehnike<br>
+          <span style="font-weight:400; color: var(--muted);">Nastavnik elektro-grupe predmeta, Tehnička škola Pirot</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZAKLJUČAK -->
+  <div class="section" style="margin-top:10px;">
+    <div class="section-title">
+      <div class="section-num" style="background: var(--teal);">✓</div>
+      <h2 style="color: var(--teal);">Zaključak</h2>
+    </div>
+    <div class="section-body">
+      <div class="info-strip">
+        <div class="metric"><div class="val">3-fazni</div><div class="lbl">Algoritam detekcije pada</div></div>
+        <div class="metric"><div class="val">100%</div><div class="lbl">GSM Autonomija</div></div>
+        <div class="metric"><div class="val">3+</div><div class="lbl">Softverske platforme</div></div>
+        <div class="metric"><div class="val">47%</div><div class="lbl">Bruto marža</div></div>
+      </div>
+      <p>
+        LifeLink je funkcionalan prototip koji dokazuje da učenici mogu razviti komercijalno relevantno, tehnički sofisticirano i društveno korisno rešenje. Autonomni GSM SOS poziv bez pametnog telefona, 3-fazni algoritam detekcije pada koji eliminiše lažne alarme, i prihvatljiva cena u poređenju sa konkurencijom – čine LifeLink pravim kandidatom za dalji razvoj i tržišni plasman.
+      </p>
+    </div>
+  </div>
+
+  <!-- LITERATURA -->
+  <div class="section" style="margin-top:10px; border-top: 1px solid var(--border); padding-top:10px;">
+    <div class="section-title" style="margin-bottom:4px;">
+      <h2 style="font-size:9pt; color: var(--muted); text-transform:uppercase; letter-spacing:.5px;">Literatura i reference</h2>
+    </div>
+    <div style="font-size:7.5pt; color: var(--muted); line-height:1.7; padding-left:10px;">
+      [1] Espressif – ESP-IDF Framework i FreeRTOS – <em>docs.espressif.com</em><br>
+      [2] LVGL – Light and Versatile Graphics Library – <em>lvgl.io</em><br>
+      [3] SIMCom – SIM800L AT Commands Manual i Hardware Design<br>
+      [4] QST Corporation – QMI8658C IMU Datasheet<br>
+      [5] Maxim Integrated – MAX30102 Pulse Oximeter Datasheet<br>
+      [6] Google Developers – Maps URL API – <em>developers.google.com/maps</em><br>
+      [7] Flutter / Dart SDK – <em>flutter.dev</em> – Cross-platform mobilna aplikacija<br>
+      [8] Espressif ESP-DSP Library – DSP algoritmi za ESP32-S3 – <em>github.com/espressif/esp-dsp</em>
+    </div>
+  </div>
+
+  <div style="position:absolute; bottom:14mm; left:18mm; right:18mm; text-align:center; font-size:7pt; color:var(--border); border-top:1px solid var(--border); padding-top:6px;">
+    LifeLink Učenička Kompanija &nbsp;·&nbsp; Tehnička škola Pirot &nbsp;·&nbsp; Regionalno takmičenje JA Serbia 2024/25 &nbsp;·&nbsp; Stranica 6 od 6
+  </div>
+</div>
+
+</body>
+</html>
