@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifeLink — Pametni Sat za Bezbednost Starijih</title>
+    <title>LifeLink — Smart Watch for Elderly Safety</title>
     <meta name="description"
-        content="LifeLink je napredan prototip pametnog sata baziran na ESP32-S3 platformi, fokusiran na bezbednost starijih osoba, praćenje zdravlja i automatsko reagovanje u hitnim situacijama.">
+        content="LifeLink is an advanced smart watch prototype based on the ESP32-S3 platform, focused on elderly safety, health monitoring, and automatic response in emergencies.">
     <link rel="icon" href="img/lifelink_logo.png" type="image/png">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
@@ -28,21 +28,21 @@
                 <span>Life<span class="accent">Link</span></span>
             </a>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#features">Mogućnosti</a></li>
-                <li><a href="#technology">Tehnologija</a></li>
-                <li><a href="#algorithms">Algoritmi</a></li>
-                <li><a href="#hardware">Hardver</a></li>
-                <li><a href="#screens">Interfejs</a></li>
-                <li><a href="#companion-app">Aplikacija</a></li>
-                <li><a href="izvestaj.html" target="_blank" class="nav-cta" style="background: linear-gradient(135deg, #0057A8, #00AEAE); color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: 600;">📄 Učenička kompanija</a></li>
-                <li><a href="LifeLink-narukvica za pomoć najugroženijim pacijentima.pdf" target="_blank" class="nav-cta" style="background: linear-gradient(135deg, #FF6B00, #FACC15); color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: 600;">🏆 Galaksija kup</a></li>
-                <li><a href="#contact">Kontakt</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#technology">Technology</a></li>
+                <li><a href="#algorithms">Algorithms</a></li>
+                <li><a href="#hardware">Hardware</a></li>
+                <li><a href="#screens">Interface</a></li>
+                <li><a href="#companion-app">App</a></li>
+                <li><a href="izvestaj_en.html" target="_blank" class="nav-cta" style="background: linear-gradient(135deg, #0057A8, #00AEAE); color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: 600;">📄 Student Company</a></li>
+                <li><a href="LifeLink-narukvica za pomoć najugroženijim pacijentima.pdf" target="_blank" class="nav-cta" style="background: linear-gradient(135deg, #FF6B00, #FACC15); color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: 600;">🏆 Galaksija Cup</a></li>
+                <li><a href="#contact">Contact</a></li>
                 <li class="lang-switch">
-                    <a href="index.html" class="active">SR</a> <span style="color:var(--border);">|</span>
-                    <a href="index_en.html">EN</a>
+                    <a href="index.html">SR</a> <span style="color:var(--border);">|</span>
+                    <a href="index_en.html" class="active">EN</a>
                 </li>
             </ul>
-            <button class="theme-toggle" id="themeToggle" aria-label="Promeni temu">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                 <svg class="theme-icon theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="5" />
@@ -60,7 +60,7 @@
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
             </button>
-            <button class="nav-toggle" id="navToggle" aria-label="Meni">
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
                 <span></span><span></span><span></span>
             </button>
         </div>
@@ -75,29 +75,27 @@
             <div class="hero-content">
                 <div class="hero-badge">
                     <span class="badge-dot"></span>
-                    ESP32-S3 Baziran Projekat
+                    ESP32-S3 Based Project
                 </div>
                 <h1>
-                    <span class="hero-line">Zaštita koja</span>
-                    <span class="hero-line gradient-text">spašava živote</span>
+                    <span class="hero-line">Protection that</span>
+                    <span class="hero-line gradient-text">saves lives</span>
                 </h1>
                 <p class="hero-description">
-                    LifeLink je napredan pametni sat prototip dizajniran za bezbednost starijih osoba. Sa naprednom
-                    detekcijom pada, praćenjem vitalnih funkcija i automatskim SMS upozorenjima — jer svaka sekunda je
-                    važna.
+                    LifeLink is an advanced smart watch prototype designed for elderly safety. With advanced fall detection, vital signs monitoring, and automatic SMS alerts — because every second matters.
                 </p>
                 <div class="hero-actions">
                     <a href="#features" class="btn btn-primary">
-                        <span>Istraži mogućnosti</span>
+                        <span>Explore Features</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M7 17L17 7M17 7H7M17 7V17" />
                         </svg>
                     </a>
                     <a href="#technology" class="btn btn-secondary">
-                        <span>Tehnički detalji</span>
+                        <span>Technical Details</span>
                     </a>
-                    <a href="izvestaj.html" target="_blank" class="btn btn-secondary" style="border-color: #00AEAE; color: #00AEAE;">
+                    <a href="izvestaj_en.html" target="_blank" class="btn btn-secondary" style="border-color: #00AEAE; color: #00AEAE;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14 2 14 8 20 8"/>
@@ -105,14 +103,14 @@
                             <line x1="16" y1="17" x2="8" y2="17"/>
                             <polyline points="10 9 9 9 8 9"/>
                         </svg>
-                        <span>Učenička kompanija</span>
+                        <span>Student Company</span>
                     </a>
                     <a href="LifeLink-narukvica za pomoć najugroženijim pacijentima.pdf" target="_blank" class="btn btn-secondary" style="border-color: #F59E0B; color: #F59E0B;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;">
                             <circle cx="12" cy="8" r="7"/>
                             <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
                         </svg>
-                        <span>Galaksija kup</span>
+                        <span>Galaksija Cup</span>
                     </a>
                 </div>
                 <div class="hero-stats">
@@ -122,13 +120,13 @@
                     </div>
                     <div class="stat-divider"></div>
                     <div class="stat">
-                        <span class="stat-value">3-Fazna</span>
-                        <span class="stat-label">Detekcija pada</span>
+                        <span class="stat-value">3-Phase</span>
+                        <span class="stat-label">Fall Detection</span>
                     </div>
                     <div class="stat-divider"></div>
                     <div class="stat">
                         <span class="stat-value">100<span class="stat-unit">Hz</span></span>
-                        <span class="stat-label">Uzorkovanje senzora</span>
+                        <span class="stat-label">Sensor Sampling</span>
                     </div>
                 </div>
             </div>
@@ -165,7 +163,7 @@
             <div class="mouse">
                 <div class="mouse-wheel"></div>
             </div>
-            <span>Skroluj dole</span>
+            <span>Scroll down</span>
         </div>
     </header>
 
@@ -173,10 +171,9 @@
     <section id="features">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-tag">Mogućnosti</span>
-                <h2>Sve što je potrebno za <span class="gradient-text">bezbednost</span></h2>
-                <p>Kompletan sistem za praćenje zdravlja i bezbednosti starijih osoba, dizajniran sa pažnjom na svaki
-                    detalj.</p>
+                <span class="section-tag">Features</span>
+                <h2>Everything needed for <span class="gradient-text">safety</span></h2>
+                <p>A complete system for tracking health and safety of elderly people, designed with attention to every detail.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card feature-card-large" data-aos="fade-up">
@@ -186,23 +183,22 @@
                             <path d="M12 2L12 22M12 22L5 15M12 22L19 15" />
                         </svg>
                     </div>
-                    <h3>Napredna Detekcija Pada</h3>
-                    <p>3-fazni algoritam koristi QMI8658 IMU (akcelerometar + žiroskop) za detekciju slobodnog pada,
-                        udarca i mirovanja. Provera orijentacije eliminira lažne alarme.</p>
+                    <h3>Advanced Fall Detection</h3>
+                    <p>3-phase algorithm uses QMI8658 IMU (accelerometer + gyroscope) to detect free fall, impact, and immobility. Orientation check eliminates false alarms.</p>
                     <div class="feature-phases">
                         <div class="phase">
                             <span class="phase-num">1</span>
-                            <span>Slobodan Pad<br><small>&lt; 0.6g</small></span>
+                            <span>Free Fall<br><small>&lt; 0.6g</small></span>
                         </div>
                         <div class="phase-arrow">→</div>
                         <div class="phase">
                             <span class="phase-num">2</span>
-                            <span>Udarac<br><small>&gt; 3.5g</small></span>
+                            <span>Impact<br><small>&gt; 3.5g</small></span>
                         </div>
                         <div class="phase-arrow">→</div>
                         <div class="phase">
                             <span class="phase-num">3</span>
-                            <span>Mirovanje<br><small>5 sekundi</small></span>
+                            <span>Immobility<br><small>5 seconds</small></span>
                         </div>
                     </div>
                 </div>
@@ -213,9 +209,8 @@
                             <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                         </svg>
                     </div>
-                    <h3>Praćenje Vitalnih Funkcija</h3>
-                    <p>MAX30102 senzor u realnom vremenu meri puls (BPM) i saturaciju kiseonikom (SpO2) korišćenjem FFT
-                        analize signala.</p>
+                    <h3>Vital Signs Tracking</h3>
+                    <p>MAX30102 sensor measures heart rate (BPM) and oxygen saturation (SpO2) in real time using FFT signal analysis.</p>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="feature-icon fi-sms">
@@ -224,9 +219,8 @@
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                         </svg>
                     </div>
-                    <h3>Automatski SMS Alert</h3>
-                    <p>SIM800L GSM modul šalje hitni SMS sa GPS koordinatama (Google Maps link), pulsom i statusom pada
-                        kontakt osobi.</p>
+                    <h3>Automatic SMS Alert</h3>
+                    <p>SIM800L GSM module sends an emergency SMS with GPS coordinates (Google Maps link), heart rate, and fall status to a contact person.</p>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
                     <div class="feature-icon fi-ui">
@@ -237,9 +231,8 @@
                             <line x1="12" y1="17" x2="12" y2="21" />
                         </svg>
                     </div>
-                    <h3>Interaktivni UI (LVGL)</h3>
-                    <p>Dinamički interfejs sa navigacijom gestovima, status barom, numpad za unos broja i debug prikazom
-                        senzora na 466×466 AMOLED ekranu.</p>
+                    <h3>Interactive UI (LVGL)</h3>
+                    <p>Dynamic interface with gesture navigation, status bar, numpad for number input, and debug sensor display on a 466×466 AMOLED screen.</p>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="feature-icon fi-sim">
@@ -248,9 +241,8 @@
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                         </svg>
                     </div>
-                    <h3>Odbrojavanje & Otkazivanje</h3>
-                    <p>5-sekundni countdown ekran omogućava korisniku da otkaže lažni alarm tapom na ekran pre slanja
-                        SMS-a.</p>
+                    <h3>Countdown & Cancellation</h3>
+                    <p>A 5-second countdown screen allows the user to cancel a false alarm by tapping the screen before the SMS is sent.</p>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="feature-icon fi-ble">
@@ -259,9 +251,8 @@
                             <path d="M6.5 6.5l11 11L12 23V1l5.5 5.5-11 11" />
                         </svg>
                     </div>
-                    <h3>BLE Konekcija</h3>
-                    <p>Bluetooth Low Energy SPP server za buduću komunikaciju sa mobilnom aplikacijom i dijagnostiku
-                        uređaja.</p>
+                    <h3>BLE Connection</h3>
+                    <p>Bluetooth Low Energy SPP server for future communication with a mobile application and device diagnostics.</p>
                 </div>
             </div>
         </div>
@@ -272,34 +263,31 @@
         <div class="section-container">
             <div class="mission-layout">
                 <div class="mission-image-wrap" data-aos="fade-right">
-                    <img src="img/elderly_care.png" alt="Starija osoba sa LifeLink satom" class="mission-image">
+                    <img src="img/elderly_care.png" alt="Elderly person with LifeLink watch" class="mission-image">
                     <div class="mission-image-badge">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                         </svg>
-                        <span>Uvek zaštićeni</span>
+                        <span>Always protected</span>
                     </div>
                 </div>
                 <div class="mission-content" data-aos="fade-left">
-                    <span class="section-tag">Misija</span>
-                    <h2>Tehnologija u službi <span class="gradient-text">najdražih</span></h2>
-                    <p class="mission-description">Pad je jedan od vodećih uzroka povreda kod starijih osoba. LifeLink
-                        je dizajniran sa jednim ciljem — da pruži sigurnost i brz odgovor u trenutku kada je to
-                        najpotrebnije, čak i kada osoba nije u mogućnosti da sama pozove pomoć.</p>
+                    <span class="section-tag">Mission</span>
+                    <h2>Technology serving <span class="gradient-text">loved ones</span></h2>
+                    <p class="mission-description">Falling is one of the leading causes of injury among the elderly. LifeLink is designed with a single goal — to provide security and swift response exactly when needed, even when the person cannot call for help themselves.</p>
                     <div class="mission-stats">
                         <div class="mission-stat">
                             <div class="mission-stat-value">37.3<span class="mission-stat-unit">M</span></div>
-                            <div class="mission-stat-label">Padova godišnje zahteva medicinsku pažnju u svetu</div>
+                            <div class="mission-stat-label">Falls per year requiring medical attention globally</div>
                         </div>
                         <div class="mission-stat">
                             <div class="mission-stat-value">&lt;10<span class="mission-stat-unit">s</span></div>
-                            <div class="mission-stat-label">Vreme od pada do slanja SMS alerta sa GPS lokacijom</div>
+                            <div class="mission-stat-label">Time from fall to sending SMS alert with GPS location</div>
                         </div>
                         <div class="mission-stat">
                             <div class="mission-stat-value">24/7</div>
-                            <div class="mission-stat-label">Kontinuirano praćenje vitalnih funkcija i detekcija pada
-                            </div>
+                            <div class="mission-stat-label">Continuous monitoring of vitals and fall detection</div>
                         </div>
                     </div>
                     <div class="mission-features">
@@ -308,21 +296,21 @@
                                 stroke-width="2">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
-                            <span>Bez potrebe za pametnim telefonom</span>
+                            <span>No smartphone required</span>
                         </div>
                         <div class="mission-feature">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)"
                                 stroke-width="2">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
-                            <span>Automatski SMS sa Google Maps lokacijom</span>
+                            <span>Automatic SMS with Google Maps location</span>
                         </div>
                         <div class="mission-feature">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)"
                                 stroke-width="2">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
-                            <span>Mogućnost otkazivanja lažnog alarma</span>
+                            <span>Option to cancel false alarms</span>
                         </div>
                     </div>
                 </div>
@@ -334,13 +322,12 @@
     <section id="technology">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-tag">Tehnologija</span>
-                <h2>Konstruisano na <span class="gradient-text">ESP32-S3</span> platformi</h2>
-                <p>LifeLink koristi ESP-IDF framework kao temelj, uz LVGL grafičku biblioteku za premium korisničko
-                    iskustvo.</p>
+                <span class="section-tag">Technology</span>
+                <h2>Engineered on <span class="gradient-text">ESP32-S3</span> platform</h2>
+                <p>LifeLink uses the ESP-IDF framework as its foundation, alongside the LVGL graphics library for a premium user experience.</p>
                 <div class="hero-actions" style="justify-content: center; margin-top: 2rem;">
                     <a href="LifeLink_Firmware.zip" download class="btn btn-primary">
-                        <span>Preuzmi ESP32 Firmware</span>
+                        <span>Download ESP32 Firmware</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <polyline points="7 10 12 15 17 10" />
@@ -348,7 +335,7 @@
                         </svg>
                     </a>
                     <a href="https://github.com/blagojevicboban/LifeLink_ESP32App" target="_blank" class="btn btn-secondary" style="margin-left: 1rem;">
-                        <span>GitHub Projekat</span>
+                        <span>GitHub Project</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
                         </svg>
@@ -359,7 +346,7 @@
                 <div class="tech-image-wrap" data-aos="fade-right">
                     <video autoplay loop muted playsinline class="tech-image" style="box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15), 0 0 60px rgba(8, 145, 178, 0.1);">
                         <source src="video/LifeLinkDemo1.mp4" type="video/mp4">
-                        Vaš pretraživač ne podržava video tag.
+                        Your browser does not support the video tag.
                     </video>
                     <div class="tech-image-glow"></div>
                 </div>
@@ -374,8 +361,7 @@
                         </div>
                         <div>
                             <h4>ESP-IDF v5.4</h4>
-                            <p>Zvanični Espressif razvojni okvir sa potpunom kontrolom nad hardverom. FreeRTOS baziran
-                                multitasking.</p>
+                            <p>Official Espressif development framework providing full hardware control. Multi-tasking based on FreeRTOS.</p>
                         </div>
                     </div>
                     <div class="tech-item">
@@ -388,9 +374,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4>LVGL Grafika</h4>
-                            <p>Lagana i moćna grafička biblioteka za embedded uređaje, sa animacijama, gestovima i
-                                prilagodljivim temama.</p>
+                            <h4>LVGL Graphics</h4>
+                            <p>A lightweight and powerful library for embedded devices with animations, gestures, and custom themes.</p>
                         </div>
                     </div>
                     <div class="tech-item">
@@ -401,9 +386,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4>ESP-DSP Hardversko Ubrzanje</h4>
-                            <p>FFT obrada signala ubrzana hardverom za analizu PPG signala u realnom vremenu sa 100Hz
-                                brzinom uzorkovanja.</p>
+                            <h4>ESP-DSP Hardware Acceleration</h4>
+                            <p>Hardware-accelerated FFT signal processing for real-time PPG analysis with 100Hz sampling rate.</p>
                         </div>
                     </div>
                     <div class="tech-item">
@@ -417,10 +401,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4>AT Komande GSM</h4>
-                            <p>Komunikacija sa SIM800L GSM modulom putem UART za mrežnu registraciju, SMS slanje i
-                                statusne
-                                provere.</p>
+                            <h4>AT Commands GSM</h4>
+                            <p>Communication with the SIM800L GSM module via UART for network registration, SMS dispatch, and status checks.</p>
                         </div>
                     </div>
                 </div>
@@ -432,10 +414,9 @@
     <section id="algorithms">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-tag">Algoritmi</span>
-                <h2>Nauka iza <span class="gradient-text">detekcije</span></h2>
-                <p>Sofisticirani algoritmi za obradu signala obezbeđuju tačnost i pouzdanost u kritičnim situacijama.
-                </p>
+                <span class="section-tag">Algorithms</span>
+                <h2>The science behind <span class="gradient-text">detection</span></h2>
+                <p>Sophisticated signal processing algorithms ensure accuracy and reliability in critical situations.</p>
             </div>
             <div class="algo-grid">
                 <div class="algo-card" data-aos="fade-up">
@@ -446,26 +427,25 @@
                                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                             </svg>
                         </div>
-                        <h3>FFT Analiza Pulsa & SpO2</h3>
+                        <h3>FFT Analysis of HR & SpO2</h3>
                     </div>
                     <div class="algo-body">
-                        <p>Brza Furijeova Transformacija (FFT) analizira PPG signal sa MAX30102 senzora za robusnu
-                            procenu pulsa i saturacije kiseonikom.</p>
+                        <p>Fast Fourier Transform (FFT) analyzes the PPG signal from the MAX30102 sensor for robust heart rate and oxygen saturation estimation.</p>
                         <div class="algo-specs">
                             <div class="algo-spec">
-                                <span class="spec-label">Brzina uzorkovanja</span>
+                                <span class="spec-label">Sampling Rate</span>
                                 <span class="spec-value">100 Hz</span>
                             </div>
                             <div class="algo-spec">
-                                <span class="spec-label">Veličina bafera</span>
-                                <span class="spec-value">512 uzoraka</span>
+                                <span class="spec-label">Buffer Size</span>
+                                <span class="spec-value">512 samples</span>
                             </div>
                             <div class="algo-spec">
-                                <span class="spec-label">Opseg detekcije</span>
+                                <span class="spec-label">Detection Range</span>
                                 <span class="spec-value">30–240 BPM</span>
                             </div>
                             <div class="algo-spec">
-                                <span class="spec-label">Prozor</span>
+                                <span class="spec-label">Window</span>
                                 <span class="spec-value">Hann Window</span>
                             </div>
                         </div>
@@ -483,34 +463,33 @@
                                 <path d="M12 2L12 22M12 22L5 15M12 22L19 15" />
                             </svg>
                         </div>
-                        <h3>3-Fazna Detekcija Pada</h3>
+                        <h3>3-Phase Fall Detection</h3>
                     </div>
                     <div class="algo-body">
-                        <p>Algoritam zasnovan na mašini stanja koristi Signal Vector Magnitude (SVM) za razlikovanje
-                            pravih padova od svakodnevnih aktivnosti.</p>
+                        <p>A state machine-based algorithm utilizing Signal Vector Magnitude (SVM) to distinguish genuine falls from daily activities.</p>
                         <div class="algo-formula">
-                            <span class="formula-label">SVM (Totalna G-sila):</span>
+                            <span class="formula-label">SVM (Total G-force):</span>
                             <code>SVM = √(ax² + ay² + az²)</code>
                         </div>
                         <div class="algo-formula">
-                            <span class="formula-label">Provera Orijentacije:</span>
+                            <span class="formula-label">Orientation Check:</span>
                             <code>θ = arccos(v_ref · v_curr / |v_ref| · |v_curr|)</code>
                         </div>
                         <div class="algo-specs">
                             <div class="algo-spec">
-                                <span class="spec-label">Prag Free-Fall</span>
+                                <span class="spec-label">Free-Fall Threshold</span>
                                 <span class="spec-value">&lt; 0.6g</span>
                             </div>
                             <div class="algo-spec">
-                                <span class="spec-label">Prag udarca</span>
+                                <span class="spec-label">Impact Threshold</span>
                                 <span class="spec-value">&gt; 3.5g</span>
                             </div>
                             <div class="algo-spec">
-                                <span class="spec-label">Potvrda mirovanja</span>
-                                <span class="spec-value">5 sekundi</span>
+                                <span class="spec-label">Immobility Confirmation</span>
+                                <span class="spec-value">5 seconds</span>
                             </div>
                             <div class="algo-spec">
-                                <span class="spec-label">Promena orijentacije</span>
+                                <span class="spec-label">Orientation Change</span>
                                 <span class="spec-value">&gt; 60°</span>
                             </div>
                         </div>
@@ -524,9 +503,9 @@
     <section id="hardware">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-tag">Hardver</span>
-                <h2>Precizno odabrane <span class="gradient-text">komponente</span></h2>
-                <p>Svaka komponenta je pažljivo izabrana da obezbedi pouzdanost, tačnost i efikasnost.</p>
+                <span class="section-tag">Hardware</span>
+                <h2>Carefully selected <span class="gradient-text">components</span></h2>
+                <p>Every component is chosen specifically to ensure reliability, accuracy, and efficiency.</p>
             </div>
             <div class="hw-grid">
                 <div class="hw-card" data-aos="fade-up">
@@ -541,7 +520,7 @@
                                 </svg>
                             </div>
                             <h4>ESP32-S3</h4>
-                            <p>Dual-core Xtensa LX7 MCU sa Wi-Fi i BLE 5.0 podrškom</p>
+                            <p>Dual-core Xtensa LX7 MCU with Wi-Fi and BLE 5.0 support</p>
                             <span class="hw-tag">MCU</span>
                         </div>
                         <div class="hw-card-back">
@@ -561,8 +540,8 @@
                                 </svg>
                             </div>
                             <h4>Round AMOLED</h4>
-                            <p>466×466 piksela, visok kontrast i duboko crna za premium prikaz</p>
-                            <span class="hw-tag">Displej</span>
+                            <p>466×466 pixels, high contrast, and deep black for premium display</p>
+                            <span class="hw-tag">Display</span>
                         </div>
                         <div class="hw-card-back">
                             <img src="img/esp32-s3-touch-amoled-1.75-1.jpg" alt="Round AMOLED">
@@ -580,8 +559,8 @@
                                 </svg>
                             </div>
                             <h4>SIM800L GSM</h4>
-                            <p>Kompaktan Quad-band 2G modul napajan direktno sa 3.7V baterije, AT komande preko UART-a</p>
-                            <span class="hw-tag">Celularni</span>
+                            <p>Compact Quad-band 2G module powered directly from a 3.7V battery, AT commands over UART</p>
+                            <span class="hw-tag">Cellular</span>
                         </div>
                         <div class="hw-card-back">
                             <img src="img/sim800l.jpg" alt="SIM800L GSM">
@@ -599,8 +578,8 @@
                                 </svg>
                             </div>
                             <h4>QMI8658</h4>
-                            <p>6-osni IMU (Akcelerometar + Žiroskop) za preciznu detekciju pokreta</p>
-                            <span class="hw-tag">IMU Senzor</span>
+                            <p>6-axis IMU (Accelerometer + Gyroscope) for precise motion detection</p>
+                            <span class="hw-tag">IMU Sensor</span>
                         </div>
                         <div class="hw-card-back">
                             <img src="img/qmi8658.jpg" alt="QMI8658 IMU">
@@ -618,8 +597,8 @@
                                 </svg>
                             </div>
                             <h4>MAX30102</h4>
-                            <p>Optički senzor za merenje pulsa (BPM) i saturacije kiseonikom (SpO2)</p>
-                            <span class="hw-tag">Zdravlje</span>
+                            <p>Optical sensor for measuring heart rate (BPM) and oxygen saturation (SpO2)</p>
+                            <span class="hw-tag">Health</span>
                         </div>
                         <div class="hw-card-back">
                             <img src="img/max30102.jpg" alt="MAX30102 Sensor">
@@ -638,7 +617,7 @@
                                 </svg>
                             </div>
                             <h4>AXP2101</h4>
-                            <p>Napredno upravljanje napajanjem sa višestrukim izlaznim naponima</p>
+                            <p>Advanced power management IC with multiple output voltages</p>
                             <span class="hw-tag">PMIC</span>
                         </div>
                         <div class="hw-card-back">
@@ -654,17 +633,16 @@
     <section id="screens">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-tag">Interfejs</span>
-                <h2>Intuitivan <span class="gradient-text">korisnički interfejs</span></h2>
-                <p>Navigacija gestovima između ekrana optimizovana za starije korisnike.</p>
+                <span class="section-tag">Interface</span>
+                <h2>Intuitive <span class="gradient-text">user interface</span></h2>
+                <p>Gesture-based navigation between screens optimized for elderly users.</p>
             </div>
             <div class="screens-flow">
                 <div class="screen-card" data-aos="fade-up">
                     <div class="screen-number">01</div>
                     <h4>Dashboard</h4>
-                    <p>Primarni sat face sa vitalnim znacima, sat vremenom i ikonama za status konekcije (GPS, GSM, BLE,
-                        Baterija).</p>
-                    <div class="screen-tag">Glavni Ekran</div>
+                    <p>Primary watch face displaying vital signs, time, and connection status icons (GPS, GSM, BLE, Battery).</p>
+                    <div class="screen-tag">Main Screen</div>
                 </div>
                 <div class="screen-connector">
                     <svg width="40" height="24" viewBox="0 0 40 24">
@@ -673,9 +651,9 @@
                 </div>
                 <div class="screen-card" data-aos="fade-up" data-aos-delay="100">
                     <div class="screen-number">02</div>
-                    <h4>Pad & Debug</h4>
-                    <p>Simulacija pada jednim tapom. Toggle za debug prikaz X, Y, Z osa i G-sile u realnom vremenu.</p>
-                    <div class="screen-tag">Testiranje</div>
+                    <h4>Fall & Debug</h4>
+                    <p>Single-tap fall simulation. Toggle for real-time debug view of X, Y, Z axes and G-Force.</p>
+                    <div class="screen-tag">Testing</div>
                 </div>
                 <div class="screen-connector">
                     <svg width="40" height="24" viewBox="0 0 40 24">
@@ -684,9 +662,9 @@
                 </div>
                 <div class="screen-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="screen-number">03</div>
-                    <h4>Podešavanja</h4>
-                    <p>Numpad za unos GSM broja hitnog kontakta. Nema potrebe za eksternim uređajem ili aplikacijom.</p>
-                    <div class="screen-tag">Konfiguracija</div>
+                    <h4>Settings</h4>
+                    <p>Numpad to enter an emergency GSM contact number. No need for an external device or app configuration.</p>
+                    <div class="screen-tag">Configuration</div>
                 </div>
                 <div class="screen-connector">
                     <svg width="40" height="24" viewBox="0 0 40 24">
@@ -695,9 +673,8 @@
                 </div>
                 <div class="screen-card screen-card-alert" data-aos="fade-up" data-aos-delay="300">
                     <div class="screen-number">04</div>
-                    <h4>Hitno Odbrojavanje</h4>
-                    <p>5-sekundni crveni alert. Korisnik može tapom otkazati. Ako ne reaguje, šalje se SMS sa GPS
-                        lokacijom.</p>
+                    <h4>Emergency Countdown</h4>
+                    <p>5-second red alert. The user can tap to cancel. If not canceled, it sends an SMS with the GPS location.</p>
                     <div class="screen-tag screen-tag-alert">Alert</div>
                 </div>
             </div>
@@ -708,13 +685,12 @@
     <section id="companion-app">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-tag">Mobilna Aplikacija</span>
-                <h2>Prateća <span class="gradient-text">Flutter aplikacija</span></h2>
-                <p>Cross-platform mobilna aplikacija koja proširuje mogućnosti LifeLink sata putem Bluetooth Low Energy
-                    konekcije.</p>
+                <span class="section-tag">Mobile Application</span>
+                <h2>Companion <span class="gradient-text">Flutter app</span></h2>
+                <p>A cross-platform mobile application that extends the capabilities of the LifeLink watch via a Bluetooth Low Energy connection.</p>
                 <div class="hero-actions" style="justify-content: center; margin-top: 2rem;">
                     <a href="app-release.apk" download class="btn btn-primary">
-                        <span>Preuzmi Android APK</span>
+                        <span>Download Android APK</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <polyline points="7 10 12 15 17 10" />
@@ -722,7 +698,7 @@
                         </svg>
                     </a>
                     <a href="https://github.com/blagojevicboban/LifeLink_MobileApp" target="_blank" class="btn btn-secondary" style="margin-left: 1rem;">
-                        <span>GitHub Projekat</span>
+                        <span>GitHub Project</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
                         </svg>
@@ -748,23 +724,22 @@
                             <path d="M8 21h8M12 17v4" />
                         </svg>
                     </div>
-                    <h3>Dashboard Uživo</h3>
-                    <p>Prikaz vitalnih parametara u realnom vremenu preslikanih sa sata — puls (BPM), saturacija
-                        kiseonikom (SpO2), jačina udara (G-Force), GPS lokacija i nivo baterije.</p>
+                    <h3>Live Dashboard</h3>
+                    <p>Real-time view of vital parameters mirrored from the watch — heart rate (BPM), oxygen saturation (SpO2), impact severity (G-Force), GPS location, and battery level.</p>
                     <div class="feature-phases">
                         <div class="phase">
                             <span class="phase-num" style="background: var(--cyan);">❤</span>
-                            <span>BPM<br><small>Puls</small></span>
+                            <span>BPM<br><small>Pulse</small></span>
                         </div>
                         <div class="phase-arrow">+</div>
                         <div class="phase">
                             <span class="phase-num" style="background: var(--green);">O₂</span>
-                            <span>SpO2<br><small>Kiseonik</small></span>
+                            <span>SpO2<br><small>Oxygen</small></span>
                         </div>
                         <div class="phase-arrow">+</div>
                         <div class="phase">
                             <span class="phase-num" style="background: var(--purple, #a855f7);">G</span>
-                            <span>G-Sila<br><small>Udarac</small></span>
+                            <span>G-Force<br><small>Impact</small></span>
                         </div>
                     </div>
                 </div>
@@ -775,9 +750,8 @@
                             <path d="M6.5 6.5l11 11L12 23V1l5.5 5.5-11 11" />
                         </svg>
                     </div>
-                    <h3>BLE Povezivanje</h3>
-                    <p>Automatsko ili manuelno uparivanje sa LifeLink satom putem Bluetooth Low Energy SPP protokola sa
-                        statusom konekcije.</p>
+                    <h3>BLE Connectivity</h3>
+                    <p>Automatic or manual pairing with the LifeLink watch via Bluetooth Low Energy SPP protocol, complete with connection status.</p>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="feature-icon fi-sms">
@@ -786,9 +760,8 @@
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                         </svg>
                     </div>
-                    <h3>Detekcija Pada</h3>
-                    <p>Aplikacija preslikava 3-fazni sistem sa sata: Bezbedno → Upozorenje → Alarm, sa 5-sekundnim
-                        odbrojavanjem i opcijom otkazivanja.</p>
+                    <h3>Fall Detection</h3>
+                    <p>The app mirrors the watch's 3-phase system: Safe → Warning → Alarm, with a 5-second countdown and cancellation capability.</p>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
                     <div class="feature-icon fi-sim">
@@ -798,9 +771,8 @@
                                 d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
                         </svg>
                     </div>
-                    <h3>Hitni SOS Odgovor</h3>
-                    <p>Po isteku odbrojavanja automatski poziva hitni kontakt, šalje SMS sa GPS koordinatama ili
-                        aktivira sistemski SOS signal.</p>
+                    <h3>Emergency SOS Response</h3>
+                    <p>Upon countdown expiry, it automatically calls the emergency contact, sends an SMS with GPS coordinates, or triggers a system SOS signal.</p>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="feature-icon fi-ui">
@@ -810,9 +782,8 @@
                             <circle cx="12" cy="10" r="3" />
                         </svg>
                     </div>
-                    <h3>Interaktivna Mapa</h3>
-                    <p>OpenStreetMap prikaz lokacije korisnika u realnom vremenu za pomoć spasiocima pri intervenciji.
-                    </p>
+                    <h3>Interactive Map</h3>
+                    <p>Real-time OpenStreetMap representation of the user's location to assist rescuers during an intervention.</p>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="feature-icon fi-ble">
@@ -823,9 +794,8 @@
                                 d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                         </svg>
                     </div>
-                    <h3>Podešavanja</h3>
-                    <p>Konfiguracija hitnog kontakta, izbor akcije pada (poziv/SMS/SOS), trajanje odbrojavanja i MAC
-                        adresa BLE uređaja.</p>
+                    <h3>Settings</h3>
+                    <p>Configure emergency contact, select fall action (Call/SMS/SOS), adjust countdown duration, and set BLE device MAC address.</p>
                 </div>
             </div>
         </div>
@@ -841,32 +811,31 @@
                         <img src="img/lifelink_logo.png" alt="LifeLink" class="footer-logo-img">
                         <span>Life<span class="accent">Link</span></span>
                     </div>
-                    <p>Napredan pametni sat prototip za bezbednost starijih osoba. Baziran na ESP32-S3 platformi sa
-                        ESP-IDF i LVGL.</p>
+                    <p>Advanced smart watch prototype for elderly safety. Based on the ESP32-S3 platform with ESP-IDF and LVGL.</p>
                 </div>
                 <div class="footer-links-group">
-                    <h5>Projekat</h5>
+                    <h5>Project</h5>
                     <ul>
-                        <li><a href="#features">Mogućnosti</a></li>
-                        <li><a href="#technology">Tehnologija</a></li>
-                        <li><a href="#algorithms">Algoritmi</a></li>
-                        <li><a href="#hardware">Hardver</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#technology">Technology</a></li>
+                        <li><a href="#algorithms">Algorithms</a></li>
+                        <li><a href="#hardware">Hardware</a></li>
                     </ul>
                 </div>
                 <div class="footer-links-group">
-                    <h5>Dokumentacija</h5>
+                    <h5>Documentation</h5>
                     <ul>
-                        <li><a href="izvestaj.html" target="_blank" style="color: #00AEAE; font-weight: 600;">📄 Učenička kompanija</a></li>
-                        <li><a href="LifeLink-narukvica za pomoć najugroženijim pacijentima.pdf" target="_blank" style="color: #F59E0B; font-weight: 600;">🏆 Galaksija kup</a></li>
-                        <li><a href="LifeLink_Flajer.png" target="_blank" style="color: #00AEAE; font-weight: 600;">🖨️ Promotivni Flajer</a></li>
-                        <li><a href="https://github.com/blagojevicboban/LifeLink_ESP32App/blob/main/README_RS.md" target="_blank">README</a></li>
-                        <li><a href="https://github.com/blagojevicboban/LifeLink_ESP32App/blob/main/TECHNICAL_DOC_RS.md" target="_blank">Tehnička Dokumentacija</a></li>
-                        <li><a href="https://github.com/blagojevicboban/LifeLink_ESP32App/blob/main/USER_MANUAL_RS.md" target="_blank">Korisnički Priručnik</a></li>
-                        <li><a href="https://github.com/blagojevicboban/LifeLink_ESP32App/blob/main/ALGORITHMS.md" target="_blank">Algoritmi</a></li>
+                        <li><a href="izvestaj_en.html" target="_blank" style="color: #00AEAE; font-weight: 600;">📄 Student Company</a></li>
+                        <li><a href="LifeLink-narukvica za pomoć najugroženijim pacijentima.pdf" target="_blank" style="color: #F59E0B; font-weight: 600;">🏆 Galaksija Cup</a></li>
+                        <li><a href="flajer_en.html" target="_blank" style="color: #00AEAE; font-weight: 600;">🖨️ Promotional Flyer</a></li>
+                        <li><a href="https://github.com/blagojevicboban/LifeLink_ESP32App/blob/main/README.md" target="_blank">README</a></li>
+                        <li><a href="https://github.com/blagojevicboban/LifeLink_ESP32App/blob/main/TECHNICAL_DOC.md" target="_blank">Technical Documentation</a></li>
+                        <li><a href="https://github.com/blagojevicboban/LifeLink_ESP32App/blob/main/USER_MANUAL.md" target="_blank">User Manual</a></li>
+                        <li><a href="https://github.com/blagojevicboban/LifeLink_ESP32App/blob/main/ALGORITHMS.md" target="_blank">Algorithms</a></li>
                     </ul>
                 </div>
                 <div class="footer-links-group">
-                    <h5>Tehnologije</h5>
+                    <h5>Technologies</h5>
                     <ul>
                         <li><a href="https://docs.espressif.com/projects/esp-idf/" target="_blank">ESP-IDF</a></li>
                         <li><a href="https://lvgl.io/" target="_blank">LVGL</a></li>
@@ -877,8 +846,8 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 LifeLink Project. Sva prava zadržana.</p>
-                <p class="footer-built">Izgrađen sa ❤️ za bezbednost starijih</p>
+                <p>&copy; 2026 LifeLink Project. All rights reserved.</p>
+                <p class="footer-built">Built with ❤️ for elderly safety</p>
             </div>
         </div>
     </footer>
