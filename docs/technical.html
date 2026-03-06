@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeLink — Technical Documentation</title>
+    <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="docs_style.css">
+</head>
+<body>
+    <div class="doc-container">
+        <header>
+            <a href="../index_en.html" class="logo-link">
+                <img src="../img/lifelink_logo.png" alt="LifeLink Logo" class="logo-img">
+                <span>LifeLink</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <a href="technical_rs.html" class="back-link">Srpski 🇷🇸</a>
+                <a href="../index_en.html" class="back-link">Home</a>
+            </div>
+        </header>
+
+        <main>
+            <h1>Technical Documentation - LifeLink [ESP32-S3]</h1>
+            
+            <p>This document describes the internal functioning of the LifeLink smart health-safety bracelet, covering sensor structure, network stacks, I2C communication, and asynchronous task management in FreeRTOS.</p>
+
+            <h2>System Architecture & Resource Management (FreeRTOS)</h2>
+            <p>At the heart of LifeLink is the powerful dual-core <code>ESP32-S3</code> controller. Operations are divided using built-in FreeRTOS to maintain a fluid user interface while background tasks perform critical body scanning for vulnerable patients and elderly users.</p>
+
+            <h3>Core/Task Distribution:</h3>
+            <ul>
+                <li><code>app_main</code>: Designated for main LVGL interface (Screen, GUI), communicating with the LCD controller via DMA SPI channels.</li>
+                <li><code>sensor_read_task</code>: (Core 1) Synchronizes with the <code>QMI8658</code> over <code>I2C</code>.</li>
+                <li><code>MAX30102</code>: C-based drivers implemented as asynchronous interrupts with <code>FIFO</code> buffer handling.</li>
+                <li><code>gsm_task</code>: GSM modem task listening to <code>UART</code> in a non-blocking manner.</li>
+                <li><code>ble_spp_server_task</code>: Bluetooth channel for "Heartbeat" (Telemetry) logs and telemetry events.</li>
+            </ul>
+
+            <h3>Hardware Interrupts & I2C (Known Issues)</h3>
+            <blockquote>
+                The known "Interrupt Watchdog (WDT)" module crash is resolved by using the newer <code>driver/i2c_master.h</code> iteration and introducing Mutex/Semaphores for hardware resource sharing.
+            </blockquote>
+
+            <h2>Fall Detection Logic (QMI8658 Advanced Logic)</h2>
+            <p>Fall detection is divided into 3 state-machine phases:</p>
+            <ol>
+                <li><strong>FREE_FALL</strong>: System detects a total loss of gravity (0 - 0.6G).</li>
+                <li><strong>IMPACT_DETECTED</strong>: Triggered once G-force exceeds the defined threshold (> 3.5G).</li>
+                <li><strong>STILLNESS & ANGLE CHECK</strong>: Must conclude with a stillness condition for at least 5 seconds and an orientation change > 60 degrees.</li>
+            </ol>
+
+            <h2>Communication & SOS Reporting (SIM800L & GPS LC76G)</h2>
+            <p>Upon a verified fall, the system deliveries a pre-formatted URL (Google Maps link) and vital analytics via the hardware SIM800L GSM module.</p>
+            <h2>Hardware Stack</h2>
+            <ul>
+                <li><strong>MCU</strong>: ESP32-S3</li>
+                <li><strong>Cellular</strong>: SIM800L GSM (AT Commands, 3.7V)</li>
+                <li><strong>IMU Sensors</strong>: QMI8658 (Motion & Tilt)</li>
+                <li><strong>Health Sensors</strong>: MAX30102 (Heart Rate & SpO2)</li>
+                <li><strong>Power Management</strong>: AXP2101</li>
+            </ul>
+
+            <h2>Hardware Schematic</h2>
+            <div style="margin: 2rem 0; text-align: center;">
+                <img src="../img/LifeLink-sch.jpg" alt="LifeLink Schematic" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+            </div>
+
+            <h2>UI Management & Smart Power (AXP2101)</h2>
+            <p>All UI updates pass through <code>lvgl_mux</code> Semaphores. The <code>AXP2101</code> PMIC manages charging and deep-sleep modes, turning off AMOLED pixels during inactivity.</p>
+
+            <h2>Companion Mobile App (Flutter Companion)</h2>
+            <p>A cross-platform app connects via BLE SPP to extend the bracelet's capabilities, featuring live dashboards, 3-phase alarm mirroring, and automatic emergency actions.</p>
+
+            <h2>References</h2>
+            <ol>
+                <li><strong>ESP-IDF Programming Guide</strong> - Official documentation for ESP32-S3.</li>
+                <li><strong>FreeRTOS API Reference</strong> - Mutex/Semaphore usage documentation.</li>
+                <li><strong>LVGL Documentation</strong> - Graphical library interactions.</li>
+                <li><strong>QMI8658 & MAX30102 Datasheets</strong> - Sensor hardware specifications.</li>
+                <li><strong>SIM800L AT Commands</strong> - GSM modem control.</li>
+                <li><strong>AXP2101 Datasheet</strong> - Power and charging management.</li>
+            </ol>
+        </main>
+    </div>
+</body>
+</html>

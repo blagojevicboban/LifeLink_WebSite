@@ -1,9 +1,13 @@
 # LIFELINK
-**- Pametan sat koji čuva zdravlje, detektuje padove i automatski poziva pomoć -**
+**- Pametna narukvica koja čuva zdravlje, detektuje padove i automatski poziva pomoć -**
 
-**Ime Tima:** [Ime Tima]  
-**Autori:** [Ime Prezime]*  
-Učenici IV-1 razreda  
+**Ime Tima:** LIFE LINK - NARUKVICA ZA POMOĆ NAJUGROŽENIJIM PACIJENTIMA 
+**Autori:** Kristina Gocev
+Teodora Pejčić
+Luka Vučić
+Mihailo Pešić
+Sava Petrović  
+Učenici IV-1 razreda 2025/2026 
 Tehnička škola Pirot  
 
 **Mentor:** BOBAN BLAGOJEVIĆ, dipl. ing. elektrotehnike, nastavnik elektro-grupe predmeta u Tehnička škola Pirot
@@ -12,7 +16,7 @@ Tehnička škola Pirot
 
 ## REZIME
 
-Projekat LifeLink predstavlja napredni pametni sat baziran na ESP32-S3 platformi, osmišljen pre svega kao sigurnosni asistent za starija i ugrožena lica. LifeLink kombinuje procesorsku moć ESP-IDF radnog okruženja sa LVGL grafičkom bibliotekom, pružajući vizuelno privlačan korisnički interfejs na kružnom AMOLED ekranu rezolucije 466x466 piksela. Hardver i softver sata zajednički nadgledaju zdravstvene parametre i upozoravaju staratelje u hitnim situacijama.
+Projekat LifeLink predstavlja naprednu pametnu zdravstveno-bezbednosnu narukvicu baziranu na ESP32-S3 platformi, osmišljenu pre svega kao sigurnosni asistent za najugroženije pacijente i starija lica. LifeLink kombinuje procesorsku moć ESP-IDF radnog okruženja sa LVGL grafičkom bibliotekom, pružajući vizuelno privlačan korisnički interfejs na kružnom AMOLED ekranu rezolucije 466x466 piksela. Hardver i softver narukvice zajednički nadgledaju zdravstvene parametre i upozoravaju staratelje u hitnim situacijama.
 
 Uređaj neprekidno meri vitalne parametre korisnika kao što su brzina pulsa (BPM) i nivo kiseonika u krvi (SpO2) uz pomoć MAX30102 medicinskog senzora. Njegova najbitnija funkcija je napredna detekcija pada – sat integriše QMI8658 inercijalni senzor (akcelerometar i žiroskop) sa posebnim softverskim algoritmom koji prepoznaje slobodan pad praćen jakim udarom i kasnijim mirovanjem, čime se efikasno filtriraju lažne uzbune (na primer usled naglih pokreta ruku). Kada detektuje pravi pad, uređaj prikazuje crveno obaveštenje i započinje odbrojavanje u trajanju od 5 sekundi. Ukoliko korisnik nije zaista povređen i ne treba mu pomoć, odbrojavanje može poništiti na dodir. U suprotnom, SIM800L GSM mrežni modul sata u potpunoj autonomiji (bez pametnog telefona) šalje SMS na programirani broj za hitne slučajeve. Poruka sadrži status zdravstvenih vitala u momentu pada, upozorenje, kao i direktan link na GPS lokaciju na Google mapama. 
 
@@ -80,13 +84,13 @@ void send_sos_sms(const char* phone_no, int hr, float latitude, float longitude)
 ## REZULTAT
 Nakon lemljenja fizičkih sklopova, razrade C koda po preporučenoj ESP-IDF arhitekturi na dva procesorska jezgra i renderovanja LVGL menija, sproveli smo niz stres testova uređaja. Fokus testiranja bio je kalibrisanje osetljivosti detekcije pada QMI8658 modula. Algoritam je isfiltriran za sprečavanje lažnih alarma tako što uz brzu promenu ubrzanja (slobodan pad o tlo) sada nužno ispituje i potonje statično polje i preokrenut ugaoni vektor nagiba, uspešno izbegavajući greške prilikom mahutalja rukom ili jednostavnog guranja. 
 
-Druga uspešna tačka leži u prelasku na SIM800L GSM modul koji se napaja direktno sa Li-Ion baterije (3.7–4.2V) bez potrebe za spoljnim boost konvertorom, uz uvođenje filter kondenzatora (1000µF elektrolitski + 100nF keramički) paralelno na VCC/GND pinove modula. Ovo je doprinelo potpunoj mrežnoj pokrivenosti i stabilnosti signala, eliminišući probleme sa gubitkom 5V napajanja koje je prethodni boost konvertor uzrokovao. Softverski automatski recovery mehanizam dodatno obezbeđuje pouzdanost sistema restartovanjem modula nakon uzastopnih neuspeha. Konačni rezultat je potpuno funkcionalan pametni sat impresivnog interfejsa koji, za razliku od modernih pametnih satova, nije vezan isključivo za mobilni telefon putem Bluetooth veze, već poseduje integrisan zdravstveni biološki nadzor i pravovremeno izveštava o incidentima na sopstveno GSM nezavisno prenešeno mobilno SMS rešenje, obezbeđujući na taj način visok stepen prenosive bezbednosti za najugroženije grupe.
+Druga uspešna tačka leži u prelasku na SIM800L GSM modul koji se napaja direktno sa Li-Ion baterije (3.7–4.2V) bez potrebe za spoljnim boost konvertorom, uz uvođenje filter kondenzatora (1000µF elektrolitski + 100nF keramički) paralelno na VCC/GND pinove modula. Ovo je doprinelo potpunoj mrežnoj pokrivenosti i stabilnosti signala, eliminišući probleme sa gubitkom 5V napajanja koje je prethodni boost konvertor uzrokovao. Softverski automatski recovery mehanizam dodatno obezbeđuje pouzdanost sistema restartovanjem modula nakon uzastopnih neuspeha. Konačni rezultat je potpuno funkcionalna pametna narukvica impresivnog interfejsa koja, za razliku od modernih pametnih narukvica, nije vezana isključivo za mobilni telefon putem Bluetooth veze, već poseduje integrisan zdravstveni biološki nadzor i pravovremeno izveštava o incidentima na sopstveno GSM nezavisno prenešeno mobilno SMS rešenje, obezbeđujući na taj način visok stepen prenosive bezbednosti za najugroženije pacijente i starije osobe.
 
 ---
 
 ## MOBILNA APLIKACIJA (LifeLink Companion App)
 
-Pored autonomnog rada sata, razvijena je i prateća mobilna aplikacija korišćenjem **Flutter** frejmvorka, koja proširuje mogućnosti LifeLink sistema putem Bluetooth Low Energy (BLE) veze sa satom.
+Pored autonomnog rada narukvice, razvijena je i prateća mobilna aplikacija korišćenjem **Flutter** frejmvorka, koja proširuje mogućnosti LifeLink sistema putem Bluetooth Low Energy (BLE) veze sa narukvicom.
 
 ### a.) Funkcionalnosti Aplikacije
 
@@ -127,7 +131,11 @@ Aplikacija koristi **MVVM** (Model-View-ViewModel) šablon:
 Predstavljeni prototip LifeLink platforme pruža izuzetan potencijal. Njegova najveća prednost jeste modularan multifunkcionalan pristup malog faktora forme. Mogući dalji rad na projektu zasigurno obuhvata dublju optimizaciju upotrebe baterije - kreiranjem takozvanog "Deep Sleep" logičkog koraka gašenjem ekrana, izradu namenskog prilagođenog komercijalnog 3D kućišta koje će zaštititi celokupan sklop od vlage ili udaraca, kao i integraciju algoritama veštačke inteligencije (Edge Impulse/TinyML). Mogućnošću "treniranja" sitnih klasifikacionih neuronskih mreža na samom ESP32 hardveru bi se drastično povećala moć raspoznavanja udesa i predviđanja vrste skoka na osnovu bogatijih baza podataka (dataseta). Bez obzira na to što je trenutni uređaj prototipskog karaktera, efikasnost i samostalnost testiranih modula dokazuju njegovu visoku i spasonosnu nosivu primenjivost na realnom terenu.
 
 ## ZAHVALNICA
-Zahvaljujemo se ...
+Ovim putem se zahvaljujemo mentoru Bobanu Blagojeviću, profesoru Bojanu Ćiriću i
+profesorki Sanji Rančić na velikoj podršci, stručnoj pomoći i korisnim savetima tokom
+realizacije projekta. Posebnu zahvalnost upućujemo mentorki Milici Petković iz kompanije
+BOSCH na nesebičnoj pomoći i stručnom doprinosu, kao i Zoranu Dimitrovu na pomoći pri
+izradi prilagodljivog kaiša. Takođe, zahvaljujemo se Startup Centru Pirot i kolektivu Tehničke škole Pirot na podršci i saradnji 
 
 ## LITERATURA I REFERENCE
 [1] ESP-IDF Framework platforma i FreeRTOS repozitorijumi – Espressif – https://docs.espressif.com  

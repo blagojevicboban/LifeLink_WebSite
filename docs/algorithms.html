@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeLink — Algorithms</title>
+    <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="docs_style.css">
+</head>
+<body>
+    <div class="doc-container">
+        <header>
+            <a href="../index_en.html" class="logo-link">
+                <img src="../img/lifelink_logo.png" alt="LifeLink Logo" class="logo-img">
+                <span>LifeLink</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <a href="algorithms_rs.html" class="back-link">Srpski 🇷🇸</a>
+                <a href="../index_en.html" class="back-link">Home</a>
+            </div>
+        </header>
+
+        <main>
+            <h1>LifeLink Algorithms Documentation</h1>
+            
+            <p>This document describes the signal processing algorithms used in the LifeLink project for Vital Signs monitoring and Fall Detection.</p>
+
+            <h2>1. Heart Rate & SpO2 (FFT-Based)</h2>
+            <p>We use the <strong>Fast Fourier Transform (FFT)</strong> to analyze the Photoplethysmogram (PPG) signal from the MAX30102 sensor. This method is more robust against motion artifacts compared to simple peak detection.</p>
+
+            <h3>Implementation Details:</h3>
+            <ul>
+                <li><strong>Library</strong>: <code>espressif/esp-dsp</code> (Hardware accelerated on ESP32-S3).</li>
+                <li><strong>Sampling Rate</strong>: 100 Hz.</li>
+                <li><strong>Buffer Size</strong>: 512 samples (~5.12 seconds of data).</li>
+            </ul>
+
+            <h3>Steps:</h3>
+            <ol>
+                <li><strong>DC Removal</strong>: Subtract the mean value of the signal.</li>
+                <li><strong>Windowing</strong>: Apply a <strong>Hann Window</strong> to reduce spectral leakage.</li>
+                <li><strong>FFT</strong>: Compute the complex FFT.</li>
+                <li><strong>SpO2 Calculation</strong>:
+                    <ul>
+                        <li>Extract AC and DC components for Red and IR channels.</li>
+                        <li>Calculate Ratio $R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$.</li>
+                        <li>Apply formula: $SpO_2 = 110 - 25 \times R$.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <hr>
+
+            <h2>2. Advanced Fall Detection (3-Phase Model)</h2>
+            <p>Fall detection uses data from the QMI8658 IMU and implements a state machine to distinguish real falls from daily activities.</p>
+
+            <h3>Core Concept: SVM (Signal Vector Magnitude)</h3>
+            <p>The total G-force is calculated as:</p>
+            <p>$$SVM = \sqrt{a_x^2 + a_y^2 + a_z^2}$$</p>
+
+            <h3>The 3-Phase Logic:</h3>
+            <ol>
+                <li><strong>Phase 1: Free Fall</strong>: SVM drops below <code>0.6g</code>. System captures the reference orientation.</li>
+                <li><strong>Phase 2: Impact</strong>: SVM spikes above <code>3.5g</code> within 500ms.</li>
+                <li><strong>Phase 3: Stillness</strong>: System monitors stability for 5 seconds.</li>
+            </ol>
+
+            <h3>Orientation Verification</h3>
+            <p>To prevent false positives, we compare the device orientation before and after the fall:</p>
+            <p>$$\theta = \arccos\left(\frac{v_{ref} \cdot v_{curr}}{|v_{ref}| \cdot |v_{curr}|}\right)$$</p>
+            <p>If $\theta > 60^\circ$ AND User is Still $\rightarrow$ <strong>CONFIRMED FALL</strong>.</p>
+
+            <hr>
+
+            <h2>3. Sensor Fusion & Rate Limiting</h2>
+            <ul>
+                <li><strong>GPS (LC76G)</strong>: Polled every 100ms.</li>
+                <li><strong>Rate Limiting</strong>: UI/Log updates at 10Hz to save CPU for DSP processing.</li>
+            </ul>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeLink — Tehnička Dokumentacija</title>
+    <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="docs_style.css">
+</head>
+<body>
+    <div class="doc-container">
+        <header>
+            <a href="../index.html" class="logo-link">
+                <img src="../img/lifelink_logo.png" alt="LifeLink Logo" class="logo-img">
+                <span>LifeLink</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <a href="technical.html" class="back-link">English 🇬🇧</a>
+                <a href="../index.html" class="back-link">Početna</a>
+            </div>
+        </header>
+
+        <main>
+            <h1>Tehnička Dokumentacija - LifeLink [ESP32-S3]</h1>
+            
+            <p>Ovaj dokument je fokusiran na opis unutrašnjeg funkcionisanja LifeLink pametne narukvice. Uključuje strukturu senzora, mrežnih stack-ova i komunikacije putem <code>I2C</code> sabirnice, kao i asinhrono upravljanje zadacima u FreeRTOS.</p>
+
+            <h2>Arhitektura Sistema i Menadžment Resursa (FreeRTOS)</h2>
+            <p>Srce LifeLinka je moćan dvojezgarni <code>ESP32-S3</code> kontroler, gde se operacije dele koristeći ugrađeni FreeRTOS kako bi se održao interfejs na ekranima fluidno pri visokom frejmrejtu dok pozadinski zadaci obavljaju kritične akcije skeniranja tela najugroženijih pacijenata i starijih korisnika.</p>
+
+            <h3>Raspodela Core/Taskova:</h3>
+            <ul>
+                <li><code>app_main</code>: Dodeljuje se procesiranje na dnu i glavni LVGL interfejs (Ekran, GUI) koji komuniciraju sa LCD kontrolerom preko DMA SPI kanala.</li>
+                <li><code>sensor_read_task</code>: (Core 1) Radi sinhronizaciju sa <code>QMI8658</code> preko <code>I2C</code>.</li>
+                <li><code>MAX30102</code>: C-Based driveri su implementirani kao asinhroni interrupti gde senzor pakuje podatke preko <code>FIFO</code> buffera.</li>
+                <li><code>gsm_task</code>: GSM modem stoji na posebnom Task-u i isključivo non-blocking sluša <code>UART</code>.</li>
+                <li><code>ble_spp_server_task</code>: BlueTooth kanal zadužen za "Heartbeat" (Telemetry) logove svakih sekundu.</li>
+            </ul>
+
+            <h3>Hardverski Interrapti i <code>I2C</code> (Poznati Problemi)</h3>
+            <blockquote>
+                Moguće je doći do poznatog "Interrupt Watchdog (WDT)" padanja modula zbog ISR preklapanja. Problem se rešava korišćenjem <code>driver/i2c_master.h</code> i uvođenjem Mutex/Semafora za deljenje resursa.
+            </blockquote>
+
+            <h2>Analiza i Otkrivanje Pada (QMI8658 Napredna Logika)</h2>
+            <p>Detekcija padova je podeljena na 3 state-machine faze:</p>
+            <ol>
+                <li><strong>FREE_FALL</strong>: Detekcija gubitka gravitacije (0 - 0.6G).</li>
+                <li><strong>IMPACT_DETECTED</strong>: G-force prevazilazi threshold (> 3.5G).</li>
+                <li><strong>STILLNESS & ANGLE CHECK</strong>: Mirovanje 5 sekundi + promena ugla preko 60 stepeni.</li>
+            </ol>
+
+            <h2>Komunikacija i SOS Prijavljivanje (SIM800L & GPS LC76G)</h2>
+            <p>Nakon verifikovanog pada, sistem ispaljuje asinhroni task koji preko <code>SIM800L</code> modula šalje SMS sa Google Maps linkom i vitalnim parametrima.</p>
+            <h2>Hardver</h2>
+            <ul>
+                <li><strong>Mikrokontroler</strong>: ESP32-S3</li>
+                <li><strong>Mreža / Komunikacija</strong>: SIM800L GSM (AT Komande, 3.7V)</li>
+                <li><strong>IMU Senzori</strong>: QMI8658 (Pokret i nagib)</li>
+                <li><strong>Senzori Zdravlja</strong>: MAX30102 (Puls i SpO2)</li>
+                <li><strong>Upravljanje napajanjem</strong>: AXP2101</li>
+            </ul>
+
+            <h2>Električna Šema</h2>
+            <div style="margin: 2rem 0; text-align: center;">
+                <img src="../img/LifeLink-sch.jpg" alt="LifeLink Šema" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+            </div>
+
+            <h2>Upravljanje Napajanjem i Displejom (AXP2101)</h2>
+            <p>MCU pauzira crtanje sa <code>esp_lcd_panel_disp_on_off</code> nakon 15s bez interakcije. AMOLED ekran efektivno gasi piksele kod crne boje, štedeći energiju.</p>
+
+            <h2>Prateća Mobilna Aplikacija (Flutter Companion)</h2>
+            <p>Flutter cross-platform aplikacija se povezuje putem BLE SPP protokola (UUID: <code>4fafc201-...</code>). Upravlja 3-faznim alarmom i izvršava hitne akcije poput direktnog poziva ili slanja SOS signala.</p>
+
+            <h2>Reference i Literatura</h2>
+            <ol>
+                <li><strong>ESP-IDF Programming Guide</strong> - Službena dokumentacija za ESP32-S3.</li>
+                <li><strong>FreeRTOS API Reference</strong> - Dokumentacija za Mutex/Semaphore.</li>
+                <li><strong>LVGL Documentation</strong> - Grafička biblioteka i thread-safe interakcija.</li>
+                <li><strong>QMI8658 & MAX30102 Datasheets</strong> - Specifikacije senzora.</li>
+                <li><strong>SIM800L AT Commands</strong> - Upravljanje modemom.</li>
+                <li><strong>Power Management</strong>: AXP2101</li>
+            </ol>
+        </main>
+    </div>
+</body>
+</html>

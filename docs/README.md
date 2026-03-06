@@ -1,13 +1,13 @@
-# LifeLink Smartwatch - ESP32-S3
+# LifeLink Smart Health-Safety Bracelet - ESP32-S3
 
 [🇷🇸 Srpski verzija dokumentacije nalazi se u README_RS.md](README_RS.md)
 
-LifeLink is an advanced smartwatch prototype built on the **ESP32-S3** platform, utilizing **ESP-IDF** alongside **LVGL** for a rich graphical interface (466x466 AMOLED display). It focuses on elderly care, health tracking, and robust emergency response functionality.
+LifeLink is an advanced smart health-safety bracelet prototype built on the **ESP32-S3** platform, utilizing **ESP-IDF** alongside **LVGL** for a rich graphical interface (466x466 AMOLED display). It focuses on the care of the most vulnerable patients and elderly people, health tracking, and robust emergency response functionality.
 
 ## Features
 
 - **Advanced Fall Detection**: Utilizes the QMI8658 IMU (Accelerometer + Gyroscope) to detect sudden drops (Free Fall) and hard impacts. It requires extended stillness after an impact coupled with an orientation shift to confirm a real fall and avoid false alarms.
-- **Fall Simulation & Override**: Users can simulate a fall via the interactive UI for testing purposes. Real falls trigger an immediate 5-second on-screen countdown; if it's a false alarm, users can tap to cancel before an alert is dispatched.
+- **Fall Simulation & Override**: Users can simulate a fall via the interactive UI of the bracelet for testing purposes. Real falls trigger an immediate 5-second on-screen countdown; if it's a false alarm, users can tap to cancel before an alert is dispatched.
 - **Automated GSM Emergency SMS**: Communicates with a SIM800L GSM Module to send background SMS alerts containing:
   - Precise GPS coordinates formatted as a direct Google Maps link.
   - Heart rate at the time of the event.
@@ -23,10 +23,10 @@ LifeLink is an advanced smartwatch prototype built on the **ESP32-S3** platform,
 
 A cross-platform **Flutter** companion app extends LifeLink's capabilities via Bluetooth Low Energy (BLE):
 
-- **Real-Time Dashboard**: Live Heart Rate (BPM), SpO2, G-Force, and GPS location mirrored from the watch.
+- **Real-Time Dashboard**: Live Heart Rate (BPM), SpO2, G-Force, and GPS location mirrored from the bracelet.
 - **BLE Connectivity**: Automatic or manual pairing with the LifeLink ESP32 wearable via BLE SPP.
 - **Emergency Response**: Configurable fall response actions — direct phone **Call**, **SMS** with GPS coordinates, or system-wide **SOS** intent.
-- **Fall Mirroring**: App mirrors the watch's 3-stage fall detection (Safe → Warning → Alarm) with a 5-second countdown and haptic/audio alerts.
+- **Fall Mirroring**: App mirrors the bracelet's 3-stage fall detection (Safe → Warning → Alarm) with a 5-second countdown and haptic/audio alerts.
 - **Settings**: Configure emergency contact, fall action type, countdown duration, and default device MAC address.
 - **Interactive Map**: Displays the user's location on an OpenStreetMap view for responder assistance.
 
@@ -38,6 +38,9 @@ A cross-platform **Flutter** companion app extends LifeLink's capabilities via B
 - **IMU Sensor**: QMI8658 (Accelerometer & Gyroscope)
 - **Health Sensor**: MAX30102 (HR & SpO2)
 - **Power Management**: AXP2101
+
+## Hardware Schematic
+![LifeLink Schematic](../img/LifeLink-sch.jpg)
 
 ## Setup & Building
 
@@ -58,7 +61,7 @@ idf.py -p COM_PORT flash monitor
 
 ## Application Flow
 
-1. **Dashboard (Screen 1)**: Primary clock face, health vitals, and connectivity status icons.
+1. **Dashboard (Screen 1)**: Primary bracelet face, health vitals, and connectivity status icons.
 2. **Fall Trigger/Debug (Screen 2)**: Simulate a fall, or engage the raw hardware debug sensors stream.
 3. **Settings (Screen 3)**: Utilize the customized numpad to input or replace your dedicated emergency contact's GSM phone number.
 4. **Emergency Countdown (Screen 4)**: Activated upon Fall Confirmation. Provides an unmissable red-alert interface allowing users to abort the alert before it attempts to connect via the SIM800L modem to send an SMS.

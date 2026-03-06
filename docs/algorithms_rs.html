@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeLink — Algoritmi</title>
+    <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="docs_style.css">
+</head>
+<body>
+    <div class="doc-container">
+        <header>
+            <a href="../index.html" class="logo-link">
+                <img src="../img/lifelink_logo.png" alt="LifeLink Logo" class="logo-img">
+                <span>LifeLink</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <a href="algorithms.html" class="back-link">English 🇬🇧</a>
+                <a href="../index.html" class="back-link">Početna</a>
+            </div>
+        </header>
+
+        <main>
+            <h1>Dokumentacija LifeLink Algoritama</h1>
+            
+            <p>Ovaj dokument opisuje algoritme za obradu signala koji se koriste u LifeLink projektu za praćenje vitalnih funkcija i detekciju pada.</p>
+
+            <h2>1. Puls i SpO2 (Bazirano na FFT-u)</h2>
+            <p>Koristimo <strong>Brzu Furijeovu Transformaciju (FFT)</strong> za analizu fotopletizmogramskog (PPG) signala sa MAX30102 senzora. Ova metoda je robusnija protiv artefakata pokreta u poređenju sa jednostavnom detekcijom vrhova u vremenskom domenu.</p>
+
+            <h3>Detalji Implementacije:</h3>
+            <ul>
+                <li><strong>Biblioteka</strong>: <code>espressif/esp-dsp</code> (Hardverski ubrzano na ESP32-S3).</li>
+                <li><strong>Brzina uzorkovanja</strong>: 100 Hz.</li>
+                <li><strong>Veličina bafera</strong>: 512 uzoraka (~5.12 sekundi podataka).</li>
+            </ul>
+
+            <h3>Koraci:</h3>
+            <ol>
+                <li><strong>Uklanjanje DC komponente</strong>: Oduzimanje srednje vrednosti signala.</li>
+                <li><strong>Prozorska funkcija</strong>: Primena <strong>Hann prozora</strong> za smanjenje spektralnog curenja.</li>
+                <li><strong>FFT</strong>: Izračunavanje kompleksnog FFT-a.</li>
+                <li><strong>Izračunavanje SpO2</strong>:
+                    <ul>
+                        <li>Ekstrakcija AC i DC komponenti za Red i IR kanale.</li>
+                        <li>Izračunavanje odnosa $R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$.</li>
+                        <li>Primena formule: $SpO_2 = 110 - 25 \times R$.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <hr>
+
+            <h2>2. Napredna Detekcija Pada (3-Fazni Model)</h2>
+            <p>Detekcija pada koristi podatke sa QMI8658 IMU senzora i implementira mašinu stanja kako bi razlikovala stvarne padove od svakodnevnih aktivnosti.</p>
+
+            <h3>Osnovni koncept: SVM (Signal Vector Magnitude)</h3>
+            <p>Totalna G-sila se izračunava kao:</p>
+            <p>$$SVM = \sqrt{a_x^2 + a_y^2 + a_z^2}$$</p>
+
+            <h3>3-Fazna Logika:</h3>
+            <ol>
+                <li><strong>Faza 1: Slobodan Pad</strong>: SVM pada ispod <code>0.6g</code>. Sistem beleži referentnu orijentaciju.</li>
+                <li><strong>Faza 2: Udarac</strong>: SVM skače iznad <code>3.5g</code> u roku od 500ms.</li>
+                <li><strong>Faza 3: Mirovanje</strong>: Sistem prati stabilnost tokom 5 sekundi.</li>
+            </ol>
+
+            <h3>Verifikacija Orijentacije</h3>
+            <p>Da bismo sprečili lažne uzbune, poredimo orijentaciju pre i posle pada:</p>
+            <p>$$\theta = \arccos\left(\frac{v_{ref} \cdot v_{curr}}{|v_{ref}| \cdot |v_{curr}|}\right)$$</p>
+            <p>Ako je $\theta > 60^\circ$ i korisnik miruje $\rightarrow$ <strong>POTVRĐEN PAD</strong>.</p>
+
+            <hr>
+
+            <h2>3. Fuzija Senzora i Ograničenje Brzine</h2>
+            <ul>
+                <li><strong>GPS (LC76G)</strong>: Očitava se svakih 100ms.</li>
+                <li><strong>Izveštavanje</strong>: UI/Log osvežavanje na 10Hz radi uštede CPU resursa.</li>
+            </ul>
+        </main>
+    </div>
+</body>
+</html>

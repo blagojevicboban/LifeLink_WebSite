@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeLink — Dokumentacija (README)</title>
+    <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="docs_style.css">
+</head>
+<body>
+    <div class="doc-container">
+        <header>
+            <a href="../index.html" class="logo-link">
+                <img src="../img/lifelink_logo.png" alt="LifeLink Logo" class="logo-img">
+                <span>LifeLink</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <a href="readme.html" class="back-link">English 🇬🇧</a>
+                <a href="../index.html" class="back-link">Početna</a>
+            </div>
+        </header>
+
+        <main>
+            <h1>LifeLink Pametna Narukvica - ESP32-S3</h1>
+            
+            <p>LifeLink je napredna pametna zdravstveno-bezbednosna narukvica izgrađena na <strong>ESP32-S3</strong> platformi. Koristi <strong>ESP-IDF</strong> u kombinaciji sa grafičkom bibliotekom <strong>LVGL</strong> za iscrtavanje prelepog korisničkog interfejsa na okruglom AMOLED ekranu rezolucije 466x466 piksela. Prvenstveno je fokusirana na brigu o najugroženijim pacijentima i starijim licima, praćenje zdravstvenih parametara i brzo reagovanje u hitnim situacijama.</p>
+
+            <h2>Glavne Funkcionalnosti</h2>
+            <ul>
+                <li><strong>Napredna Detekcija Pada</strong>: Koristi QMI8658 IMU (Akcelerometar + Žiroskop) za otkrivanje naglih padova i jakih udaraca o tlo. Zahteva period zadržavanja u nepomičnom stanju i specifičnu promenu ugla nagiba nakon udara kako bi potvrdio pravi pad a izbegao lažne uzbune (prilikom npr. trčanja ili naglih pokreta ruke).</li>
+                <li><strong>Simulacija Pada & Poništavanje</strong>: Korisnici mogu lako testirati sistem simulacijom pada preko samog interfejsa narukvice. Pravi pad okida 5-sekundno odbrojavanje na ekranu; ako je greška ili korisniku nije potrebna pomoć, jednim dodirom po ekranu proces se poništava i prekidaju se hitne akcije.</li>
+                <li><strong>Automatski GSM SMS Alarmi</strong>: Komunicira sa SIM800L GSM Modulom kako bi asinhrono (u pozadini) poslao SMS upozorenja koja sadrže:
+                    <ul>
+                        <li>Precizne GPS koordinate formatirane kao direktan Google Maps link (Lokacija gde se osoba nalazi).</li>
+                        <li>Otkucaje srca u sekundi akcidenta.</li>
+                        <li>Informaciju da li je pad bio stvaran ili samo test/simulacija.</li>
+                    </ul>
+                </li>
+                <li><strong>Zdravstveni Parametri Uživo</strong>: Sistem redovno očitava brzinu pulsa i oksigenaciju krvi u procentima (SpO2) uz pomoć MAX30102 senzora na poleđini. Novi podaci se uvek sveže ažuriraju na početnom ekranu.</li>
+                <li><strong>Interaktivni Korisnički Interfejs (LVGL)</strong>: 
+                    <ul>
+                        <li>Dinamična statusna traka na vrhu ekrana sa indikatorima za GPS konekciju, GSM povezanost (sa promenom boje u zavisnosti od signala), status Baterije i Bluetooth Mreže.</li>
+                        <li>Navigacija putem prevlačenja prsta po ekranu nalevo i nadesno (Meni gestovi).</li>
+                        <li>Zaseban "Podešavanja ekran" sa ugrađenom namenskom uveličanom numeričkom tastaturom koja pojednostavljuje unos ili promenu telefonskog broja hitne službe ili bliskog lica (nije potrebna aplikacija na telefonu).</li>
+                    </ul>
+                </li>
+                <li><strong>Pregled Senzora (Debug)</strong>: Lako dostupan "DEBUG" prekidač i pogled implementiran pravo u UI sistem koji omogućava programerima uživo posmatranje X, Y, Z , i G sile, korisno zbog finog štelovanja parametara padova.</li>
+            </ul>
+
+            <h2>Prateća Mobilna Aplikacija (Flutter)</h2>
+            <p>Cross-platform <strong>Flutter</strong> prateća aplikacija proširuje mogućnosti LifeLink sistema putem Bluetooth Low Energy (BLE) konekcije:</p>
+            <ul>
+                <li><strong>Dashboard Uživo</strong>: Prikaz vitalnih parametara u realnom vremenu — puls (BPM), SpO2, G-sila i GPS lokacija preslikani sa narukvice.</li>
+                <li><strong>BLE Povezivanje</strong>: Automatsko ili manuelno uparivanje sa LifeLink narukvicom putem BLE SPP protokola.</li>
+                <li><strong>Hitni Odgovor</strong>: Konfigurisane akcije pri padu — direktan telefonski <strong>poziv</strong>, <strong>SMS</strong> sa GPS koordinatama ili sistemski <strong>SOS</strong> signal.</li>
+                <li><strong>Ogledalo Detekcije Pada</strong>: Aplikacija preslikava 3-faznu detekciju pada sa narukvice (Bezbedno → Upozorenje → Alarm) sa 5-sekundnim odbrojavanjem i haptičkim/zvučnim alarmom.</li>
+                <li><strong>Podešavanja</strong>: Konfiguracija hitnog kontakta, tipa akcije pada, trajanja odbrojavanja i MAC adrese uređaja.</li>
+                <li><strong>Interaktivna Mapa</strong>: Prikaz lokacije korisnika na OpenStreetMap mapi za pomoć spasiocima.</li>
+            </ul>
+
+            <h2>Hardver</h2>
+            <ul>
+                <li><strong>Mikrokontroler</strong>: ESP32-S3</li>
+                <li><strong>Displej</strong>: Okrugli AMOLED ekran (466x466)</li>
+                <li><strong>Mreža / Komunikacija</strong>: SIM800L GSM Modul (AT Komande, 3.7V Li-Ion)</li>
+                <li><strong>IMU Senzori</strong>: QMI8658 (Pokret i nagib)</li>
+                <li><strong>Senzori Zdravlja</strong>: MAX30102 (Puls i SpO2)</li>
+                <li><strong>Power Management</strong>: AXP2101</li>
+            </ul>
+
+            <h2>Podešavanje i Pokretanje</h2>
+            <p>Ovaj projekat je izgrađen i napisan u jezicima C i C++, preko <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/get-started/" target="_blank">Espressif ESP-IDF frejmvorka</a> (v5.x+).</p>
+            
+            <h3>1. Konfiguracija</h3>
+            <pre><code>idf.py set-target esp32s3
+idf.py menuconfig</code></pre>
+
+            <h3>2. Građenje arhitekture i Flešovanje</h3>
+            <pre><code>idf.py build
+idf.py -p COMX flash monitor</code></pre>
+            <p><em>(COMX podesite na port vašeg esp programatora)</em></p>
+
+            <h2>Pregled i mapiranje Ekrana</h2>
+            <ol>
+                <li><strong>Glavni Skrin (Ekran 1)</strong>: Brojčanik (Narukvica), glavni vitali i konektivne ikonice.</li>
+                <li><strong>Prikaz Senzora (Ekran 2)</strong>: Test dugme za simulaciju pada i Debug panel parametara.</li>
+                <li><strong>Podešavanja (Ekran 3)</strong>: Numerička tastatura za unos telefonskog broja hitne službe.</li>
+                <li><strong>Ekran u hitnim situacijama (Ekran 4)</strong>: Crveni ekran sa odbrojavanjem i opcijom poništavanja.</li>
+            </ol>
+
+            <h2>Odstranjivanje grešaka (Troubleshooting)</h2>
+            <h3>Problem sa GSM SIM800L modulom: <code>+CREG: 1,3</code> i nasumični <code>+CPIN: NO SIM</code> logovi</h3>
+            <blockquote>
+                Ako uređaj ne uspeva da se registruje na mrežu (Registration Denied status: +CREG: 1,3), problem leži u <strong>nedovoljno snažnom napajanju</strong> modula (2A strujni pikovi).
+            </blockquote>
+            <ul>
+                <li>SIM800L radi na <strong>3.7–4.2V</strong> direktno sa baterije.</li>
+                <li>Zalemiti <strong>1000µF elektrolitski</strong> i <strong>100nF keramički kondenzator</strong> paralelno na VCC/GND.</li>
+                <li>Koristite deblje napojne kablove.</li>
+                <li>Uverite se da SIM kartica nema aktivan PIN kod.</li>
+            </ul>
+        </main>
+    </div>
+</body>
+</html>

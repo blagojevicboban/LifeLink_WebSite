@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeLink — User Manual</title>
+    <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="docs_style.css">
+</head>
+<body>
+    <div class="doc-container">
+        <header>
+            <a href="../index_en.html" class="logo-link">
+                <img src="../img/lifelink_logo.png" alt="LifeLink Logo" class="logo-img">
+                <span>LifeLink</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <a href="manual_rs.html" class="back-link">Srpski 🇷🇸</a>
+                <a href="../index_en.html" class="back-link">Home</a>
+            </div>
+        </header>
+
+        <main>
+            <h1>LifeLink - User Manual</h1>
+            
+            <p>Welcome to the user guide for your <strong>LifeLink</strong> smart health-safety bracelet, built on the powerful ESP32-S3 platform! This smart bracelet features a round glass AMOLED touch screen and is primarily designed as your guardian for health and safety.</p>
+
+            <p>Why does LifeLink protect you? Through its powerful built-in sensors, it constantly "listens" to your heart, blood flow, and every change in speed as you move towards the floor — preventing false arm jerks, it guarantees that it really calls for help when you fall and get injured.</p>
+
+            <hr>
+
+            <h2>Basic Navigation</h2>
+            <p>Your screen works on a <strong>Swipe</strong> basis:</p>
+
+            <h3>1. Main Home Screen</h3>
+            <p>When you unlock and touch the device, you arrive here. This screen is your home and control panel:</p>
+            <ul>
+                <li>Your vitals (Heart Rate and Oxygen) are displayed right in front of your eyes.</li>
+                <li>Above the text are small icons (Red, Orange, and Green) representing <code>GPS</code> and <code>GSM</code> signal status.</li>
+            </ul>
+
+            <h3>2. "Fall Simulation" Screen (Swipe Left)</h3>
+            <p>Swipe from the left edge of the bracelet towards the center. Here is a huge button to "Simulate FALL". It's ideal to press this before climbing or experimenting as a "just in case" measure.</p>
+
+            <h3>3. Emergency Contact Screen</h3>
+            <p>In the menus, you will find an enlarged numeric keypad. Simply enter the phone number of your emergency contact and press (Save). This number is stored securely and persists even if the battery runs out.</p>
+
+            <hr>
+
+            <h2>Emergency Screen (SOS)</h2>
+            <p>When the device triggers a fall, it shows an ominous <strong>Red "DID YOU FALL?" screen</strong>.</p>
+            <blockquote>
+                The bracelet counts down 15 seconds before dispatching an alert. If you didn't actually fall, simply swipe across the screen to stop the countdown. Otherwise, "CALLING FOR HELP!!!" messages will be sent automatically.
+            </blockquote>
+        </main>
+    </div>
+</body>
+</html>

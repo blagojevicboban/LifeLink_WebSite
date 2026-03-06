@@ -1,10 +1,10 @@
 # Tehnička Dokumentacija - LifeLink [ESP32-S3]
 
-Ovaj dokument je fokusiran na opis unutrašnjeg funkcionisanja LifeLink pametnog sata. Uključuje strukturu senzora, mrežnih stack-ova i komunikacije putem `I2C` sabirnice, kao i asinhrono upravljanje zadacima u FreeRTOS.
+Ovaj dokument je fokusiran na opis unutrašnjeg funkcionisanja LifeLink pametne narukvice. Uključuje strukturu senzora, mrežnih stack-ova i komunikacije putem `I2C` sabirnice, kao i asinhrono upravljanje zadacima u FreeRTOS.
 
 ## Arhitektura Sistema i Menadžment Resursa (FreeRTOS)
 
-Srce LifeLinka je moćan dvojezgarni `ESP32-S3` kontroler, gde se operacije dele koristeći ugrađeni FreeRTOS kako bi se održao interfejs na ekranima fluidno pri visokom frejmrejtu dok pozadinski zadaci obavljaju kritične akcije skeniranja tela.
+Srce LifeLinka je moćan dvojezgarni `ESP32-S3` kontroler, gde se operacije dele koristeći ugrađeni FreeRTOS kako bi se održao interfejs na ekranima fluidno pri visokom frejmrejtu dok pozadinski zadaci obavljaju kritične akcije skeniranja tela najugroženijih pacijenata i starijih korisnika.
 
 **Raspodela Core/Taskova:**
 - `app_main` dodeljuje se procesiranje na dnu i glavni LVGL interfejs (Ekran, GUI) koji komuniciraju sa LCD kontrolerom preko DMA SPI kanala.
@@ -25,7 +25,7 @@ Moguće je doći do poznatog "Interrupt Watchdog (WDT)" padanja modula, gde Blue
 Detekcija padova (Fall Detection) podeljena je na 3 state-machine faze koje ignorišu lažne trzaje. Algoritam ne reaguje isključivo na prebačen g-force (`< 0.6G za Pad, > 3.5G za udar`), već na:
 1. `FREE_FALL` : Sistem detektuje potpun gubitak gravitacije (0 - 0.6G) uz periodičan nadzor. Zadržava referentne podatke pre uleta u ambis, za kasniju kalkulaciju orijentacije.
 2. `IMPACT_DETECTED` : Nakon što G prevaziđe definisan threshold (> 3.5G MAX). Ako ne, State Machine se resetuje `500ms` bez reakcija.
-3. `STILLNESS & ANGLE CHECK` (Verifikaciji Mirnoće): Padanje se mora završiti sa `STILLNESS` uslovom u trajanju od barem 5 sekundi a potom sledi kalkulisanje kosinusa (Dot-Product ugla) prvobitnog vektora sa sadašnjim iznosom `ref_ax`, `ref_ay`. Sat zahteva da se promena ugla desi preko **60 stepeni**.
+3. `STILLNESS & ANGLE CHECK` (Verifikaciji Mirnoće): Padanje se mora završiti sa `STILLNESS` uslovom u trajanju od barem 5 sekundi a potom sledi kalkulisanje kosinusa (Dot-Product ugla) prvobitnog vektora sa sadašnjim iznosom `ref_ax`, `ref_ay`. Narukvica zahteva da se promena ugla desi preko **60 stepeni**.
 
 
 ## Komunikacija i SOS Prijavljivanje (SIM800L GSM & GPS LC76G)
@@ -45,7 +45,7 @@ Svi pozivi ka `ui_Label_setText()` za LCD displej MORAJU proći `example_lvgl_lo
 
 ## Prateća Mobilna Aplikacija (Flutter Companion)
 
-Flutter bazirana cross-platform aplikacija koja se putem BLE SPP protokola povezuje sa LifeLink satom i proširuje sistem sa dodatnim mogućnostima na mobilnom telefonu.
+Flutter bazirana cross-platform aplikacija koja se putem BLE SPP protokola povezuje sa LifeLink narukvicom i proširuje sistem sa dodatnim mogućnostima na mobilnom telefonu.
 
 **BLE Protokol Komunikacije:**
 - Servisni UUID: `4fafc201-1fb5-459e-8fcc-c5c9c331914b`
