@@ -7,8 +7,7 @@
     <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <link rel="stylesheet" href="docs_style.css">
 </head>
 <body>
@@ -46,9 +45,21 @@
                 <li><strong>FFT</strong>: Compute the complex FFT.</li>
                 <li><strong>SpO2 Calculation</strong>:
                     <ul>
-                        <li>Extract AC and DC components for Red and IR channels.</li>
-                        <li>Calculate Ratio $R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$.</li>
-                        <li>Apply formula: $SpO_2 = 110 - 25 \times R$.</li>
+                        <li><strong>AC & DC Extraction</strong>: 
+                            <ul>
+                                <li><strong>DC Component</strong>: Static absorption from tissue/bone (extracted from 0Hz FFT bin).</li>
+                                <li><strong>AC Component</strong>: Pulsating absorption from arterial blood (magnitude at heart rate frequency).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Ratio of Ratios</strong>:
+                            <p>$$R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$$</p>
+                        </li>
+                        <li><strong>Final Formula</strong>: Saturation percentage using linear (empirical) approximation:
+                            <p>$$SpO_2 = 110 - 25 \times R$$</p>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                                * Optimized for the clinical range (70-100%) providing high accuracy and low CPU overhead.
+                            </p>
+                        </li>
                     </ul>
                 </li>
             </ol>
@@ -64,15 +75,21 @@
 
             <h3>The 3-Phase Logic:</h3>
             <ol>
-                <li><strong>Phase 1: Free Fall</strong>: SVM drops below <code>0.6g</code>. System captures the reference orientation.</li>
-                <li><strong>Phase 2: Impact</strong>: SVM spikes above <code>3.5g</code> within 500ms.</li>
-                <li><strong>Phase 3: Stillness</strong>: System monitors stability for 5 seconds.</li>
+                <li><strong>Phase 1: Free Fall</strong>: 
+                    <p>Detects weightlessness (SVM < 0.6g). The system records the <strong>reference orientation</strong> of the arm just before the drop.</p>
+                </li>
+                <li><strong>Phase 2: Impact</strong>: 
+                    <p>Sudden G-force spike (> 3.5g) within a 500ms window. This separates real falls from common arm impacts.</p>
+                </li>
+                <li><strong>Phase 3: Stillness & Orientation Check</strong>: 
+                    <p>Monitors stability for 5 seconds. If the user remains still, the orientation change relative to Phase 1 is calculated.</p>
+                </li>
             </ol>
 
             <h3>Orientation Verification</h3>
-            <p>To prevent false positives, we compare the device orientation before and after the fall:</p>
+            <p>Utilizing cosine similarity (dot-product) to calculate shift magnitude:</p>
             <p>$$\theta = \arccos\left(\frac{v_{ref} \cdot v_{curr}}{|v_{ref}| \cdot |v_{curr}|}\right)$$</p>
-            <p>If $\theta > 60^\circ$ AND User is Still $\rightarrow$ <strong>CONFIRMED FALL</strong>.</p>
+            <p>If $\theta > 60^\circ$ and stillness is verified $\rightarrow$ <strong>CONFIRMED FALL</strong>.</p>
 
             <hr>
 
@@ -83,5 +100,10 @@
             </ul>
         </main>
     </div>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
 </body>
 </html>

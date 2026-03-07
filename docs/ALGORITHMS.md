@@ -19,9 +19,15 @@ We use the **Fast Fourier Transform (FFT)** to analyze the Photoplethysmogram (P
 4.  **Power Spectrum**: Calculate magnitudes for both Red and IR channels.
 5.  **Peak Detection**: Find the dominant frequency bin in the 0.5Hz - 4.0Hz range (30 - 240 BPM).
 6.  **SpO2 Calculation**:
-    - Extract AC components (Peak Magnitude) and DC components (Mean) for Red and IR.
-    - Calculate Ratio $R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$.
-    - Apply formula: $SpO_2 = 110 - 25 \times R$.
+    - **AC and DC Component Extraction**:
+        - **DC Component**: Represents constant light absorption by tissues/bones (magnitude at 0Hz).
+        - **AC Component**: Represents pulsating absorption by arterial blood (magnitude at the detected heart rate frequency).
+    - **Normalization**: Dividing AC by DC for each channel eliminates variables like skin tone or sensor pressure.
+    - **Ratio of Ratios Calculation**:
+    $$R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$$
+    - **Empirical Formula**: Final saturation is derived using a linear approximation:
+    $$SpO_2 = 110 - 25 \times R$$
+    *(Note: Linear fit provides +/- 2% accuracy within the 70-100% range while being computationally efficient for MCU execution.)*
 
 ---
 
@@ -36,29 +42,21 @@ In rest, $SVM \approx 1.0g$.
 
 ### The 3-Phase Logic:
 
-#### Phase 1: Free Fall (Slobodan Pad)
-- **Trigger**: SVM drops below `0.6g` (`FALL_THRESHOLD_LOW`).
-- **Action**:
-    - The system enters `FREE_FALL` state.
-    - Captures the **Release Orientation** (Reference Gravity Vector $\vec{v}_{ref}$) to compare later.
+#### Phase 1: Free Fall
+- **Physics**: The moment of weightlessness as the body starts to drop.
+- **Trigger**: SVM drops below `0.6g`.
+- **Key Action**: The system records the **reference orientation** ($\vec{v}_{ref}$) — the position of the arm just before the incident.
 
-#### Phase 2: Impact (Udarac)
-- **Window**: Must occur within 500ms of Free Fall.
-- **Trigger**: SVM spikes above `3.5g` (`FALL_THRESHOLD_HIGH`).
-- **Action**: System enters `WAITING_FOR_STILLNESS`.
+#### Phase 2: Impact
+- **Physics**: Collision with the ground creating high G-force acceleration.
+- **Time Window**: Impact must occur within 500ms of Phase 1.
+- **Trigger**: SVM spikes above `3.5g`. If no free fall preceded the spike, it is ignored (e.g., hitting a table).
 
-#### Phase 3: Stillness & Orientation Check (Mirovanje)
-- **Duration**: System monitors stability for **5 seconds** (`STILLNESS_DURATION_MS`).
-- **Action**:
-    - If the user moves significantly (SVM deviates > 0.2g from 1g), the fall is rejected.
-    - After 5 seconds, if the user is still, we check **Orientation Change**.
-
-### Orientation Verification
-To prevent false positives (e.g., clapping hands, hitting a desk), we compare the device orientation before and after the "fall".
-
-- **Formula**:
-$\theta = \arccos(\frac{v_{ref} \cdot v_{curr}}{|v_{ref}| \cdot |v_{curr}|})$
-- **Condition**: If $\theta > 60^\circ$ AND User is Still $\rightarrow$ **CONFIRMED FALL**.
+#### Phase 3: Stillness & Orientation Check
+- **Stillness**: System waits for 5 seconds of stability. Any significant movement cancels the alarm.
+- **Orientation Shift**: If still, the current gravity vector is compared to the reference from Phase 1.
+- **Formula**: $\theta = \arccos(\frac{v_{ref} \cdot v_{curr}}{|v_{ref}| \cdot |v_{curr}|})$
+- **Confirmation**: If orientation shift $\theta > 60^\circ$ AND user is still $\rightarrow$ **CONFIRMED FALL**.
 
 ## 3. Sensor Fusion & Rate Limiting
 

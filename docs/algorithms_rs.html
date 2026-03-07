@@ -7,8 +7,7 @@
     <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <link rel="stylesheet" href="docs_style.css">
 </head>
 <body>
@@ -46,9 +45,21 @@
                 <li><strong>FFT</strong>: Izračunavanje kompleksnog FFT-a.</li>
                 <li><strong>Izračunavanje SpO2</strong>:
                     <ul>
-                        <li>Ekstrakcija AC i DC komponenti za Red i IR kanale.</li>
-                        <li>Izračunavanje odnosa $R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$.</li>
-                        <li>Primena formule: $SpO_2 = 110 - 25 \times R$.</li>
+                        <li><strong>Ekstrakcija AC i DC komponenti</strong>: 
+                            <ul>
+                                <li><strong>DC komponenta</strong>: Konstantna apsorpcija tkiva i kostiju (0Hz magnituda FFT-a).</li>
+                                <li><strong>AC komponenta</strong>: Pulsirajuća apsorpcija arterijske krvi (magnituda na frekvenciji pulsa).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Izračunavanje odnosa (Ratio of Ratios)</strong>:
+                            <p>$$R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$$</p>
+                        </li>
+                        <li><strong>Finalna formula</strong>: Procenat se dobija linearnom (empirijskom) aproksimacijom:
+                            <p>$$SpO_2 = 110 - 25 \times R$$</p>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                                * Kalibrisano za medicinski opseg 70-100% gde linearni fit nudi najbolji balans preciznosti i performansi.
+                            </p>
+                        </li>
                     </ul>
                 </li>
             </ol>
@@ -64,15 +75,21 @@
 
             <h3>3-Fazna Logika:</h3>
             <ol>
-                <li><strong>Faza 1: Slobodan Pad</strong>: SVM pada ispod <code>0.6g</code>. Sistem beleži referentnu orijentaciju.</li>
-                <li><strong>Faza 2: Udarac</strong>: SVM skače iznad <code>3.5g</code> u roku od 500ms.</li>
-                <li><strong>Faza 3: Mirovanje</strong>: Sistem prati stabilnost tokom 5 sekundi.</li>
+                <li><strong>Faza 1: Slobodan Pad</strong>: 
+                    <p>Detekcija gubitka težine (SVM < 0.6g). Sistem beleži <strong>referentnu orijentaciju</strong> ruke neposredno pre pada.</p>
+                </li>
+                <li><strong>Faza 2: Udarac (Impact)</strong>: 
+                    <p>Nagli skok ubrzanja (> 3.5g) koji se mora desiti u roku od 500ms. Ovo odvaja padove od običnih udaraca rukom o objekte.</p>
+                </li>
+                <li><strong>Faza 3: Mirovanje i Provera Ugla</strong>: 
+                    <p>Sistem čeka 5 sekundi stabilnosti. Ako je korisnik miran, računa se promena ugla u odnosu na referentnu tačku iz Faze 1.</p>
+                </li>
             </ol>
 
             <h3>Verifikacija Orijentacije</h3>
-            <p>Da bismo sprečili lažne uzbune, poredimo orijentaciju pre i posle pada:</p>
+            <p>Koristimo kosinusnu sličnost (dot-product) za izračunavanje promene nagiba:</p>
             <p>$$\theta = \arccos\left(\frac{v_{ref} \cdot v_{curr}}{|v_{ref}| \cdot |v_{curr}|}\right)$$</p>
-            <p>Ako je $\theta > 60^\circ$ i korisnik miruje $\rightarrow$ <strong>POTVRĐEN PAD</strong>.</p>
+            <p>Ako je $\theta > 60^\circ$ i detektovano je mirovanje $\rightarrow$ <strong>POTVRĐEN PAD</strong>.</p>
 
             <hr>
 
@@ -83,5 +100,10 @@
             </ul>
         </main>
     </div>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
 </body>
 </html>

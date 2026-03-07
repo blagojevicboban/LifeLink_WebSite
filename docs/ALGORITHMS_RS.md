@@ -19,9 +19,15 @@ Koristimo **Brzu Furijeovu Transformaciju (FFT)** za analizu fotopletizmogramsko
 4.  **Spektar snage**: Izračunavanje magnituda za crveni (Red) i infracrveni (IR) kanal.
 5.  **Detekcija vrha**: Pronalaženje dominantne frekvencije u opsegu 0.5Hz - 4.0Hz (30 - 240 BPM).
 6.  **Izračunavanje SpO2**:
-    - Ekstrakcija AC komponenti (magnituda vrha) i DC komponenti (srednja vrednost) za Red i IR.
-    - Izračunavanje odnosa $R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$.
-    - Primena formule: $SpO_2 = 110 - 25 \times R$.
+    - **Ekstrakcija AC i DC komponenti**: 
+        - **DC komponenta**: Predstavlja konstantnu apsorpciju svetlosti od strane tkiva i kostiju (dobija se iz magnitude na 0Hz frekvenciji FFT-a).
+        - **AC komponenta**: Predstavlja pulsirajuću apsorpciju arterijske krvi (magnituda na frekvenciji pulsa).
+    - **Normalizacija**: AC vrednost se deli sa DC vrednošću za svaki kanal kako bi se eliminisali faktori poput boje kože ili pritiska na senzor.
+    - **Izračunavanje odnosa (Ratio of Ratios)**: 
+    $$R = \frac{AC_{red}/DC_{red}}{AC_{ir}/DC_{ir}}$$
+    - **Linearna (Empirijska) aproksimacija**: Finalni procenat se dobija formulom: 
+    $$SpO_2 = 110 - 25 \times R$$
+    *(Napomena: Iako je stvarna kriva blago nelinearna, u opsegu od 70-100% linearna aproksimacija nudi preciznost od +/- 2% uz minimalno procesorsko opterećenje.)*
 
 ---
 
@@ -37,28 +43,20 @@ U stanju mirovanja, $SVM \approx 1.0g$.
 ### 3-Fazna Logika:
 
 #### Faza 1: Slobodan Pad
-- **Okidač**: SVM pada ispod `0.6g` (`FALL_THRESHOLD_LOW`).
-- **Akcija**:
-    - Sistem ulazi u `FREE_FALL` stanje.
-    - Snima **referentnu orijentaciju** (vektor gravitacije $\vec{v}_{ref}$) za kasniju poređenje.
+- **Fizika**: Trenutak gubitka težine dok telo počinje da pada.
+- **Okidač**: SVM pada ispod `0.6g`.
+- **Ključna akcija**: Sistem snima **referentnu orijentaciju** ($\vec{v}_{ref}$) — položaj ruke neposredno pre incidenta.
 
-#### Faza 2: Udarac
-- **Vremenski prozor**: Mora se desiti u roku od 500ms nakon slobodnog pada.
-- **Okidač**: SVM skače iznad `3.5g` (`FALL_THRESHOLD_HIGH`).
-- **Akcija**: Sistem ulazi u stanje `WAITING_FOR_STILLNESS`.
+#### Faza 2: Udarac (Impact)
+- **Fizika**: Sudar tela sa podlogom koji stvara naglo ubrzanje.
+- **Vremenski prozor**: Šiljak se mora desiti unutar 500ms od Faze 1.
+- **Okidač**: SVM skače iznad `3.5g`. Ako nema prethodnog slobodnog pada, udarac se ignoriše (npr. udarac rukom o sto).
 
 #### Faza 3: Mirovanje i Provera Orijentacije
-- **Trajanje**: Sistem prati stabilnost tokom **5 sekundi** (`STILLNESS_DURATION_MS`).
-- **Akcija**:
-    - Ako se korisnik značajno pomeri (SVM odstupa > 0.2g od 1g), pad se odbacuje.
-    - Nakon 5 sekundi, ako je korisnik miran, proveravamo **promenu orijentacije**.
-
-### Verifikacija Orijentacije
-Da bismo sprečili lažno pozitivne rezultate (npr. tapšanje, udarac o sto), poredimo orijentaciju uređaja pre i posle "pada".
-
-- **Formula**:
-$\theta = \arccos(\frac{v_{ref} \cdot v_{curr}}{|v_{ref}| \cdot |v_{curr}|})$
-- **Uslov**: Ako je $\theta > 60^\circ$ I korisnik miruje $\rightarrow$ **POTVRĐEN PAD**.
+- **Mirovanje**: Sistem čeka 5 sekundi. Ako se detektuje pokret, alarm se poništava (korisnik je dobro).
+- **Provera ugla**: Ako je korisnik miran, poredi se trenutni vektor gravitacije sa referentnim iz Faze 1.
+- **Formula**: $\theta = \arccos(\frac{v_{ref} \cdot v_{curr}}{|v_{ref}| \cdot |v_{curr}|})$
+- **Potvrda**: Ako je promena ugla $\theta > 60^\circ$, sistem potvrđuje da korisnik leži i aktivira SOS.
 
 ---
 

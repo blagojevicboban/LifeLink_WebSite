@@ -6,6 +6,8 @@
     <title>LifeLink — Tehnička Dokumentacija</title>
     <link rel="icon" href="../img/lifelink_logo.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <link rel="stylesheet" href="docs_style.css">
 </head>
 <body>
@@ -24,19 +26,65 @@
         <main>
             <h1>Tehnička Dokumentacija - LifeLink [ESP32-S3]</h1>
             
-            <p>Ovaj dokument je fokusiran na opis unutrašnjeg funkcionisanja LifeLink pametne narukvice. Uključuje strukturu senzora, mrežnih stack-ova i komunikacije putem <code>I2C</code> sabirnice, kao i asinhrono upravljanje zadacima u FreeRTOS.</p>
+            <p>Ovaj dokument je fokusiran na opis unutrašnjeg funkcionisanja LifeLink pametne narukvice. Uključuje strukturu senzora, mrežnih stack-ova i komunikacije putem <code>I2C</code> sabirnice, kao i asinhrono upravljanje zadacima u FreeRTOS.
+            <br>Izvorni kod firmware-a: <a href="https://github.com/blagojevicboban/LifeLink_ESP32App" target="_blank" class="back-link" style="display:inline-block; margin-top:0.5rem;"><i class="fab fa-github"></i> GitHub: LifeLink_ESP32App</a></p>
 
             <h2>Arhitektura Sistema i Menadžment Resursa (FreeRTOS)</h2>
             <p>Srce LifeLinka je moćan dvojezgarni <code>ESP32-S3</code> kontroler, gde se operacije dele koristeći ugrađeni FreeRTOS kako bi se održao interfejs na ekranima fluidno pri visokom frejmrejtu dok pozadinski zadaci obavljaju kritične akcije skeniranja tela najugroženijih pacijenata i starijih korisnika.</p>
 
             <h3>Raspodela Core/Taskova:</h3>
-            <ul>
-                <li><code>app_main</code>: Dodeljuje se procesiranje na dnu i glavni LVGL interfejs (Ekran, GUI) koji komuniciraju sa LCD kontrolerom preko DMA SPI kanala.</li>
-                <li><code>sensor_read_task</code>: (Core 1) Radi sinhronizaciju sa <code>QMI8658</code> preko <code>I2C</code>.</li>
-                <li><code>MAX30102</code>: C-Based driveri su implementirani kao asinhroni interrupti gde senzor pakuje podatke preko <code>FIFO</code> buffera.</li>
-                <li><code>gsm_task</code>: GSM modem stoji na posebnom Task-u i isključivo non-blocking sluša <code>UART</code>.</li>
-                <li><code>ble_spp_server_task</code>: BlueTooth kanal zadužen za "Heartbeat" (Telemetry) logove svakih sekundu.</li>
-            </ul>
+            
+            <div class="task-item">
+                <p><strong>app_main</strong>: Glavna ulazna tačka, inicijalizacija hardvera i pokretanje svih podsistema.</p>
+                <pre><code class="language-cpp">void app_main(void) {
+    i2c_init();             // Inicijalizacija sabirnice
+    ble_spp_server_init();  // Startup Bluetooth-a
+    ui_init();              // Inicijalizacija LVGL GUI-ja
+    xTaskCreate(read_sensor_data, "sensor_read_task", 4096, NULL, 10, NULL);
+}</code></pre>
+            </div>
+
+            <div class="task-item">
+                <p><strong>sensor_read_task</strong>: Sinhronizacija sa QMI8658 senzorom i obrada pada u realnom vremenu.</p>
+                <pre><code class="language-cpp">void read_sensor_data(void *arg) {
+    while (1) {
+        if (qmi.getDataReady()) {
+            qmi.getAccelerometer(acc.x, acc.y, acc.z);
+            // State-machine detekcija pada...
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}</code></pre>
+            </div>
+
+            <div class="task-item">
+                <p><strong>MAX30102</strong>: Asinhrona obrada vitalnih parametara (Puls i SpO2) korišćenjem FIFO bafera i FFT algoritma.</p>
+                <pre><code class="language-cpp">while (max30102.available()) {
+    redBuffer[i] = max30102.getRed();
+    irBuffer[i] = max30102.getIR();
+    if (full) fft_process(red, ir, 100, &hr, &spo2);
+}</code></pre>
+            </div>
+
+            <div class="task-item">
+                <p><strong>gsm_task</strong>: Nadzor mreže i auto-recovery mehanizam za SIM800L modul.</p>
+                <pre><code class="language-cpp">void gsm_status_task(void *arg) {
+    while (1) {
+        if (gsm_check_network() != ESP_OK) {
+            gsm_a6_init(); // Re-inicijalizacija u slučaju gubitka mreže
+        }
+        vTaskDelay(pdMS_TO_TICKS(10000));
+    }
+}</code></pre>
+            </div>
+
+            <div class="task-item">
+                <p><strong>ble_spp_server_task</strong>: Bluetooth Low Energy stack za komunikaciju sa mobilnom aplikacijom.</p>
+                <pre><code class="language-cpp">void ble_spp_server_host_task(void *param) {
+    nimble_port_run();             // Glavna petlja NimBLE stack-a
+    nimble_port_freertos_deinit(); // Deinicijalizacija pri gašenju
+}</code></pre>
+            </div>
 
             <h3>Hardverski Interrapti i <code>I2C</code> (Poznati Problemi)</h3>
             <blockquote>
@@ -67,11 +115,69 @@
                 <img src="../img/LifeLink-sch.jpg" alt="LifeLink Šema" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border);">
             </div>
 
-            <h2>Upravljanje Napajanjem i Displejom (AXP2101)</h2>
-            <p>MCU pauzira crtanje sa <code>esp_lcd_panel_disp_on_off</code> nakon 15s bez interakcije. AMOLED ekran efektivno gasi piksele kod crne boje, štedeći energiju.</p>
+            <h2>Upravljanje Napajanjem i Displejom (AXP2101 & AMOLED)</h2>
+            <p>LifeLink koristi sofisticiran sistem upravljanja energijom kako bi osigurao dugotrajnost baterije i stabilnost sistema.</p>
+
+            <div class="task-item">
+                <p><strong>AXP2101 PMIC</strong>: Pametni kontroler napajanja koji upravlja naponima za ESP32 i periferije.</p>
+                <ul>
+                    <li><strong>ALDO1 (3.3V)</strong>: Napajanje za glavne senzore i logiku.</li>
+                    <li><strong>ALDO2 (1.8V)</strong>: Napajanje za AMOLED digitalni interfejs.</li>
+                    <li><strong>Zastita od Boot-Loopa</strong>: Registrovan <code>0x10</code> bit 1 (PWROFF) se automatski čisti pri startu kako bi se sprečilo gašenje sistema nakon 1 sekunde (kritičan fix za Waveshare ploče).</li>
+                    <li><strong>Punjenje</strong>: Konfigurisano na 500mA sa ciljnim naponom od 4.2V za Li-Po baterije.</li>
+                </ul>
+            </div>
+
+            <div class="task-item">
+                <p><strong>AMOLED Power Optimization</strong>: AMOLED ekrani troše struju samo za aktivne piksele.</p>
+                <pre><code class="language-cpp">// Funkcija za uštedu energije
+void reset_screen_timer() {
+    if (!screen_is_on) {
+        esp_lcd_panel_disp_on_off(panel_handle, true); // Wake up
+        ESP_LOGI("PWR", "Screen WAKE");
+    }
+    last_touch_time = esp_timer_get_time() / 1000;
+}</code></pre>
+                <p><strong>Softverski Timeout</strong>: Nakon 15 sekundi bez dodira, sistem poziva <code>esp_lcd_panel_disp_on_off(panel_handle, false)</code>, što gasi sve piksele i minimizuje potrošnju dok pozadinski taskovi nastavljaju rad.</p>
+            </div>
+
+            <div class="task-item">
+                <p><strong>TCA9554 IO Expander</strong>: Dodatni čip na <code>0x20</code> adresi koji fizički kontroliše EN (Enable) pinove ekrana.</p>
+                <pre><code class="language-cpp">// P2 pin na TCA9554 kontroliše LCD_VCC_EN
+uint8_t tca_val[] = {0x01, 0x27}; // P0, P1, P2 High
+i2c_master_write_to_device(I2C_NUM, TCA9554_ADDR, tca_val, 2, timeout);</code></pre>
+            </div>
 
             <h2>Prateća Mobilna Aplikacija (Flutter Companion)</h2>
-            <p>Flutter cross-platform aplikacija se povezuje putem BLE SPP protokola (UUID: <code>4fafc201-...</code>). Upravlja 3-faznim alarmom i izvršava hitne akcije poput direktnog poziva ili slanja SOS signala.</p>
+            <p>LifeLink sistem uključuje namensku cross-platform aplikaciju razvijenu u **Flutter** framework-u, koja služi kao primarni interfejs za staratelje i medicinsko osoblje. Izborni kod aplikacije je dostupan na: <a href="https://github.com/blagojevicboban/LifeLink_MobileApp" target="_blank" class="back-link" style="display:inline-block; margin-top:0.5rem;"><i class="fab fa-github"></i> GitHub: LifeLink_MobileApp</a></p>
+
+            <div class="task-item">
+                <p><strong>BLE Komunikacioni Protokol</strong>: Aplikacija koristi <code>flutter_blue_plus</code> biblioteku za niskoenergetsku Bluetooth komunikaciju.</p>
+                <ul>
+                    <li><strong>Service UUID</strong>: <code>4fafc201-1fb5-459e-8fcc-c5c9c331914b</code></li>
+                    <li><strong>Characteristic UUID</strong>: <code>beb5483e-36e1-4688-b7f5-ea07361b26a8</code></li>
+                    <li><strong>Subscription</strong>: Aplikacija se pretplaćuje (subscribe) na notifikacije karaktristike, omogućavajući real-time striming podataka bez konstantnog polling-a.</li>
+                </ul>
+            </div>
+
+            <div class="task-item">
+                <p><strong>Arhitektura BleService koda</strong>: Implementiran je Singleton obrazac za upravljanje konekcijom.</p>
+                <pre><code class="language-cpp">// BleService (Flutter) logika pretplate
+await targetCharacteristic.setNotifyValue(true);
+targetCharacteristic.onValueReceived.listen((value) {
+    // Parsiranje bajtova u vitalne parametre
+    _dataController.add(value); 
+});</code></pre>
+            </div>
+
+            <div class="task-item">
+                <p><strong>Glavne Funkcionalnosti</strong>:</p>
+                <ul>
+                    <li><strong>Live Dashboard</strong>: Vizuelni prikaz Pulsa i SpO2 mernih vrednosti koje pristižu direktno sa narukvice.</li>
+                    <li><strong>Mirroring Alarma</strong>: Kada narukvica detektuje pad, telefon momentalno aktivira zvučni alarm i prikazuje lokaciju korisnika na mapi.</li>
+                    <li><strong>Upravljanje Kontaktima</strong>: Mogućnost daljinskog podešavanja SOS brojeva putem BLE kanala.</li>
+                </ul>
+            </div>
 
             <h2>Reference i Literatura</h2>
             <ol>
@@ -84,5 +190,13 @@
             </ol>
         </main>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script>
+        window.addEventListener('load', (event) => {
+            Prism.highlightAll();
+        });
+    </script>
 </body>
 </html>
