@@ -1,0 +1,169 @@
+LIFE LINK-NARUKVICA ZA POMOĆ NAJUGROŽENIJIM 
+PACIJENTIMA 
+LIFE LINK– BRACELET FOR ASSISTANCE TO THE MOST 
+VULNERABLE PATIENTS 
+Autori: KRISTINA GOCEV , MIHAILO PEŠIĆ, LUKA VUČIĆ učenici IV razreda 
+Tehničke škole u Pirotu  
+Mentor : Dipl.ing.elektrotehnike za računarsku tehniku i informatiku BLAGOJEVIĆ 
+BOBAN profesor programiranja , Tehnička škola Pirot 
+II REZIME 
+LifeLink je pametna zdravstveno-bezbednosna narukvica razvijena na ESP32 platformi, 
+namenjena dijaliznim bolesnicima , osobama na terapijama od karcinoma , dijabetičarima i 
+drugim najugroženijim grupama pacijenata , kao i njihovim porodicama, kojima je podrška u 
+svakodnevnom životu od presudnog značaja. Ideja projekta nastala je iz stvarnih potreba 
+zajednice , ali i ličnog iskustva jednog člana tima , što je dodatno motivisalo detaljnu analizu 
+problema sa kojima se pacijenti i njihove porodice svakodnevno 
+suočavaju. Tokom teških i mukotrpnih terapija, pacijenti često 
+nemaju snage da posegnu za telefonom i pozovu pomoć , dok 
+porodice žive u stalnoj brizi i strahu , ne znajući u kakvom se 
+stanju njihovi najbliži nalaze . LifeLink omogućava kontinuirano 
+praćenje vitalnih parametara , automatsku detekciju padova i 
+kritičnih stanja , kao i trenutno slanje SOS poziva i poruka sa 
+preciznom GPS lokacijom putem GSM mreže , nezavisno od 
+mobilnog telefona. Sistem dodatno podržava BLE (Bluetooth 
+Low Energy) komunikaciju , čime se omogućava povezivanje sa 
+pametnim telefonom i aplikacijom kada je telefon u blizini, u zavisnosti od izbora korisnika ili 
+osobe koja o njemu brine . Rezultat rada je funkcionalan prototip pametne narukvice koja 
+povećava osećaj sigurnosti pacijenata , smanjuje psihološki pritisak na porodice i omogućava 
+bržu reakciju u hitnim situacijama .  
+Slika 1-Prvi prototip LifeLink-a Picture 1 - The first prototype of LifeLink 
+III PRINCIP RADA I PRAKTIČNA REALIZACIJA 
+3.1 Princip rada sistema 
+LifeLink je pametna narukvica bazirana na ESP32-S3 mikrokontroleru , namenjena stalnom 
+praćenju zdravstvenog stanja korisnika i automatskoj reakciji u hitnim situacijama. 
+Sistem radi na sledećem principu : 
+ Senzori neprekidno mere puls , nivo kiseonika u krvi i prate pokrete i položaj tela .  
+ Podaci se obrađuju u realnom vremenu pomoću FreeRTOS multitasking sistema . 
+ U slučaju detekcije pada ili kritičnog stanja, automatski se aktivira GSM modul koji 
+šalje SOS poruku sa GPS lokacijom. (ili preko BLE preko aplikacije-po izboru 
+korisnika) 
+ Prikaz informacija vrši se preko AMOLED ekrana pomoću grafičkog interfejsa 
+zasnovanog na LVGL biblioteci . 
+ Sistem vodi računa o potrošnji energije , automatski gasi ekran i upravlja napajanjem 
+kako bi produžio trajanje baterije . 
+3.2 Predstavljanje komponenti za izradu rada uz opis i karakteristike komponenti 
+BR NAZIV KOMPONENTE OPIS I ULOGA 
+1. ESP32-S3 mikrokontroler Centralna procesorska jedinica sistema , upravlja 
+svim perifernim modulima i pokreće FreeRTOS, 
+LVGL i komunikacione protokole 
+2. QMI8658 – Akcelerometar i žiroskop Detekcija pokreta, položaja ruke i padova i 
+komunikacija putem I2C magistrale 
+3. GPS LC76G modul Precizno određivanje lokacije korisnika i slanje 
+NMEA koordinata ($GNGGA , $GNRMC) 
+4. AXP2101 – Power Management Unit Upravljanje baterijom,merenje procenta napunjenosti 
+i kontrola potrošnje energije 
+5. AMOLED displej + LVGL Grafički prikaz svih informacija i brz i fluidan 
+interfejs uz DMA SPI komunikaciju 
+6. MAX30102 – Puls i SpO₂ senzor Merenje pulsa i zasićenosti krvi kiseonikom,FIFO 
+bafer + interrupt način rada 
+7. SIM800L / GSM A6 GSM modul Quad-band 2G modul za automatsko slanje SMS 
+poruka i poziva u hitnim slučajevima , bez potrebe za 
+telefonom . Komunikacija preko UART interfejsa 
+8. .Li-Ion baterija Prenosivi izvor energije koji obezbeđuje višesatni 
+stabilan i nezavisan rad uređaja . 
+ Tabela 1-Spisak komponenata sa funkcijama           
+Table 1- List of components with functions 
+3.3 Šema sistema,način povezivanja komponenti 
+ 
+ 
+ 
+ 
+ 
+      
+3.4 Programiranje platforme bitni delovi koda za rad sistema uz opis funkcije 
+1.FreeRTOS raspodela taskova-Sistem koristi multitasking arhitekturu zasnovanu na 
+FreeRTOS-u , gde je app_main zadužen za grafički interfejs i LVGL prikaz , sensor_read_task 
+za čitanje podataka sa senzora , gsm_task za slanje SOS poruka , ble_task za BLE telemetriju, 
+dok power_task upravlja potrošnjom energije sistema . 
+2. Algoritam detekcije pada-Sistem koristi state machine algoritam koji obuhvata faze 
+detekcije slobodnog pada (FREE_FALL) , detekcije udara (IMPACT) i potvrde nepokretnosti 
+uz promenu ugla (STILLNESS + ANGLE) . Pad se smatra validnim ukoliko je detektovana 
+promena ugla veća od 60° i ukoliko nepokretnost traje najmanje 5 sekundi . 
+3. Slanje SOS poruke-Nakon potvrde pada , sistem automatski aktivira GSM modul , 
+postavlja tekstualni režim rada (A T+CMGF=1) i šalje SOS poruku na unapred definisan broj 
+(A T+CMGS), koja sadrži upozorenje i GPS lokaciju korisnika u obliku Google Maps linka. 
+4. Upravljanje ekranom i potrošnjom-Nakon 15 sekundi neaktivnosti , 
+sistem automatski isključuje AMOLED ekran , smanjuje ukupnu 
+potrošnju energije i po potrebi prelazi u deep-sleep režim rada radi 
+maksimalne uštede baterije . 
+Više informacija na našem sajtu :https://lifelink.tsp.edu.rs/. 
+ 
+ 
+ 
+ 
+Slika 2-Šema povezivanja komponenata     
+Picture 2 - Component connection diagram 
+Slika 4-LifeLink aplikacija(ble)-kada je  
+došlo do incidenta 
+Figure 4-LifeLink application(ble)-when 
+the incident occurred 
+Slika 3-Ekran  na uređaju kada dođje do 
+incidenta 
+Picture 3 - Device screen when an 
+incident occurs 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+IV REZULTAT 
+Nakon lemljenja fizičkih sklopova, razrade C koda po preporučenoj ESP-IDF arhitekturi 
+na dva procesorska jezgra i renderovanja LVGL menija , sproveli smo niz stres testova uređaja. 
+Fokus testiranja bio je kalibrisanje osetljivosti detekcije pada QMI8658 modula. Algoritam je 
+isfiltriran za sprečavanje lažnih alarma tako što uz brzu promenu ubrzanja (slobodan pad o tlo) 
+ispituje i očekivano mirovanje nakon pada, kao i promenu ugla pri padu, uspešno izbegavajući 
+greške prilikom mahanja rukom ili jednostavnog guranja.. Druga uspešna tačka leži u prelasku 
+sa modula GSM GA6-B (5V) na modul SIM800L GSM (3.7V) koji se napaja direktno sa Li-
+Ion baterije (3.7–4.2V)bez potrebe za spoljnim boost konvertorom, uz uvođenje filter 
+kondenzatora (1000μF elektrolitski + 100nF keramički) paralelno na VCC/GND pinove 
+modula. Ovo je doprinelo potpunoj mrežnoj pokrivenosti i stabilnosti signala, eliminišući 
+probleme sa gubitkom 5V napajanja koje je prethodni boost konvertor uzrokovao. Konačni 
+rezultat je potpuno funkcionalna pametna narukvica impresivnog interfejsa koja , za razliku od 
+modernih pametnih satova , nije vezana isključivo za mobilni telefon putem Bluetooth veze , 
+već poseduje integrisan zdravstveni biološki nadzor i pravovremeno izveštava o incidentima na 
+sopstveno GSM nezavisno prenešeno mobilno SMS rešenje , obezbeđujući na taj način visok 
+stepen prenosive bezbednosti za najugroženije grupe,time što obaveštava na vreme šaljući tačnu 
+lokaciju nadležnim službama(hitna pomoć) i porodici, što svima pruža osećaj dodatne 
+sigurnosti i olakšanja. Takođe, uređaj poseduje BLE (Buluetooth Low Energy), te se može 
+Slika 5- Deo koda zaslužan za 
+detekciju pada 
+Picture 5- The part of the 
+code responsible for the fall 
+detection 
+
+konektovati i na mobilni telefon korisnika, a hitan poziv ili SMS poslati i direktno sa aplikacije 
+korisnikovog telefona na izabrane brojeve. 
+V ZAKLJUČAK 
+Predstavljeni prototip LifeLink platforme pruža izuzetan potencijal . Njegova najveća prednost 
+jeste modularan multifunkcionalan pristup malog faktora forme . Mogući dalji rad na projektu 
+zasigurno obuhvata dublju optimizaciju upotrebe baterije - kreiranjem takozvanog "Deep 
+Sleep" logičkog koraka gašenjem ekrana , kao i integraciju algoritama veštačke inteligencije 
+(Edge Impulse/TinyML). Mogućnošću "treniranja" sitnih klasifikacionih neuronskih mreža na 
+samom ESP32 hardveru bi se drastično povećala moć raspoznavanja padova i 
+nezgoda,različitih vrsta pokreta i skokova , nepravilnog rada srca , kao i predviđanja tipova 
+događaja na osnovu većeg broja podataka , i  prilagođavanja ponašanju konkretnog korisnika 
+na osnovu bogatijih baza podataka (dataseta). Bez obzira na to što je trenutni uređaj 
+prototipskog karaktera , efikasnost i samostalnost testiranih modula dokazuju njegovu visoku i 
+spasonosnu nosivu primenjivost na realnom terenu . 
+VI ZAHV ALNOST 
+Ovim putem se zahvaljujemo mentoru Bobanu Blagojeviću , profesoru Bojanu Ćiriću i 
+profesorki Sanji Rančić na velikoj podršci , stručnoj pomoći i korisnim savetima tokom 
+realizacije projekta. Posebnu zahvalnost upućujemo mentorki Milici Petković iz kompanije 
+BOSCH na nesebičnoj pomoći i stručnom doprinosu , kao i Zoranu Dimitrovu na pomoći pri 
+izradi prilagodljivog kaiša. Takođe , zahvaljujemo se Startup Centru Pirot i kolektivu Tehničke 
+škole Pirot na podršci i saradnji  
+VII LITERATURA I REFERENCE 
+[1.] Espressif Systems, ESP-IDF Programming Guide, Espressif, https://docs.espressif.com 
+ [2.] LVGL Community, LVGL Graphic Library Documentation, LVGL.io, https://lvgl.io 
+ [3.]  SIM800L GSM Module Datasheet / AT Commands – SIMCom dokumentacija 
+ [4.] QST Corporation, QMI8658C Attitude & Motion Detection IMU Datasheet, QST,  
+[5.] Maxim Integrated, MAX30102 High-Sensitivity Pulse Oximeter and Heart-Rate Sensor Datasheet, Maxim 
+Integrated 
+[6.] Google Developers, Google Maps URL Schema Documentation, Google, 
+https://developers.google.com/maps/documentation/urls/get-started 
+[7.] Google Developers, Google Anti-Gravity, Google, https://antigravity.google/ 
