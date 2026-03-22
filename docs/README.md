@@ -18,6 +18,7 @@ LifeLink is an advanced smart health-safety bracelet prototype built on the **ES
   - Intuitive gesture-based navigation (swipe left/right) between screens.
   - Dedicated "Settings" view featuring an on-screen numpad allowing users to register emergency SMS phone numbers without requiring an external mobile app.
 - **Sensor Debug View**: Accessible "DEBUG" toggle available in the UI to visualize live X, Y, Z, and G-force readings for rapid testing and threshold calibration.
+- **Web Dashboard**: Real-time cloud monitoring interface for caregivers to track multiple bracelets simultaneously.
 
 ## Companion Mobile App (Flutter)
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeLink Dashboard | Real-time Monitoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="../img/favicon.png">
+</head>
+<body>
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Inicijalizacija LifeLink Cloud sistema...</p>
+    </div>
+
+    <header>
+        <div class="logo-section">
+            <h1>LIFE<span>LINK</span></h1>
+            <div class="dashboard-title">DASHBOARD</div>
+        </div>
+        <div id="connection-status" class="status-badge status-offline">Provera konekcije...</div>
+    </header>
+
+    <main>
+        <div id="devices-container" class="devices-grid">
+            <!-- Kartice uređaja će biti ubačene ovde putem JS -->
+        </div>
+        
+        <div id="no-devices" style="display: none; text-align: center; margin-top: 5rem;">
+            <h2 style="color: var(--text-secondary);">Nema registrovanih narukvica</h2>
+            <p style="color: var(--text-secondary); opacity: 0.6;">Povežite narukvicu putem mobilne aplikacije da biste videli podatke.</p>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
