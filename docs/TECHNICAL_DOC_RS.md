@@ -43,6 +43,23 @@ Svi pozivi ka `ui_Label_setText()` za LCD displej MORAJU proći `example_lvgl_lo
 ## Upravljanje Pametnim Napajanjem i Displejom (AXP2101)
 `axp_get_batt_percent` implementiran u `PMU` petlji, a u kombinaciji sa kapacitivnim tasterom proverava statiku ruku na `CST92xx` staklu. Nakon 15s bez ikakvog prekida odozdo, MCU pauzira crtanje sa `esp_lcd_panel_disp_on_off` (AMOLED se "gasi" i resetuje, tako crna boja efektivno gasi pixel), a potom ukida signal na LCD Backlight-u za deep-sleep efekte ekrana.
 
+## Cloud Arhitektura i Remote Praćenje (Firebase & Cloud Dashboard)
+
+Sistem je proširen integracijom sa Google Firebase platformom, što omogućava lekarima i članovima porodice da prate pacijenta u realnom vremenu sa bilo koje lokacije.
+
+**1. Firebase Cloud Firestore:**
+- **Kolekcija `devices`**: Čuva trenutno stanje uređaja (online/offline status, baterija, puls, SpO2).
+- **Sub-kolekcija `health_snapshots`**: Istorijski podaci vitalnih funkcija koji se šalju svakih 30 sekundi radi praćenja trendova.
+- **Sub-kolekcija `fall_events`**: Specifični zapisi o svakom detektovanom padu, uključujući lokaciju (Google Maps koordinate) i jačinu udarca (G-sila).
+
+**2. Načini prenosa podataka (Dual-Channel Sync):**
+- **Bluetooth (BLE) -> App**: Primarni kanal. Mobilna aplikacija prima podatke od sata i prosleđuje ih u Firebase.
+- **WiFi Direct (Experimental)**: Sat može direktno komunicirati sa Firebase-om putem kućne mreže ako je telefon van dometa.
+
+**3. Web Dashboard ([lifelink.tsp.edu.rs/dashboard/](https://lifelink.tsp.edu.rs/dashboard/)):**
+- Moderni single-page interfejs baziran na Firebase JS SDK (v11).
+- **Real-time Reaktivnost**: Koristi `onSnapshot` za trenutno osvežavanje metrika bez potrebe za reload-om stranice.
+
 ## Prateća Mobilna Aplikacija (Flutter Companion)
 
 Flutter bazirana cross-platform aplikacija koja se putem BLE SPP protokola povezuje sa LifeLink narukvicom i proširuje sistem sa dodatnim mogućnostima na mobilnom telefonu.
