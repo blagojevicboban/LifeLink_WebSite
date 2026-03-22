@@ -4,12 +4,12 @@ import { getFirestore, collection, onSnapshot, query, orderBy, limit } from "htt
 // === KONFIGURACIJA FIREBASE-A ===
 // Zamenite ovo podacima iz vašeg Firebase projekta (Project Settings > Web App)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBKCa-ybxfSdrm4N8ow-Olh-3BSfHzs4-g",
+    authDomain: "lifelink-a3581.firebaseapp.com",
+    projectId: "lifelink-a3581",
+    storageBucket: "lifelink-a3581.firebasestorage.app",
+    messagingSenderId: "384903714979",
+    appId: "1:384903714979:web:35581896791e3e518dc716"
 };
 
 // Inicijalizacija
