@@ -25,6 +25,7 @@ const connectionStatus = document.getElementById('connection-status');
 const fallListeners = {};
 const historyListeners = {};
 const deviceCharts = {};
+const deviceEnvCharts = {};
 
 // Glavni listener za uređaje
 onSnapshot(collection(db, "devices"), (snapshot) => {
@@ -58,6 +59,7 @@ onSnapshot(collection(db, "devices"), (snapshot) => {
             if (fallListeners[deviceId]) fallListeners[deviceId]();
             if (historyListeners[deviceId]) historyListeners[deviceId]();
             if (deviceCharts[deviceId]) deviceCharts[deviceId].destroy();
+            if (deviceEnvCharts[deviceId]) deviceEnvCharts[deviceId].destroy();
         }
     });
 }, (error) => {
@@ -115,9 +117,16 @@ function updateDeviceUI(id, data) {
             </div>
 
             <div class="history-section">
-                <h3>Istorija Vitalnih Funkcija</h3>
+                <h3>Vreme: Puls & SpO2</h3>
                 <div class="chart-container">
                     <canvas id="chart-${id}"></canvas>
+                </div>
+            </div>
+
+            <div class="history-section" style="margin-top: 2rem;">
+                <h3>Vreme: G-Sila & Baterija</h3>
+                <div class="chart-container">
+                    <canvas id="chart-env-${id}"></canvas>
                 </div>
             </div>
 
@@ -133,7 +142,7 @@ function updateDeviceUI(id, data) {
                 </div>
             </div>
         `;
-        initChart(id);
+        initCharts(id);
     }
 
     // Ažuriranje vrednosti bez osvežavanja celog HTML-a (za glatki UI)
@@ -151,9 +160,10 @@ function updateDeviceUI(id, data) {
     sourceInd.querySelector('span').textContent = `Izvor: ${sourceText}`;
 }
 
-function initChart(deviceId) {
-    const ctx = document.getElementById(`chart-${deviceId}`).getContext('2d');
-    deviceCharts[deviceId] = new Chart(ctx, {
+function initCharts(deviceId) {
+    // 1. Chart za Puls i SpO2
+    const ctxHealth = document.getElementById(`chart-${deviceId}`).getContext('2d');
+    deviceCharts[deviceId] = new Chart(ctxHealth, {
         type: 'line',
         data: {
             labels: [],
@@ -204,6 +214,61 @@ function initChart(deviceId) {
             }
         }
     });
+
+    // 2. Chart za G-Silu i Bateriju
+    const ctxEnv = document.getElementById(`chart-env-${deviceId}`).getContext('2d');
+    deviceEnvCharts[deviceId] = new Chart(ctxEnv, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'G-Sila',
+                    data: [],
+                    borderColor: '#00e5ff',
+                    backgroundColor: 'rgba(0, 229, 255, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0
+                },
+                {
+                    label: 'Baterija',
+                    data: [],
+                    borderColor: '#00e676',
+                    backgroundColor: 'rgba(0, 230, 118, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false },
+                y: {
+                    min: 0,
+                    max: 5,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#78909c', font: { size: 10 } }
+                },
+                y1: {
+                    position: 'right',
+                    min: 0,
+                    max: 100,
+                    grid: { display: false },
+                    ticks: { color: '#78909c', font: { size: 10 } }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
 }
 
 function setupHistoryListener(deviceId) {
@@ -216,7 +281,7 @@ function setupHistoryListener(deviceId) {
     );
 
     historyListeners[deviceId] = onSnapshot(historyQuery, (snapshot) => {
-        if (!deviceCharts[deviceId]) return;
+        if (!deviceCharts[deviceId] || !deviceEnvCharts[deviceId]) return;
 
         const history = [];
         snapshot.forEach(doc => history.push(doc.data()));
@@ -225,13 +290,18 @@ function setupHistoryListener(deviceId) {
         history.reverse();
 
         const labels = history.map(d => d.timestamp ? new Date(d.timestamp.toDate()).toLocaleTimeString() : '');
-        const pulseData = history.map(d => d.pulse);
-        const spo2Data = history.map(d => d.spo2);
-
+        
+        // Ažuriranje Health Chart (Puls & SpO2)
         deviceCharts[deviceId].data.labels = labels;
-        deviceCharts[deviceId].data.datasets[0].data = pulseData;
-        deviceCharts[deviceId].data.datasets[1].data = spo2Data;
-        deviceCharts[deviceId].update('none'); // 'none' za bolje performanse bez animacije na svakom update-u
+        deviceCharts[deviceId].data.datasets[0].data = history.map(d => d.pulse);
+        deviceCharts[deviceId].data.datasets[1].data = history.map(d => d.spo2);
+        deviceCharts[deviceId].update('none');
+
+        // Ažuriranje Environment Chart (G-Force & Battery)
+        deviceEnvCharts[deviceId].data.labels = labels;
+        deviceEnvCharts[deviceId].data.datasets[0].data = history.map(d => d.gForce);
+        deviceEnvCharts[deviceId].data.datasets[1].data = history.map(d => d.battery);
+        deviceEnvCharts[deviceId].update('none');
     });
 }
 
