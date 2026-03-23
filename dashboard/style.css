@@ -33,6 +33,12 @@ header {
     padding-bottom: 1rem;
 }
 
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
 .logo-section {
     display: flex;
     align-items: center;
