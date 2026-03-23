@@ -18,6 +18,8 @@ LifeLink je napredna pametna zdravstveno-bezbednosna narukvica izgrađena na **E
   - Navigacija putem prevlačenja prsta po ekranu nalevo i nadesno (Meni gestovi).
   - Zaseban "Podešavanja ekran" sa ugrađenom namenskom uveličanom numeričkom tastaturom koja pojednostavljuje unos ili promenu telefonskog broja hitne službe ili bliskog lica (nije potrebna aplikacija na telefonu).
 - **Pregled Senzora (Debug)**: Lako dostupan "DEBUG" prekidač i pogled implementiran pravo u UI sistem koji omogućava programerima uživo posmatranje X, Y, Z , i G sile, korisno zbog finog štelovanja parametara padova.
+- **Live Monitor Dashboard**: Centralizovani cloud interfejs za negovatelje koji omogućava praćenje zdravstvenih parametara (Puls, SpO2) sa istorijskim grafikonima i vizuelizacijom normalnog opsega (60-100 BPM / 95-100% SpO2).
+- **Mapa sa Dvostrukim Praćenjem**: Integrisana mapa u realnom vremenu koja istovremeno prikazuje GPS lokaciju i narukvice i pratećeg mobilnog telefona.
 
 ## Prateća Mobilna Aplikacija (Flutter)
 

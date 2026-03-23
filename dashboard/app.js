@@ -21,6 +21,18 @@ const loadingOverlay = document.getElementById('loading');
 const noDevicesMsg = document.getElementById('no-devices');
 const connectionStatus = document.getElementById('connection-status');
 
+window.toggleHelp = function() {
+    const modal = document.getElementById('help-modal');
+    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+};
+
+window.onclick = function(event) {
+    const modal = document.getElementById('help-modal');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
 // Rečnik aktivnih listenera i grafikona
 const fallListeners = {};
 const historyListeners = {};

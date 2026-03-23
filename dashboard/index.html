@@ -43,9 +43,34 @@
                 <i class="fas fa-trophy"></i> Galaksija kup
             </a>
 
+            <div class="nav-pill pill-help" onclick="toggleHelp()">
+                <i class="fas fa-question-circle"></i> Pomoć
+            </div>
+
             <div id="connection-status" class="status-badge status-offline">Provera...</div>
         </div>
     </header>
+
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Uputstvo za Live Monitor</h2>
+                <span class="close-btn" onclick="toggleHelp()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h3>Vitalni Znaci</h3>
+                <p>Normalni opseg pulsa je <strong>60-100 BPM</strong>. SpO2 bi trebalo da bude <strong>iznad 95%</strong>. Na grafikonima su ove zone osenčene radi lakšeg praćenja.</p>
+                
+                <h3>Mapa Lokacije</h3>
+                <p><i class="fas fa-clock" style="color: var(--blue);"></i> Plavi marker predstavlja **Sat/Narukvicu**.</p>
+                <p><i class="fas fa-mobile-screen" style="color: var(--green);"></i> Zeleni marker predstavlja **Mobilni Telefon**.</p>
+                
+                <h3>Izvori Podataka</h3>
+                <p><strong>WiFi Direct:</strong> Sat šalje podatke direktno na server (najbrže).</p>
+                <p><strong>via App (BLE):</strong> Podaci se šalju putem telefona člana porodice.</p>
+            </div>
+        </div>
+    </div>
 
     <main>
         <div id="devices-container" class="devices-grid">
