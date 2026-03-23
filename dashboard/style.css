@@ -29,8 +29,8 @@ header {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 3rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1.5rem;
 }
 
 .logo-link {
@@ -42,23 +42,79 @@ header {
 .logo-section {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .logo-section h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     letter-spacing: 4px;
     font-weight: 700;
 }
 
-.logo-section span {
+.logo-section h1 span {
     color: var(--accent);
 }
 
-.dashboard-title {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    letter-spacing: 2px;
+.nav-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dashboard-label {
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    margin-right: 0.5rem;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+
+.nav-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.nav-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.nav-pill i {
+    font-size: 1rem;
+}
+
+.pill-monitor {
+    background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+}
+
+.pill-company {
+    background: linear-gradient(90deg, #0082c8, #00c6ff);
+}
+
+.pill-cup {
+    background: linear-gradient(90deg, #ff8c00 0%, #ffbb00 100%);
+}
+
+.status-badge {
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+header .status-badge {
+    margin-left: 1rem;
 }
 
 .devices-grid {
@@ -117,13 +173,6 @@ header {
     color: var(--text-secondary);
 }
 
-.status-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    font-weight: 700;
-}
 
 .status-online {
     background-color: rgba(0, 230, 118, 0.1);
