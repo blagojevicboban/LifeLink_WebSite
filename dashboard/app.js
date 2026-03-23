@@ -26,6 +26,8 @@ const fallListeners = {};
 const historyListeners = {};
 const deviceCharts = {};
 const deviceEnvCharts = {};
+const deviceMaps = {};
+const deviceMarkers = {};
 
 // Glavni listener za uređaje
 onSnapshot(collection(db, "devices"), (snapshot) => {
@@ -60,6 +62,10 @@ onSnapshot(collection(db, "devices"), (snapshot) => {
             if (historyListeners[deviceId]) historyListeners[deviceId]();
             if (deviceCharts[deviceId]) deviceCharts[deviceId].destroy();
             if (deviceEnvCharts[deviceId]) deviceEnvCharts[deviceId].destroy();
+            if (deviceMaps[deviceId]) {
+                deviceMaps[deviceId].remove();
+                delete deviceMaps[deviceId];
+            }
         }
     });
 }, (error) => {
@@ -141,8 +147,14 @@ function updateDeviceUI(id, data) {
                     <div style="opacity: 0.5; font-size: 0.8rem;">Provera istorije...</div>
                 </div>
             </div>
+
+            <div class="map-section">
+                <h3><i class="fas fa-map-location-dot"></i> Lokacija (Sat i Telefon)</h3>
+                <div id="map-${id}" class="map-container"></div>
+            </div>
         `;
         initCharts(id);
+        initMap(id, data);
     }
 
     // Ažuriranje vrednosti bez osvežavanja celog HTML-a (za glatki UI)
@@ -158,6 +170,80 @@ function updateDeviceUI(id, data) {
     const sourceInd = card.querySelector('.source-indicator');
     sourceInd.className = `source-indicator ${sourceClass}`;
     sourceInd.querySelector('span').textContent = `Izvor: ${sourceText}`;
+
+    // Update markers from device doc (Mainly Phone location)
+    updateMarkers(id, data);
+}
+
+function initMap(deviceId, data) {
+    const mapElement = document.getElementById(`map-${deviceId}`);
+    if (!mapElement || deviceMaps[deviceId]) return;
+
+    // Use default coordinates if none provided (e.g., Belgrade)
+    const lat = data.lat || 44.7866;
+    const lon = data.lon || 20.4489;
+
+    const map = L.map(`map-${deviceId}`).setView([lat, lon], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    deviceMaps[deviceId] = map;
+    deviceMarkers[deviceId] = {
+        watch: null,
+        phone: null
+    };
+
+    updateMarkers(deviceId, data);
+}
+
+function updateMarkers(deviceId, data) {
+    const map = deviceMaps[deviceId];
+    if (!map) return;
+
+    // 1. Update Watch Marker
+    if (data.lat && data.lon) {
+        if (!deviceMarkers[deviceId].watch) {
+            const watchIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div class="marker-watch"><i class="fas fa-clock"></i><div class="marker-label">SAT</div></div>`,
+                iconSize: [30, 42],
+                iconAnchor: [15, 42]
+            });
+            deviceMarkers[deviceId].watch = L.marker([data.lat, data.lon], { icon: watchIcon }).addTo(map);
+        } else {
+            deviceMarkers[deviceId].watch.setLatLng([data.lat, data.lon]);
+        }
+    }
+
+    // 2. Update Phone Marker
+    if (data.phoneLat && data.phoneLon) {
+        if (!deviceMarkers[deviceId].phone) {
+            const phoneIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div class="marker-phone"><i class="fas fa-mobile-screen"></i><div class="marker-label">TEL</div></div>`,
+                iconSize: [30, 42],
+                iconAnchor: [15, 42]
+            });
+            deviceMarkers[deviceId].phone = L.marker([data.phoneLat, data.phoneLon], { icon: phoneIcon }).addTo(map);
+        } else {
+            deviceMarkers[deviceId].phone.setLatLng([data.phoneLat, data.phoneLon]);
+        }
+    }
+
+    // Auto-pan if markers exist and are valid
+    const group = [];
+    if (deviceMarkers[deviceId].watch) group.push(deviceMarkers[deviceId].watch.getLatLng());
+    if (deviceMarkers[deviceId].phone) group.push(deviceMarkers[deviceId].phone.getLatLng());
+    
+    if (group.length > 0) {
+        const bounds = L.latLngBounds(group);
+        if (group.length === 1) {
+            map.panTo(group[0]);
+        } else {
+            map.fitBounds(bounds, { padding: [30, 30] });
+        }
+    }
 }
 
 function initCharts(deviceId) {
@@ -330,6 +416,15 @@ function setupHistoryListener(deviceId) {
         deviceCharts[deviceId].data.datasets[0].data = history.map(d => d.pulse);
         deviceCharts[deviceId].data.datasets[1].data = history.map(d => d.spo2);
         deviceCharts[deviceId].update('none');
+
+        // Check for GPS in snapshots (for WiFi uploads)
+        const latestSnapshot = history[history.length - 1];
+        if (latestSnapshot && latestSnapshot.lat && latestSnapshot.lon) {
+            updateMarkers(deviceId, { 
+                lat: latestSnapshot.lat, 
+                lon: latestSnapshot.lon 
+            });
+        }
 
         // Ažuriranje Environment Chart (G-Force & Battery)
         deviceEnvCharts[deviceId].data.labels = labels;

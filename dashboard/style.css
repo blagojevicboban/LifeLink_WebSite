@@ -322,3 +322,64 @@ header .status-badge {
     margin-top: 0.5rem;
     position: relative;
 }
+
+.map-section {
+    margin-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+}
+
+.map-section h3 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.map-container {
+    height: 200px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background-color: #1a1a1a;
+}
+
+/* Leaflet Dark Mode Adjustment */
+.leaflet-container {
+    background-color: #1a1a1a !important;
+}
+
+.leaflet-tile {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+.marker-label {
+    background: var(--card-bg);
+    border: 1px solid var(--accent);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+    white-space: nowrap;
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.marker-watch {
+    color: var(--accent);
+    font-size: 24px;
+    text-shadow: 0 0 10px var(--accent);
+}
+
+.marker-phone {
+    color: var(--success);
+    font-size: 24px;
+    text-shadow: 0 0 10px var(--success);
+}
