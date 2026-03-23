@@ -210,7 +210,41 @@ function initCharts(deviceId) {
                 }
             },
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                annotation: {
+                    annotations: {
+                        pulseRange: {
+                            type: 'box',
+                            yScaleID: 'y',
+                            yMin: 60,
+                            yMax: 100,
+                            backgroundColor: 'rgba(255, 82, 82, 0.03)',
+                            borderWidth: 0,
+                            label: {
+                                display: true,
+                                content: 'Normal (60-100)',
+                                position: 'start',
+                                color: 'rgba(255, 82, 82, 0.4)',
+                                font: { size: 9 }
+                            }
+                        },
+                        spo2Range: {
+                            type: 'box',
+                            yScaleID: 'y1',
+                            yMin: 95,
+                            yMax: 100,
+                            backgroundColor: 'rgba(68, 138, 255, 0.03)',
+                            borderWidth: 0,
+                            label: {
+                                display: true,
+                                content: 'Saturacija (95+)',
+                                position: 'end',
+                                color: 'rgba(68, 138, 255, 0.4)',
+                                font: { size: 9 }
+                            }
+                        }
+                    }
+                }
             }
         }
     });
