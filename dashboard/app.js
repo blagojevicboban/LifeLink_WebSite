@@ -152,11 +152,32 @@ function updateDeviceUI(id, data) {
                 <div class="source-icon"></div>
                 <span>Izvor: ${sourceText}</span>
             </div>
-
             <div class="fall-history">
                 <h3>Nedavni Padovi</h3>
                 <div id="falls-${id}">
                     <div style="opacity: 0.5; font-size: 0.8rem;">Provera istorije...</div>
+                </div>
+            </div>
+
+            <div class="monitor-guide">
+                <h3>Uputstvo za Live Monitor</h3>
+                <div class="guide-grid">
+                    <div class="guide-item">
+                        <span class="guide-label"><i class="fas fa-heartbeat"></i> Puls</span>
+                        <span class="guide-text">60-100 BPM</span>
+                    </div>
+                    <div class="guide-item">
+                        <span class="guide-label"><i class="fas fa-tint"></i> SpO2</span>
+                        <span class="guide-text">95-100%</span>
+                    </div>
+                    <div class="guide-item">
+                        <span class="guide-label"><i class="fas fa-clock" style="color: var(--accent);"></i> Plavo</span>
+                        <span class="guide-text">Sat</span>
+                    </div>
+                    <div class="guide-item">
+                        <span class="guide-label"><i class="fas fa-mobile-screen" style="color: var(--success);"></i> Zeleno</span>
+                        <span class="guide-text">Telefon</span>
+                    </div>
                 </div>
             </div>
 
