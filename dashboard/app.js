@@ -21,8 +21,10 @@ const loadingOverlay = document.getElementById('loading');
 const noDevicesMsg = document.getElementById('no-devices');
 const connectionStatus = document.getElementById('connection-status');
 
-// Rečnik aktivnih listenera za padove kako bi izbegli dupliranje
+// Rečnik aktivnih listenera i grafikona
 const fallListeners = {};
+const historyListeners = {};
+const deviceCharts = {};
 
 // Glavni listener za uređaje
 onSnapshot(collection(db, "devices"), (snapshot) => {
@@ -45,11 +47,17 @@ onSnapshot(collection(db, "devices"), (snapshot) => {
         if (change.type === "added" || change.type === "modified") {
             updateDeviceUI(deviceId, deviceData);
             setupFallListener(deviceId);
+            setupHistoryListener(deviceId);
         }
         
         if (change.type === "removed") {
             const card = document.getElementById(`device-${deviceId}`);
             if (card) card.remove();
+            
+            // Cleanup listeners
+            if (fallListeners[deviceId]) fallListeners[deviceId]();
+            if (historyListeners[deviceId]) historyListeners[deviceId]();
+            if (deviceCharts[deviceId]) deviceCharts[deviceId].destroy();
         }
     });
 }, (error) => {
@@ -74,48 +82,157 @@ function updateDeviceUI(id, data) {
     const sourceClass = data.uploadSource === 'wifi' ? 'source-wifi' : 'source-ble';
     const sourceText = data.uploadSource === 'wifi' ? 'WiFi Direct' : 'via App (BLE)';
 
-    card.innerHTML = `
-        <div class="card-header">
-            <div>
-                <div class="device-name">${data.name || 'LifeLink Sat'}</div>
-                <div class="device-id">ID: ${id}</div>
+    // Samo ako kartica nema grafikon sekciju, ubacujemo HTML
+    if (!card.querySelector('.chart-container')) {
+        card.innerHTML = `
+            <div class="card-header">
+                <div>
+                    <div class="device-name">${data.name || 'LifeLink Sat'}</div>
+                    <div class="device-id">ID: ${id}</div>
+                </div>
+                <div class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">
+                    ${isOnline ? 'Online' : 'Offline'}
+                </div>
             </div>
-            <div class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">
-                ${isOnline ? 'Online' : 'Offline'}
-            </div>
-        </div>
 
-        <div class="metrics-row">
-            <div class="metric-box metric-pulse">
-                <div class="metric-label">❤️ Puls</div>
-                <div class="metric-value">${data.pulse || 0} <small>BPM</small></div>
+            <div class="metrics-row">
+                <div class="metric-box metric-pulse">
+                    <div class="metric-label">❤️ Puls</div>
+                    <div class="metric-value" data-field="pulse">--</div>
+                </div>
+                <div class="metric-box metric-spo2">
+                    <div class="metric-label">💧 SpO2</div>
+                    <div class="metric-value" data-field="spo2">--</div>
+                </div>
+                <div class="metric-box metric-battery">
+                    <div class="metric-label">🔋 Baterija</div>
+                    <div class="metric-value" data-field="battery">--</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">📉 G-Sila</div>
+                    <div class="metric-value" data-field="gForce">--</div>
+                </div>
             </div>
-            <div class="metric-box metric-spo2">
-                <div class="metric-label">💧 SpO2</div>
-                <div class="metric-value">${data.spo2 || 0}<small>%</small></div>
-            </div>
-            <div class="metric-box metric-battery">
-                <div class="metric-label">🔋 Baterija</div>
-                <div class="metric-value">${data.battery || 0}<small>%</small></div>
-            </div>
-            <div class="metric-box">
-                <div class="metric-label">📉 G-Sila</div>
-                <div class="metric-value">${data.gForce ? data.gForce.toFixed(2) : '0.00'}</div>
-            </div>
-        </div>
 
-        <div class="source-indicator ${sourceClass}">
-            <div class="source-icon"></div>
-            <span>Izvor: ${sourceText}</span>
-        </div>
-
-        <div class="fall-history">
-            <h3>Nedavni Padovi</h3>
-            <div id="falls-${id}">
-                <div style="opacity: 0.5; font-size: 0.8rem;">Provera istorije...</div>
+            <div class="history-section">
+                <h3>Istorija Vitalnih Funkcija</h3>
+                <div class="chart-container">
+                    <canvas id="chart-${id}"></canvas>
+                </div>
             </div>
-        </div>
-    `;
+
+            <div class="source-indicator ${sourceClass}">
+                <div class="source-icon"></div>
+                <span>Izvor: ${sourceText}</span>
+            </div>
+
+            <div class="fall-history">
+                <h3>Nedavni Padovi</h3>
+                <div id="falls-${id}">
+                    <div style="opacity: 0.5; font-size: 0.8rem;">Provera istorije...</div>
+                </div>
+            </div>
+        `;
+        initChart(id);
+    }
+
+    // Ažuriranje vrednosti bez osvežavanja celog HTML-a (za glatki UI)
+    card.querySelector('[data-field="pulse"]').innerHTML = `${data.pulse || 0} <small>BPM</small>`;
+    card.querySelector('[data-field="spo2"]').innerHTML = `${data.spo2 || 0}<small>%</small>`;
+    card.querySelector('[data-field="battery"]').innerHTML = `${data.battery || 0}<small>%</small>`;
+    card.querySelector('[data-field="gForce"]').innerHTML = data.gForce ? data.gForce.toFixed(2) : '0.00';
+    
+    const badge = card.querySelector('.status-badge');
+    badge.className = `status-badge ${isOnline ? 'status-online' : 'status-offline'}`;
+    badge.textContent = isOnline ? 'Online' : 'Offline';
+    
+    const sourceInd = card.querySelector('.source-indicator');
+    sourceInd.className = `source-indicator ${sourceClass}`;
+    sourceInd.querySelector('span').textContent = `Izvor: ${sourceText}`;
+}
+
+function initChart(deviceId) {
+    const ctx = document.getElementById(`chart-${deviceId}`).getContext('2d');
+    deviceCharts[deviceId] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Puls',
+                    data: [],
+                    borderColor: '#ff5252',
+                    backgroundColor: 'rgba(255, 82, 82, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0
+                },
+                {
+                    label: 'SpO2',
+                    data: [],
+                    borderColor: '#448aff',
+                    backgroundColor: 'rgba(68, 138, 255, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false },
+                y: {
+                    min: 40,
+                    max: 180,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#78909c', font: { size: 10 } }
+                },
+                y1: {
+                    position: 'right',
+                    min: 80,
+                    max: 100,
+                    display: false
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+}
+
+function setupHistoryListener(deviceId) {
+    if (historyListeners[deviceId]) return;
+
+    const historyQuery = query(
+        collection(db, "devices", deviceId, "health_snapshots"),
+        orderBy("timestamp", "desc"),
+        limit(20)
+    );
+
+    historyListeners[deviceId] = onSnapshot(historyQuery, (snapshot) => {
+        if (!deviceCharts[deviceId]) return;
+
+        const history = [];
+        snapshot.forEach(doc => history.push(doc.data()));
+        
+        // Obrćemo jer GraphQL limit(20) vadi najnovije, a grafikon ide sleva nadesno
+        history.reverse();
+
+        const labels = history.map(d => d.timestamp ? new Date(d.timestamp.toDate()).toLocaleTimeString() : '');
+        const pulseData = history.map(d => d.pulse);
+        const spo2Data = history.map(d => d.spo2);
+
+        deviceCharts[deviceId].data.labels = labels;
+        deviceCharts[deviceId].data.datasets[0].data = pulseData;
+        deviceCharts[deviceId].data.datasets[1].data = spo2Data;
+        deviceCharts[deviceId].update('none'); // 'none' za bolje performanse bez animacije na svakom update-u
+    });
 }
 
 function setupFallListener(deviceId) {
