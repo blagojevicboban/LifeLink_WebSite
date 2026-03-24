@@ -1,3 +1,4 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, limit, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
@@ -512,7 +513,7 @@ window.requestNotifications = async function() {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
             // Zameni sa tvojim VAPID ključem iz Firebase konzole
-            const vapidKey = 'faLRnERN78dD2Y_NgoLU4DQnquA-5w-5EPLmQXUu76Y'; 
+            const vapidKey = 'Blf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqyOSla3gR3vXb8JmJ5cVDACXctc_-iP8'; 
             
             const token = await getToken(messaging, { vapidKey });
             
