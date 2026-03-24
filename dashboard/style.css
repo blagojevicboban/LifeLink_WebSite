@@ -323,8 +323,46 @@ header .status-badge {
 .history-section h3 {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    margin-bottom: 0.5rem;
 }
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.time-controls {
+    display: flex;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 3px;
+    border-radius: 8px;
+}
+
+.time-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.time-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.time-btn.active {
+    background: var(--accent);
+    color: var(--bg-color);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
 
 .chart-container {
     height: 180px;

@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy, limit, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, orderBy, limit, setDoc, doc, where, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
 // === KONFIGURACIJA FIREBASE-A ===
@@ -45,6 +45,8 @@ const deviceCharts = {};
 const deviceEnvCharts = {};
 const deviceMaps = {};
 const deviceMarkers = {};
+const deviceRanges = {}; // Track selected time range per device
+
 
 // Glavni listener za uređaje
 onSnapshot(collection(db, "devices"), (snapshot) => {
@@ -67,8 +69,13 @@ onSnapshot(collection(db, "devices"), (snapshot) => {
         if (change.type === "added" || change.type === "modified") {
             updateDeviceUI(deviceId, deviceData);
             setupFallListener(deviceId);
-            setupHistoryListener(deviceId);
+            // Inicijalizujemo istoriju samo ako već ne postoji, 
+            // da ne bismo stalno resetovali range na 1h pri svakom heartbeat-u
+            if (!historyListeners[deviceId]) {
+                setupHistoryListener(deviceId, deviceRanges[deviceId] || '1h');
+            }
         }
+
         
         if (change.type === "removed") {
             const card = document.getElementById(`device-${deviceId}`);
@@ -140,7 +147,15 @@ function updateDeviceUI(id, data) {
             </div>
 
             <div class="history-section">
-                <h3>Vreme: Puls & SpO2</h3>
+                <div class="section-header">
+                    <h3>Vreme: Puls & SpO2</h3>
+                    <div class="time-controls" data-device-id="${id}">
+                        <button class="time-btn active" data-range="1h">1h</button>
+                        <button class="time-btn" data-range="today">Danas</button>
+                        <button class="time-btn" data-range="1w">7d</button>
+                        <button class="time-btn" data-range="1m">30d</button>
+                    </div>
+                </div>
                 <div class="chart-container">
                     <canvas id="chart-${id}"></canvas>
                 </div>
@@ -211,6 +226,25 @@ function updateDeviceUI(id, data) {
 
     // Update markers from device doc (Mainly Phone location)
     updateMarkers(id, data);
+
+    // Setup event listeners for time buttons
+    const timeButtons = card.querySelectorAll('.time-btn');
+    timeButtons.forEach(btn => {
+        if (!btn.hasListener) {
+            btn.onclick = () => {
+                const range = btn.dataset.range;
+                deviceRanges[id] = range;
+                
+                // Update UI state
+                timeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Reload data with new range
+                setupHistoryListener(id, range);
+            };
+            btn.hasListener = true;
+        }
+    });
 }
 
 function initMap(deviceId, data) {
@@ -319,7 +353,17 @@ function initCharts(deviceId) {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: { display: false },
+                x: { 
+                    display: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { 
+                        color: '#78909c', 
+                        font: { size: 9 },
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 6
+                    }
+                },
                 y: {
                     min: 40,
                     max: 180,
@@ -407,7 +451,17 @@ function initCharts(deviceId) {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: { display: false },
+                x: { 
+                    display: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { 
+                        color: '#78909c', 
+                        font: { size: 9 },
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 6
+                    }
+                },
                 y: {
                     min: 0,
                     max: 5,
@@ -429,13 +483,30 @@ function initCharts(deviceId) {
     });
 }
 
-function setupHistoryListener(deviceId) {
-    if (historyListeners[deviceId]) return;
+function setupHistoryListener(deviceId, range = '1h') {
+    // Ako već postoji listener za ovaj uređaj, gasimo ga pre nego što napravimo novi sa drugim range-om
+    if (historyListeners[deviceId]) {
+        historyListeners[deviceId]();
+        delete historyListeners[deviceId];
+    }
+
+    let startTime;
+    const now = new Date();
+
+    if (range === '1h') {
+        startTime = new Date(now.getTime() - 60 * 60 * 1000);
+    } else if (range === 'today') {
+        startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    } else if (range === '1w') {
+        startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    } else if (range === '1m') {
+        startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    }
 
     const historyQuery = query(
         collection(db, "devices", deviceId, "health_snapshots"),
-        orderBy("timestamp", "desc"),
-        limit(20)
+        where("timestamp", ">=", Timestamp.fromDate(startTime)),
+        orderBy("timestamp", "asc")
     );
 
     historyListeners[deviceId] = onSnapshot(historyQuery, (snapshot) => {
@@ -444,10 +515,14 @@ function setupHistoryListener(deviceId) {
         const history = [];
         snapshot.forEach(doc => history.push(doc.data()));
         
-        // Obrćemo jer GraphQL limit(20) vadi najnovije, a grafikon ide sleva nadesno
-        history.reverse();
-
-        const labels = history.map(d => d.timestamp ? new Date(d.timestamp.toDate()).toLocaleTimeString() : '');
+        // Formiranje labela i podataka
+        const labels = history.map(d => {
+            if (!d.timestamp) return '';
+            const dt = d.timestamp.toDate();
+            if (range === '1h') return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (range === 'today') return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return dt.toLocaleDateString([], { day: '2-digit', month: '2-digit' }) + ' ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        });
         
         // Ažuriranje Health Chart (Puls & SpO2)
         deviceCharts[deviceId].data.labels = labels;
@@ -455,13 +530,10 @@ function setupHistoryListener(deviceId) {
         deviceCharts[deviceId].data.datasets[1].data = history.map(d => d.spo2);
         deviceCharts[deviceId].update('none');
 
-        // Check for GPS in snapshots (for WiFi uploads)
+        // Update markers if GPS available
         const latestSnapshot = history[history.length - 1];
         if (latestSnapshot && latestSnapshot.lat && latestSnapshot.lon) {
-            updateMarkers(deviceId, { 
-                lat: latestSnapshot.lat, 
-                lon: latestSnapshot.lon 
-            });
+            updateMarkers(deviceId, { lat: latestSnapshot.lat, lon: latestSnapshot.lon });
         }
 
         // Ažuriranje Environment Chart (G-Force & Battery)
@@ -469,6 +541,8 @@ function setupHistoryListener(deviceId) {
         deviceEnvCharts[deviceId].data.datasets[0].data = history.map(d => d.gForce);
         deviceEnvCharts[deviceId].data.datasets[1].data = history.map(d => d.battery);
         deviceEnvCharts[deviceId].update('none');
+    }, (error) => {
+        console.error("History Listener error:", error);
     });
 }
 
