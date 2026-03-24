@@ -181,6 +181,9 @@ header .status-badge {
 .pill-notify:hover { background: #ff9800; color: white; }
 .pill-notify.active { background: #4caf50; color: white; border-color: #4caf50; box-shadow: 0 0 15px rgba(76, 175, 80, 0.3); }
 
+.pill-install { background: rgba(224, 64, 251, 0.1); color: #e040fb; border: 1px solid rgba(224, 64, 251, 0.2); }
+.pill-install:hover { background: #e040fb; color: white; }
+
 .status-online {
     background-color: rgba(0, 230, 118, 0.1);
     color: var(--success);
@@ -557,7 +560,7 @@ header .status-badge {
     }
 
     .metrics-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 0.8rem;
     }
 

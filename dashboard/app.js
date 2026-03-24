@@ -544,6 +544,30 @@ onMessage(messaging, (payload) => {
     new Notification(title, { body, icon: '../img/favicon.png' });
 });
 
+// === PWA INSTALL PROMPT ===
+let deferredPrompt;
+const installPill = document.getElementById('install-pill');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installPill.style.display = 'flex';
+});
+
+window.installPWA = async function() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to install prompt: ${outcome}`);
+    deferredPrompt = null;
+    installPill.style.display = 'none';
+};
+
+window.addEventListener('appinstalled', () => {
+    console.log('PWA was installed');
+    installPill.style.display = 'none';
+});
+
 // === PWA SERVICE WORKER REGISTRATION ===
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
