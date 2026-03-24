@@ -5,7 +5,7 @@ import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/fireb
 // === KONFIGURACIJA FIREBASE-A ===
 // Zamenite ovo podacima iz vašeg Firebase projekta (Project Settings > Web App)
 const firebaseConfig = {
-    apiKey: "AIzaSyBKCa-ybxfSdrm4N8ow-Olh-3BSfHzs4-g",
+    apiKey: "BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqy0SIa3gR3vXb8JmJ5cvDACXctc_-iP8",
     authDomain: "lifelink-a3581.firebaseapp.com",
     projectId: "lifelink-a3581",
     storageBucket: "lifelink-a3581.firebasestorage.app",
