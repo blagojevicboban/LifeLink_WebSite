@@ -513,7 +513,7 @@ window.requestNotifications = async function() {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
             // Zameni sa tvojim VAPID ključem iz Firebase konzole
-            const vapidKey = 'Blf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqyOSla3gR3vXb8JmJ5cVDACXctc_-iP8'; 
+            const vapidKey = 'BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqy0SIa3gR3vXb8JmJ5cvDACXctc_-iP8'; 
             
             const token = await getToken(messaging, { vapidKey });
             
