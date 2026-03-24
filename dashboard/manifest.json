@@ -1,0 +1,22 @@
+{
+  "name": "LifeLink Dashboard",
+  "short_name": "LifeLink",
+  "description": "Real-time health monitoring and fall detection system.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a111a",
+  "theme_color": "#448aff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "../img/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "../img/lifelink_logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, orderBy, limit, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
 // === KONFIGURACIJA FIREBASE-A ===
 // Zamenite ovo podacima iz vašeg Firebase projekta (Project Settings > Web App)
@@ -20,6 +20,10 @@ const devicesContainer = document.getElementById('devices-container');
 const loadingOverlay = document.getElementById('loading');
 const noDevicesMsg = document.getElementById('no-devices');
 const connectionStatus = document.getElementById('connection-status');
+const notifyPill = document.getElementById('notify-pill');
+
+// Messaging
+const messaging = getMessaging(app);
 
 window.toggleHelp = function() {
     const modal = document.getElementById('help-modal');
@@ -499,5 +503,51 @@ function setupFallListener(deviceId) {
             `;
             fallContainer.appendChild(item);
         });
+    });
+}
+
+// === PUSH NOTIFICATIONS ===
+window.requestNotifications = async function() {
+    try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            // Zameni sa tvojim VAPID ključem iz Firebase konzole
+            const vapidKey = 'BA_PLACEHOLDER_VAPID_KEY'; 
+            
+            const token = await getToken(messaging, { vapidKey });
+            
+            if (token) {
+                console.log("FCM Token:", token);
+                await setDoc(doc(db, "fcm_tokens", token), {
+                    platform: "web",
+                    lastUpdated: new Date(),
+                    active: true
+                });
+                
+                notifyPill.classList.add('active');
+                notifyPill.innerHTML = '<i class="fas fa-check-circle"></i> Aktivne';
+                alert("Uspešno ste aktivirali notifikacije za hitne slučajeve!");
+            }
+        } else {
+            alert("Morate dozvoliti notifikacije u pretraživaču.");
+        }
+    } catch (error) {
+        console.error("Greška kod notifikacija:", error);
+        alert("Došlo je do greške prilikom aktivacije. Proverite VAPID ključ.");
+    }
+};
+
+onMessage(messaging, (payload) => {
+    console.log('Poruka primljena u foreground-u: ', payload);
+    const { title, body } = payload.notification;
+    new Notification(title, { body, icon: '../img/favicon.png' });
+});
+
+// === PWA SERVICE WORKER REGISTRATION ===
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('LifeLink SW Registered!', reg))
+            .catch(err => console.log('SW Registration Failed:', err));
     });
 }
