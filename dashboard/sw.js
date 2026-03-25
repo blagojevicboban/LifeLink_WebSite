@@ -9,7 +9,6 @@ const ASSETS = [
     'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
     'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
     'https://cdn.jsdelivr.net/npm/chart.js',
-    '../img/favicon.png',
     '../img/lifelink_logo.png'
 ];
 

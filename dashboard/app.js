@@ -5,7 +5,7 @@ import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/fireb
 // === KONFIGURACIJA FIREBASE-A ===
 // Zamenite ovo podacima iz vašeg Firebase projekta (Project Settings > Web App)
 const firebaseConfig = {
-    apiKey: "BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqy0SIa3gR3vXb8JmJ5cvDACXctc_-iP8",
+    apiKey: "AIzaSyBKCa-ybxfSdrm4N8ow-Olh-3BSfHzs4-g",
     authDomain: "lifelink-a3581.firebaseapp.com",
     projectId: "lifelink-a3581",
     storageBucket: "lifelink-a3581.firebasestorage.app",
@@ -148,21 +148,27 @@ function updateDeviceUI(id, data) {
 
             <div class="history-section">
                 <div class="section-header">
-                    <h3>Vreme: Puls & SpO2</h3>
-                    <div class="time-controls" data-device-id="${id}">
-                        <button class="time-btn active" data-range="1h">1h</button>
-                        <button class="time-btn" data-range="today">Danas</button>
-                        <button class="time-btn" data-range="1w">7d</button>
-                        <button class="time-btn" data-range="1m">30d</button>
-                    </div>
+                    <h3><span style="color: #ff5252">Puls</span> & <span style="color: #448aff">SpO2</span></h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="chart-${id}"></canvas>
                 </div>
             </div>
 
-            <div class="history-section" style="margin-top: 2rem;">
-                <h3>Vreme: G-Sila & Baterija</h3>
+            <div class="time-zoom-wrapper">
+                <div class="time-controls" data-device-id="${id}">
+                    <button class="time-btn active" data-range="1h">1h</button>
+                    <button class="time-btn" data-range="today">Danas</button>
+                    <button class="time-btn" data-range="1w">7d</button>
+                    <button class="time-btn" data-range="1m">30d</button>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <div class="section-header">
+                    <h3><span style="color: #00e5ff">G-Sila</span></h3>
+                    <h3><span style="color: #00e676">Baterija</span></h3>
+                </div>
                 <div class="chart-container">
                     <canvas id="chart-env-${id}"></canvas>
                 </div>
@@ -615,7 +621,7 @@ window.requestNotifications = async function() {
 onMessage(messaging, (payload) => {
     console.log('Poruka primljena u foreground-u: ', payload);
     const { title, body } = payload.notification;
-    new Notification(title, { body, icon: '../img/favicon.png' });
+    new Notification(title, { body, icon: '../img/lifelink_logo.png' });
 });
 
 // === PWA INSTALL PROMPT ===
