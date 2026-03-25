@@ -127,6 +127,28 @@ Aplikacija koristi **MVVM** (Model-View-ViewModel) šablon:
 - **`SettingsScreen`** – Ekran za konfiguraciju hitnog kontakta, akcije i BLE uređaja.
 
 
+## LIFELINK CLOUD DASHBOARD (Web Monitoring)
+
+Pored mobilne aplikacije, razvijen je i centralni **Cloud Dashboard** koji omogućava članovima porodice i lekarima da prate stanje korisnika u realnom vremenu putem bilo kog Web pretraživača.
+
+### a.) Tehnologije i Funkcionalnosti
+
+| Komponenta | Tehnologija / Opis |
+| --- | --- |
+| **Real-time Baza** | **Firebase Firestore** omogućava trenutan prenos podataka sa narukvice/telefona do Dashboard-a. |
+| **Push Notifikacije** | **Firebase Cloud Messaging (FCM)** šalje automatska upozorenja o padu čak i kada je pretraživač ugašen. |
+| **Analitika i Grafikoni** | **Chart.js** sa interaktivnim zumiranjem (1h do 30d) i dvostrukim Y-osama za precizan uporedni prikaz pulsa i kiseonika. |
+| **Geopozicioniranje** | **Leaflet** mapa sa podrškom za Dark-Mode, prikazuje istovremeno lokaciju sata i telefona. |
+| **PWA (Progressive Web App)** | Dashboard se može instalirati na telefon kao aplikacija, sa brzim pristupom i nativnim osećajem. |
+
+### b.) Putanja Podataka
+Sistem koristi hibridni model prenosa:
+- **Sat → Firebase (WiFi)**: Direktno slanje kada je WiFi dostupan.
+- **Sat → App → Firebase (BLE)**: Slanje putem telefona kada je sat van dometa WiFi mreže.
+- **Firebase → Dashboard**: Automatsko osvežavanje UI-ja bez potrebe za "Refresh" komandom.
+
+---
+
 ## ZAKLJUČAK
 Predstavljeni prototip LifeLink platforme pruža izuzetan potencijal. Njegova najveća prednost jeste modularan multifunkcionalan pristup malog faktora forme. Mogući dalji rad na projektu zasigurno obuhvata dublju optimizaciju upotrebe baterije - kreiranjem takozvanog "Deep Sleep" logičkog koraka gašenjem ekrana, izradu namenskog prilagođenog komercijalnog 3D kućišta koje će zaštititi celokupan sklop od vlage ili udaraca, kao i integraciju algoritama veštačke inteligencije (Edge Impulse/TinyML). Mogućnošću "treniranja" sitnih klasifikacionih neuronskih mreža na samom ESP32 hardveru bi se drastično povećala moć raspoznavanja udesa i predviđanja vrste skoka na osnovu bogatijih baza podataka (dataseta). Bez obzira na to što je trenutni uređaj prototipskog karaktera, efikasnost i samostalnost testiranih modula dokazuju njegovu visoku i spasonosnu nosivu primenjivost na realnom terenu.
 
