@@ -5,7 +5,7 @@ import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/fireb
 // === KONFIGURACIJA FIREBASE-A ===
 // Zamenite ovo podacima iz vašeg Firebase projekta (Project Settings > Web App)
 const firebaseConfig = {
-    apiKey: "AIzaSyBKCa-ybxfSdrm4N8ow-Olh-3BSfHzs4-g",
+    apiKey: "BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqy0SIa3gR3vXb8JmJ5cvDACXctc_-iP8",
     authDomain: "lifelink-a3581.firebaseapp.com",
     projectId: "lifelink-a3581",
     storageBucket: "lifelink-a3581.firebasestorage.app",
@@ -148,7 +148,8 @@ function updateDeviceUI(id, data) {
 
             <div class="history-section">
                 <div class="section-header">
-                    <h3><span style="color: #ff5252">Puls</span> & <span style="color: #448aff">SpO2</span></h3>
+                    <h3><span style="color: #ff5252">Puls</span></h3>
+                    <h3><span style="color: #448aff">SpO2</span></h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="chart-${id}"></canvas>
@@ -380,7 +381,9 @@ function initCharts(deviceId) {
                     position: 'right',
                     min: 80,
                     max: 100,
-                    display: false
+                    display: true,
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: '#78909c', font: { size: 10 } }
                 }
             },
             plugins: {
@@ -592,10 +595,17 @@ window.requestNotifications = async function() {
     try {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
+            // Eksplicitno registrujemo Service Worker da bismo izbegli "no active Service Worker" grešku
+            const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+            await navigator.serviceWorker.ready;
+            
             // Zameni sa tvojim VAPID ključem iz Firebase konzole
             const vapidKey = 'BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqy0SIa3gR3vXb8JmJ5cvDACXctc_-iP8'; 
             
-            const token = await getToken(messaging, { vapidKey });
+            const token = await getToken(messaging, { 
+                vapidKey: vapidKey,
+                serviceWorkerRegistration: registration 
+            });
             
             if (token) {
                 console.log("FCM Token:", token);
@@ -603,7 +613,7 @@ window.requestNotifications = async function() {
                     platform: "web",
                     lastUpdated: new Date(),
                     active: true
-                });
+                }, { merge: true });
                 
                 notifyPill.classList.add('active');
                 notifyPill.innerHTML = '<i class="fas fa-check-circle"></i> Aktivne';
