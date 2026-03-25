@@ -135,32 +135,28 @@ function updateDeviceUI(id, data) {
 
             <div class="history-section">
                 <div class="section-header">
-                    <h3><span style="color: #ff5252">Puls</span></h3>
-                    <h3><span style="color: #448aff">SpO2</span></h3>
+                    <h3 style="flex-shrink: 0;">Vreme: <span style="color: #ff5252">Puls</span> & <span style="color: #448aff">SpO2</span></h3>
+                    <div class="time-controls" data-device-id="${id}">
+                        <button class="time-btn active" data-range="1h">1h</button>
+                        <button class="time-btn" data-range="today">Danas</button>
+                        <button class="time-btn" data-range="1w">7d</button>
+                        <button class="time-btn" data-range="1m">30d</button>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <canvas id="chart-${id}"></canvas>
                 </div>
             </div>
 
-            <div class="time-zoom-wrapper">
-                <div class="time-controls" data-device-id="${id}">
-                    <button class="time-btn active" data-range="1h">1h</button>
-                    <button class="time-btn" data-range="today">Danas</button>
-                    <button class="time-btn" data-range="1w">7d</button>
-                    <button class="time-btn" data-range="1m">30d</button>
-                </div>
-            </div>
-
             <div class="history-section">
                 <div class="section-header">
-                    <h3><span style="color: #00e5ff">G-Sila</span></h3>
-                    <h3><span style="color: #00e676">Baterija</span></h3>
+                    <h3>Vreme: <span style="color: #00e5ff">G-Sila</span> & <span style="color: #00e676">Baterija</span></h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="chart-env-${id}"></canvas>
                 </div>
             </div>
+
 
             <div class="source-indicator ${sourceClass}">
                 <div class="source-icon"></div>
