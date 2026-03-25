@@ -1,19 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
-// === KONFIGURACIJA FIREBASE-A (SAMO ZA NOTIFIKACIJE) ===
-const firebaseConfig = {
-    apiKey: "AIzaSyAGZKMBP6u6dPr3_VKvqi-klEi-8XIl8_0",
-    authDomain: "lifelink-a3581.firebaseapp.com",
-    projectId: "lifelink-a3581",
-    storageBucket: "lifelink-a3581.firebasestorage.app",
-    messagingSenderId: "384903714979",
-    appId: "1:384903714979:web:35581896791e3e518dc716"
-};
 
-// Inicijalizacija
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+// Firebase removed. System now uses direct MariaDB polling.
 
 const devicesContainer = document.getElementById('devices-container');
 const loadingOverlay = document.getElementById('loading');
@@ -459,38 +446,8 @@ function initCharts(deviceId) {
 
 // === PUSH NOTIFICATIONS ===
 window.requestNotifications = async function() {
-    try {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-            const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            await navigator.serviceWorker.ready;
-            
-            const vapidKey = 'BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqyOSIa3gR3vXb8JmJ5cvDACXctc_-iP8'; 
-            const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
-            
-            if (token) {
-                console.log("FCM Token:", token);
-                // POST TOKEN TO OUR API (MARIADB)
-                await fetch('../api/update.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: token, platform: 'web' })
-                });
-                
-                notifyPill.classList.add('active');
-                notifyPill.innerHTML = '<i class="fas fa-check-circle"></i> Aktivne';
-                alert("Uspešno ste aktivirali notifikacije!");
-            }
-        }
-    } catch (error) {
-        console.error("FCM Error:", error);
-    }
+    alert("Notifikacije trenutno nisu dostupne nakon migracije sa Firebase-a.");
 };
-
-onMessage(messaging, (payload) => {
-    const { title, body } = payload.notification;
-    new Notification(title, { body, icon: '../img/lifelink_logo.png' });
-});
 
 
 // === PWA INSTALL PROMPT ===
