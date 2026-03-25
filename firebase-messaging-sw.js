@@ -2,7 +2,7 @@ importScripts("https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"
 importScripts("https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging-compat.js");
 
 firebase.initializeApp({
-    apiKey: "AIzaSyBKCa-ybxfSdrm4N8ow-Olh-3BSfHzs4-g",
+    apiKey: "AIzaSyAGZKMBP6u6dPr3_VKvqi-klEi-8XIl8_0",
     authDomain: "lifelink-a3581.firebaseapp.com",
     projectId: "lifelink-a3581",
     storageBucket: "lifelink-a3581.firebasestorage.app",

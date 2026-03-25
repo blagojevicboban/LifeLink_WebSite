@@ -1,11 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy, limit, setDoc, doc, where, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
-// === KONFIGURACIJA FIREBASE-A ===
-// Zamenite ovo podacima iz vašeg Firebase projekta (Project Settings > Web App)
+// === KONFIGURACIJA FIREBASE-A (SAMO ZA NOTIFIKACIJE) ===
 const firebaseConfig = {
-    apiKey: "BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqy0SIa3gR3vXb8JmJ5cvDACXctc_-iP8",
+    apiKey: "AIzaSyAGZKMBP6u6dPr3_VKvqi-klEi-8XIl8_0",
     authDomain: "lifelink-a3581.firebaseapp.com",
     projectId: "lifelink-a3581",
     storageBucket: "lifelink-a3581.firebasestorage.app",
@@ -15,7 +13,7 @@ const firebaseConfig = {
 
 // Inicijalizacija
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const messaging = getMessaging(app);
 
 const devicesContainer = document.getElementById('devices-container');
 const loadingOverlay = document.getElementById('loading');
@@ -23,8 +21,12 @@ const noDevicesMsg = document.getElementById('no-devices');
 const connectionStatus = document.getElementById('connection-status');
 const notifyPill = document.getElementById('notify-pill');
 
-// Messaging
-const messaging = getMessaging(app);
+// Rečnik aktivnih grafikona i mapa
+const deviceCharts = {};
+const deviceEnvCharts = {};
+const deviceMaps = {};
+const deviceMarkers = {};
+const deviceRanges = {}; 
 
 window.toggleHelp = function() {
     const modal = document.getElementById('help-modal');
@@ -38,65 +40,61 @@ window.onclick = function(event) {
     }
 }
 
-// Rečnik aktivnih listenera i grafikona
-const fallListeners = {};
-const historyListeners = {};
-const deviceCharts = {};
-const deviceEnvCharts = {};
-const deviceMaps = {};
-const deviceMarkers = {};
-const deviceRanges = {}; // Track selected time range per device
-
-
-// Glavni listener za uređaje
-onSnapshot(collection(db, "devices"), (snapshot) => {
-    loadingOverlay.style.display = 'none';
-    
-    if (snapshot.empty) {
-        noDevicesMsg.style.display = 'block';
-        devicesContainer.innerHTML = '';
-        return;
-    }
-
-    noDevicesMsg.style.display = 'none';
-    connectionStatus.textContent = "Sistem Online";
-    connectionStatus.className = "status-badge status-online";
-
-    snapshot.docChanges().forEach((change) => {
-        const deviceData = change.doc.data();
-        const deviceId = change.doc.id;
-
-        if (change.type === "added" || change.type === "modified") {
-            updateDeviceUI(deviceId, deviceData);
-            setupFallListener(deviceId);
-            // Inicijalizujemo istoriju samo ako već ne postoji, 
-            // da ne bismo stalno resetovali range na 1h pri svakom heartbeat-u
-            if (!historyListeners[deviceId]) {
-                setupHistoryListener(deviceId, deviceRanges[deviceId] || '1h');
-            }
-        }
-
+// === POLL DEVICES (ZAMENA ZA onSnapshot) ===
+async function pollDevices() {
+    try {
+        const response = await fetch('../api/get_data.php?action=devices');
+        const devices = await response.json();
         
-        if (change.type === "removed") {
-            const card = document.getElementById(`device-${deviceId}`);
-            if (card) card.remove();
-            
-            // Cleanup listeners
-            if (fallListeners[deviceId]) fallListeners[deviceId]();
-            if (historyListeners[deviceId]) historyListeners[deviceId]();
-            if (deviceCharts[deviceId]) deviceCharts[deviceId].destroy();
-            if (deviceEnvCharts[deviceId]) deviceEnvCharts[deviceId].destroy();
-            if (deviceMaps[deviceId]) {
-                deviceMaps[deviceId].remove();
-                delete deviceMaps[deviceId];
-            }
+        loadingOverlay.style.display = 'none';
+        
+        if (!devices || devices.length === 0) {
+            noDevicesMsg.style.display = 'block';
+            devicesContainer.innerHTML = '';
+            return;
         }
-    });
-}, (error) => {
-    console.error("Firestore error:", error);
-    connectionStatus.textContent = "Greška u konekciji";
-    connectionStatus.className = "status-badge status-offline";
-});
+
+        noDevicesMsg.style.display = 'none';
+        connectionStatus.textContent = "Sistem Online";
+        connectionStatus.className = "status-badge status-online";
+
+        // Mapiramo trenutno prikazane uređaje da bismo znali šta da uklonimo
+        const currentIds = Array.from(devicesContainer.children).map(c => c.id.replace('device-', ''));
+        const newIds = devices.map(d => d.device_id);
+
+        // Ukloni uređaje kojih više nema u bazi
+        currentIds.forEach(id => {
+            if (!newIds.includes(id)) {
+                const card = document.getElementById(`device-${id}`);
+                if (card) card.remove();
+                cleanupDeviceResources(id);
+            }
+        });
+
+        // Dodaj ili ažuriraj uređaje
+        devices.forEach(device => {
+            updateDeviceUI(device.device_id, device);
+        });
+
+    } catch (error) {
+        console.error("API Error:", error);
+        connectionStatus.textContent = "Greška u konekciji";
+        connectionStatus.className = "status-badge status-offline";
+    }
+}
+
+// Pokreni polling svakih 5 sekundi
+setInterval(pollDevices, 5000);
+pollDevices(); // Prvi poziv odmah
+
+function cleanupDeviceResources(id) {
+    if (deviceCharts[id]) deviceCharts[id].destroy();
+    if (deviceEnvCharts[id]) deviceEnvCharts[id].destroy();
+    if (deviceMaps[id]) {
+        deviceMaps[id].remove();
+        delete deviceMaps[id];
+    }
+}
 
 function updateDeviceUI(id, data) {
     let card = document.getElementById(`device-${id}`);
@@ -106,15 +104,17 @@ function updateDeviceUI(id, data) {
         card.id = `device-${id}`;
         card.className = 'device-card';
         devicesContainer.appendChild(card);
+        
+        // Postavi inicijalni range
+        deviceRanges[id] = '1h';
     }
 
-    const isOnline = data.isOnline !== false;
+    const isOnline = parseInt(data.isOnline) === 1;
     card.className = `device-card ${isOnline ? '' : 'offline'}`;
     
-    const sourceClass = data.uploadSource === 'wifi' ? 'source-wifi' : 'source-ble';
-    const sourceText = data.uploadSource === 'wifi' ? 'WiFi Direct' : 'via App (BLE)';
+    const sourceClass = data.source === 'wifi' ? 'source-wifi' : 'source-ble';
+    const sourceText = data.source === 'wifi' ? 'WiFi Direct' : 'via App (BLE)';
 
-    // Samo ako kartica nema grafikon sekciju, ubacujemo HTML
     if (!card.querySelector('.chart-container')) {
         card.innerHTML = `
             <div class="card-header">
@@ -215,13 +215,16 @@ function updateDeviceUI(id, data) {
         `;
         initCharts(id);
         initMap(id, data);
+        
+        // Inicijalno učitavanje istorije i padova
+        fetchHistory(id, deviceRanges[id]);
+        fetchFalls(id);
     }
 
-    // Ažuriranje vrednosti bez osvežavanja celog HTML-a (za glatki UI)
     card.querySelector('[data-field="pulse"]').innerHTML = `${data.pulse || 0} <small>BPM</small>`;
     card.querySelector('[data-field="spo2"]').innerHTML = `${data.spo2 || 0}<small>%</small>`;
     card.querySelector('[data-field="battery"]').innerHTML = `${data.battery || 0}<small>%</small>`;
-    card.querySelector('[data-field="gForce"]').innerHTML = data.gForce ? data.gForce.toFixed(2) : '0.00';
+    card.querySelector('[data-field="gForce"]').innerHTML = data.gForce ? parseFloat(data.gForce).toFixed(2) : '0.00';
     
     const badge = card.querySelector('.status-badge');
     badge.className = `status-badge ${isOnline ? 'status-online' : 'status-offline'}`;
@@ -231,34 +234,95 @@ function updateDeviceUI(id, data) {
     sourceInd.className = `source-indicator ${sourceClass}`;
     sourceInd.querySelector('span').textContent = `Izvor: ${sourceText}`;
 
-    // Update markers from device doc (Mainly Phone location)
     updateMarkers(id, data);
 
-    // Setup event listeners for time buttons
     const timeButtons = card.querySelectorAll('.time-btn');
     timeButtons.forEach(btn => {
         if (!btn.hasListener) {
             btn.onclick = () => {
                 const range = btn.dataset.range;
                 deviceRanges[id] = range;
-                
-                // Update UI state
                 timeButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
-                // Reload data with new range
-                setupHistoryListener(id, range);
+                fetchHistory(id, range);
             };
             btn.hasListener = true;
         }
     });
+
+    // Osveži istoriju Periodično ako smo na range-u 1h
+    if (!card.historyPoller) {
+        card.historyPoller = setInterval(() => {
+            if (deviceRanges[id] === '1h') {
+                fetchHistory(id, '1h');
+                fetchFalls(id);
+            }
+        }, 15000); // Svakih 15 sekundi osveži grafikone ako je 1h pogled
+    }
+}
+
+async function fetchHistory(deviceId, range = '1h') {
+    try {
+        const response = await fetch(`../api/get_data.php?action=history&device_id=${deviceId}&range=${range}`);
+        let history = await response.json();
+        
+        if (!deviceCharts[deviceId] || !deviceEnvCharts[deviceId]) return;
+        
+        // SQL vraća desc (najnoviji prvo), reversujemo za grafikone
+        history = history.reverse();
+        
+        const labels = history.map(d => {
+            const dt = new Date(d.timestamp);
+            if (range === '1h' || range === 'today') return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return dt.toLocaleDateString([], { day: '2-digit', month: '2-digit' }) + ' ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        });
+        
+        deviceCharts[deviceId].data.labels = labels;
+        deviceCharts[deviceId].data.datasets[0].data = history.map(d => d.pulse);
+        deviceCharts[deviceId].data.datasets[1].data = history.map(d => d.spo2);
+        deviceCharts[deviceId].update('none');
+
+        deviceEnvCharts[deviceId].data.labels = labels;
+        deviceEnvCharts[deviceId].data.datasets[0].data = history.map(d => d.gForce);
+        deviceEnvCharts[deviceId].data.datasets[1].data = history.map(d => d.battery);
+        deviceEnvCharts[deviceId].update('none');
+    } catch (e) {
+        console.error("History error:", e);
+    }
+}
+
+async function fetchFalls(deviceId) {
+    try {
+        const response = await fetch(`../api/get_data.php?action=falls&device_id=${deviceId}`);
+        const falls = await response.json();
+        const fallContainer = document.getElementById(`falls-${deviceId}`);
+        if (!fallContainer) return;
+
+        if (!falls || falls.length === 0) {
+            fallContainer.innerHTML = '<div style="opacity: 0.3; font-size: 0.8rem;">Nema zabeleženih padova</div>';
+            return;
+        }
+
+        fallContainer.innerHTML = '';
+        falls.forEach((fall) => {
+            const dt = new Date(fall.timestamp);
+            const item = document.createElement('div');
+            item.className = 'fall-item';
+            item.innerHTML = `
+                <span class="fall-time">${dt.toLocaleTimeString()} ${dt.toLocaleDateString()}</span>
+                <span>G: ${fall.gForce ? parseFloat(fall.gForce).toFixed(1) : '-'}</span>
+            `;
+            fallContainer.appendChild(item);
+        });
+    } catch (e) {
+        console.error("Falls error:", e);
+    }
 }
 
 function initMap(deviceId, data) {
     const mapElement = document.getElementById(`map-${deviceId}`);
     if (!mapElement || deviceMaps[deviceId]) return;
 
-    // Use default coordinates if none provided (e.g., Belgrade)
     const lat = data.lat || 44.7866;
     const lon = data.lon || 20.4489;
 
@@ -268,11 +332,7 @@ function initMap(deviceId, data) {
     }).addTo(map);
 
     deviceMaps[deviceId] = map;
-    deviceMarkers[deviceId] = {
-        watch: null,
-        phone: null
-    };
-
+    deviceMarkers[deviceId] = { watch: null, phone: null };
     updateMarkers(deviceId, data);
 }
 
@@ -280,7 +340,6 @@ function updateMarkers(deviceId, data) {
     const map = deviceMaps[deviceId];
     if (!map) return;
 
-    // 1. Update Watch Marker
     if (data.lat && data.lon) {
         if (!deviceMarkers[deviceId].watch) {
             const watchIcon = L.divIcon({
@@ -295,8 +354,7 @@ function updateMarkers(deviceId, data) {
         }
     }
 
-    // 2. Update Phone Marker
-    if (data.phoneLat && data.phoneLon) {
+    if (data.phoneLat && data.phoneLon) { // MariaDB bi mogao imati phoneLat polja ako ih dodamo
         if (!deviceMarkers[deviceId].phone) {
             const phoneIcon = L.divIcon({
                 className: 'custom-div-icon',
@@ -310,23 +368,12 @@ function updateMarkers(deviceId, data) {
         }
     }
 
-    // Auto-pan if markers exist and are valid
     const group = [];
     if (deviceMarkers[deviceId].watch) group.push(deviceMarkers[deviceId].watch.getLatLng());
-    if (deviceMarkers[deviceId].phone) group.push(deviceMarkers[deviceId].phone.getLatLng());
-    
-    if (group.length > 0) {
-        const bounds = L.latLngBounds(group);
-        if (group.length === 1) {
-            map.panTo(group[0]);
-        } else {
-            map.fitBounds(bounds, { padding: [30, 30] });
-        }
-    }
+    if (group.length > 0) map.panTo(group[0]);
 }
 
 function initCharts(deviceId) {
-    // 1. Chart za Puls i SpO2
     const ctxHealth = document.getElementById(`chart-${deviceId}`).getContext('2d');
     deviceCharts[deviceId] = new Chart(ctxHealth, {
         type: 'line',
@@ -341,7 +388,7 @@ function initCharts(deviceId) {
                     borderWidth: 2,
                     tension: 0.4,
                     fill: true,
-                    pointRadius: 0
+                    radius: 0
                 },
                 {
                     label: 'SpO2',
@@ -351,7 +398,7 @@ function initCharts(deviceId) {
                     borderWidth: 2,
                     tension: 0.4,
                     fill: true,
-                    pointRadius: 0,
+                    radius: 0,
                     yAxisID: 'y1'
                 }
             ]
@@ -360,73 +407,14 @@ function initCharts(deviceId) {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: { 
-                    display: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { 
-                        color: '#78909c', 
-                        font: { size: 9 },
-                        maxRotation: 0,
-                        autoSkip: true,
-                        maxTicksLimit: 6
-                    }
-                },
-                y: {
-                    min: 40,
-                    max: 180,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#78909c', font: { size: 10 } }
-                },
-                y1: {
-                    position: 'right',
-                    min: 80,
-                    max: 100,
-                    display: true,
-                    grid: { drawOnChartArea: false },
-                    ticks: { color: '#78909c', font: { size: 10 } }
-                }
+                x: { display: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#78909c', font: { size: 9 }, maxTicksLimit: 6 } },
+                y: { min: 40, max: 180, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#78909c' } },
+                y1: { position: 'right', min: 80, max: 100, ticks: { color: '#78909c' } }
             },
-            plugins: {
-                legend: { display: false },
-                annotation: {
-                    annotations: {
-                        pulseRange: {
-                            type: 'box',
-                            yScaleID: 'y',
-                            yMin: 60,
-                            yMax: 100,
-                            backgroundColor: 'rgba(255, 82, 82, 0.03)',
-                            borderWidth: 0,
-                            label: {
-                                display: true,
-                                content: 'Normal (60-100)',
-                                position: 'start',
-                                color: 'rgba(255, 82, 82, 0.4)',
-                                font: { size: 9 }
-                            }
-                        },
-                        spo2Range: {
-                            type: 'box',
-                            yScaleID: 'y1',
-                            yMin: 95,
-                            yMax: 100,
-                            backgroundColor: 'rgba(68, 138, 255, 0.03)',
-                            borderWidth: 0,
-                            label: {
-                                display: true,
-                                content: 'Saturacija (95+)',
-                                position: 'end',
-                                color: 'rgba(68, 138, 255, 0.4)',
-                                font: { size: 9 }
-                            }
-                        }
-                    }
-                }
-            }
+            plugins: { legend: { display: false } }
         }
     });
 
-    // 2. Chart za G-Silu i Bateriju
     const ctxEnv = document.getElementById(`chart-env-${deviceId}`).getContext('2d');
     deviceEnvCharts[deviceId] = new Chart(ctxEnv, {
         type: 'line',
@@ -441,7 +429,7 @@ function initCharts(deviceId) {
                     borderWidth: 2,
                     tension: 0.4,
                     fill: true,
-                    pointRadius: 0
+                    radius: 0
                 },
                 {
                     label: 'Baterija',
@@ -451,7 +439,7 @@ function initCharts(deviceId) {
                     borderWidth: 2,
                     tension: 0.4,
                     fill: true,
-                    pointRadius: 0,
+                    radius: 0,
                     yAxisID: 'y1'
                 }
             ]
@@ -460,133 +448,12 @@ function initCharts(deviceId) {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: { 
-                    display: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { 
-                        color: '#78909c', 
-                        font: { size: 9 },
-                        maxRotation: 0,
-                        autoSkip: true,
-                        maxTicksLimit: 6
-                    }
-                },
-                y: {
-                    min: 0,
-                    max: 5,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#78909c', font: { size: 10 } }
-                },
-                y1: {
-                    position: 'right',
-                    min: 0,
-                    max: 100,
-                    grid: { display: false },
-                    ticks: { color: '#78909c', font: { size: 10 } }
-                }
+                x: { display: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#78909c', font: { size: 9 }, maxTicksLimit: 6 } },
+                y: { min: 0, max: 5, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#78909c' } },
+                y1: { position: 'right', min: 0, max: 100, ticks: { color: '#78909c' } }
             },
-            plugins: {
-                legend: { display: false }
-            }
+            plugins: { legend: { display: false } }
         }
-    });
-}
-
-function setupHistoryListener(deviceId, range = '1h') {
-    // Ako već postoji listener za ovaj uređaj, gasimo ga pre nego što napravimo novi sa drugim range-om
-    if (historyListeners[deviceId]) {
-        historyListeners[deviceId]();
-        delete historyListeners[deviceId];
-    }
-
-    let startTime;
-    const now = new Date();
-
-    if (range === '1h') {
-        startTime = new Date(now.getTime() - 60 * 60 * 1000);
-    } else if (range === 'today') {
-        startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    } else if (range === '1w') {
-        startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    } else if (range === '1m') {
-        startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    }
-
-    const historyQuery = query(
-        collection(db, "devices", deviceId, "health_snapshots"),
-        where("timestamp", ">=", Timestamp.fromDate(startTime)),
-        orderBy("timestamp", "asc")
-    );
-
-    historyListeners[deviceId] = onSnapshot(historyQuery, (snapshot) => {
-        if (!deviceCharts[deviceId] || !deviceEnvCharts[deviceId]) return;
-
-        const history = [];
-        snapshot.forEach(doc => history.push(doc.data()));
-        
-        // Formiranje labela i podataka
-        const labels = history.map(d => {
-            if (!d.timestamp) return '';
-            const dt = d.timestamp.toDate();
-            if (range === '1h') return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            if (range === 'today') return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return dt.toLocaleDateString([], { day: '2-digit', month: '2-digit' }) + ' ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        });
-        
-        // Ažuriranje Health Chart (Puls & SpO2)
-        deviceCharts[deviceId].data.labels = labels;
-        deviceCharts[deviceId].data.datasets[0].data = history.map(d => d.pulse);
-        deviceCharts[deviceId].data.datasets[1].data = history.map(d => d.spo2);
-        deviceCharts[deviceId].update('none');
-
-        // Update markers if GPS available
-        const latestSnapshot = history[history.length - 1];
-        if (latestSnapshot && latestSnapshot.lat && latestSnapshot.lon) {
-            updateMarkers(deviceId, { lat: latestSnapshot.lat, lon: latestSnapshot.lon });
-        }
-
-        // Ažuriranje Environment Chart (G-Force & Battery)
-        deviceEnvCharts[deviceId].data.labels = labels;
-        deviceEnvCharts[deviceId].data.datasets[0].data = history.map(d => d.gForce);
-        deviceEnvCharts[deviceId].data.datasets[1].data = history.map(d => d.battery);
-        deviceEnvCharts[deviceId].update('none');
-    }, (error) => {
-        console.error("History Listener error:", error);
-    });
-}
-
-function setupFallListener(deviceId) {
-    if (fallListeners[deviceId]) return;
-
-    const fallsQuery = query(
-        collection(db, "devices", deviceId, "fall_events"),
-        orderBy("timestamp", "desc"),
-        limit(3)
-    );
-
-    fallListeners[deviceId] = onSnapshot(fallsQuery, (snapshot) => {
-        const fallContainer = document.getElementById(`falls-${deviceId}`);
-        if (!fallContainer) return;
-
-        if (snapshot.empty) {
-            fallContainer.innerHTML = '<div style="opacity: 0.3; font-size: 0.8rem;">Nema zabeleženih padova</div>';
-            return;
-        }
-
-        fallContainer.innerHTML = '';
-        snapshot.forEach((doc) => {
-            const fall = doc.data();
-            const time = fall.timestamp ? new Date(fall.timestamp.toDate()).toLocaleTimeString() : 'Upravo sad';
-            const date = fall.timestamp ? new Date(fall.timestamp.toDate()).toLocaleDateString() : '';
-            
-            const item = document.createElement('div');
-            item.className = 'fall-item';
-            item.innerHTML = `
-                <span class="fall-time">${time} ${date}</span>
-                <span>G: ${fall.gForce ? fall.gForce.toFixed(1) : '-'}</span>
-            `;
-            fallContainer.appendChild(item);
-        });
     });
 }
 
@@ -595,44 +462,36 @@ window.requestNotifications = async function() {
     try {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
-            // Eksplicitno registrujemo Service Worker da bismo izbegli "no active Service Worker" grešku
             const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
             await navigator.serviceWorker.ready;
             
-            // Zameni sa tvojim VAPID ključem iz Firebase konzole
-            const vapidKey = 'BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqy0SIa3gR3vXb8JmJ5cvDACXctc_-iP8'; 
-            
-            const token = await getToken(messaging, { 
-                vapidKey: vapidKey,
-                serviceWorkerRegistration: registration 
-            });
+            const vapidKey = 'BIf5p9mZamyZwcbTwA93-tEGK_lOiAHyDwyUuOW-4yaf2NrZH2GJhosqyOSIa3gR3vXb8JmJ5cvDACXctc_-iP8'; 
+            const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
             
             if (token) {
                 console.log("FCM Token:", token);
-                await setDoc(doc(db, "fcm_tokens", token), {
-                    platform: "web",
-                    lastUpdated: new Date(),
-                    active: true
-                }, { merge: true });
+                // POST TOKEN TO OUR API (MARIADB)
+                await fetch('../api/update.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token, platform: 'web' })
+                });
                 
                 notifyPill.classList.add('active');
                 notifyPill.innerHTML = '<i class="fas fa-check-circle"></i> Aktivne';
-                alert("Uspešno ste aktivirali notifikacije za hitne slučajeve!");
+                alert("Uspešno ste aktivirali notifikacije!");
             }
-        } else {
-            alert("Morate dozvoliti notifikacije u pretraživaču.");
         }
     } catch (error) {
-        console.error("Greška kod notifikacija:", error);
-        alert("Došlo je do greške prilikom aktivacije. Proverite VAPID ključ.");
+        console.error("FCM Error:", error);
     }
 };
 
 onMessage(messaging, (payload) => {
-    console.log('Poruka primljena u foreground-u: ', payload);
     const { title, body } = payload.notification;
     new Notification(title, { body, icon: '../img/lifelink_logo.png' });
 });
+
 
 // === PWA INSTALL PROMPT ===
 let deferredPrompt;
