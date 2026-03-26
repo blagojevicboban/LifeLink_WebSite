@@ -2,20 +2,21 @@ DELIMITER //
 
 CREATE PROCEDURE IF NOT EXISTS PopulateTestData(IN target_device_id VARCHAR(50))
 BEGIN
-    DECLARE last_ts TIMESTAMP;
-    DECLARE current_ts TIMESTAMP;
-    DECLARE new_pulse INT;
-    DECLARE last_pulse INT DEFAULT 75;
-    DECLARE new_spo2 INT;
-    DECLARE last_spo2 INT DEFAULT 98;
-    DECLARE new_battery INT;
-    DECLARE last_battery INT DEFAULT 100;
-    DECLARE new_gforce FLOAT;
+    DECLARE last_lat DOUBLE DEFAULT 43.1557;
+    DECLARE last_lon DOUBLE DEFAULT 22.5857;
+    DECLARE new_lat DOUBLE;
+    DECLARE new_lon DOUBLE;
     
     -- Pronađi zadnji timestamp za ovaj uređaj, ako ne postoji kreni od pre 24h
     SELECT IFNULL(MAX(timestamp), DATE_SUB(NOW(), INTERVAL 24 HOUR)) INTO last_ts 
     FROM health_snapshots 
     WHERE device_id = target_device_id;
+
+    -- Pokušaj da preuzmeš poslednju lokaciju
+    SELECT IFNULL(lat, 43.1557), IFNULL(lon, 22.5857) INTO last_lat, last_lon 
+    FROM health_snapshots 
+    WHERE device_id = target_device_id 
+    ORDER BY timestamp DESC LIMIT 1;
     
     SET current_ts = last_ts;
     
@@ -43,10 +44,16 @@ BEGIN
         
         -- G-Force: Mirno stanje sa malim šumom (0.95 - 1.05)
         SET new_gforce = 0.98 + (RAND() * 0.04);
+
+        -- Lokacija (Pirot) - Simulacija hodanja
+        SET new_lat = last_lat + (RAND() - 0.45) * 0.0001; -- Veoma mala promena (hodanje)
+        SET new_lon = last_lon + (RAND() - 0.45) * 0.0001;
+        SET last_lat = new_lat;
+        SET last_lon = new_lon;
         
         -- Ubaci podatak u istoriju
-        INSERT INTO health_snapshots (device_id, pulse, spo2, battery, gForce, timestamp)
-        VALUES (target_device_id, new_pulse, new_spo2, new_battery, new_gforce, current_ts);
+        INSERT INTO health_snapshots (device_id, pulse, spo2, battery, gForce, lat, lon, timestamp)
+        VALUES (target_device_id, new_pulse, new_spo2, new_battery, new_gforce, new_lat, new_lon, current_ts);
         
     END WHILE;
     
@@ -56,6 +63,8 @@ BEGIN
         spo2 = last_spo2,
         battery = last_battery,
         gForce = 1.0,
+        lat = last_lat,
+        lon = last_lon,
         isOnline = 1,
         source = 'Simulator',
         lastUpdated = NOW()
@@ -74,3 +83,4 @@ CREATE EVENT IF NOT EXISTS AutoSeed_Test_Device
 ON SCHEDULE EVERY 5 MINUTE
 DO 
   CALL PopulateTestData('test_device');
+

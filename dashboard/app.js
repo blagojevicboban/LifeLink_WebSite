@@ -357,37 +357,53 @@ function updateMarkers(deviceId, data) {
     const map = deviceMaps[deviceId];
     if (!map) return;
 
+    const timeStr = data.lastUpdated ? new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
     if (data.lat && data.lon) {
+        const watchLabel = `SAT${timeStr ? `<br><span class="marker-time">${timeStr}</span>` : ''}`;
         if (!deviceMarkers[deviceId].watch) {
             const watchIcon = L.divIcon({
                 className: 'custom-div-icon',
-                html: `<div class="marker-watch"><i class="fas fa-clock"></i><div class="marker-label">SAT</div></div>`,
+                html: `<div class="marker-watch"><i class="fas fa-clock"></i><div class="marker-label">${watchLabel}</div></div>`,
                 iconSize: [30, 42],
                 iconAnchor: [15, 42]
             });
-            deviceMarkers[deviceId].watch = L.marker([data.lat, data.lon], { icon: watchIcon }).addTo(map);
+            deviceMarkers[deviceId].watch = L.marker([parseFloat(data.lat), parseFloat(data.lon)], { icon: watchIcon }).addTo(map);
         } else {
-            deviceMarkers[deviceId].watch.setLatLng([data.lat, data.lon]);
+            deviceMarkers[deviceId].watch.setLatLng([parseFloat(data.lat), parseFloat(data.lon)]);
+            deviceMarkers[deviceId].watch.getElement().querySelector('.marker-label').innerHTML = watchLabel;
         }
+        deviceMarkers[deviceId].watch.bindPopup(`<b>LifeLink Sat</b><br>Lokacija: ${data.lat}, ${data.lon}<br>Zabeleženo: ${timeStr || 'Nepoznato'}`);
     }
 
-    if (data.phoneLat && data.phoneLon) { // MariaDB bi mogao imati phoneLat polja ako ih dodamo
+    if (data.phoneLat && data.phoneLon) {
+        const phoneLabel = `TEL${timeStr ? `<br><span class="marker-time">${timeStr}</span>` : ''}`;
         if (!deviceMarkers[deviceId].phone) {
             const phoneIcon = L.divIcon({
                 className: 'custom-div-icon',
-                html: `<div class="marker-phone"><i class="fas fa-mobile-screen"></i><div class="marker-label">TEL</div></div>`,
+                html: `<div class="marker-phone"><i class="fas fa-mobile-screen"></i><div class="marker-label">${phoneLabel}</div></div>`,
                 iconSize: [30, 42],
                 iconAnchor: [15, 42]
             });
-            deviceMarkers[deviceId].phone = L.marker([data.phoneLat, data.phoneLon], { icon: phoneIcon }).addTo(map);
+            deviceMarkers[deviceId].phone = L.marker([parseFloat(data.phoneLat), parseFloat(data.phoneLon)], { icon: phoneIcon }).addTo(map);
         } else {
-            deviceMarkers[deviceId].phone.setLatLng([data.phoneLat, data.phoneLon]);
+            deviceMarkers[deviceId].phone.setLatLng([parseFloat(data.phoneLat), parseFloat(data.phoneLon)]);
+            deviceMarkers[deviceId].phone.getElement().querySelector('.marker-label').innerHTML = phoneLabel;
         }
+        deviceMarkers[deviceId].phone.bindPopup(`<b>Mobilni Telefon</b><br>Lokacija: ${data.phoneLat}, ${data.phoneLon}<br>Zabeleženo: ${timeStr || 'Nepoznato'}`);
     }
 
     const group = [];
     if (deviceMarkers[deviceId].watch) group.push(deviceMarkers[deviceId].watch.getLatLng());
-    if (group.length > 0) map.panTo(group[0]);
+    if (deviceMarkers[deviceId].phone) group.push(deviceMarkers[deviceId].phone.getLatLng());
+    
+    if (group.length > 0 && !map._initialBoundsSet) {
+        if (group.length === 1) map.panTo(group[0]);
+        else map.fitBounds(L.latLngBounds(group), { padding: [50, 50] });
+        map._initialBoundsSet = true; // Samo prvi put uradi fitBounds da ne bi "skakalo" stalno
+    } else if (group.length === 1) {
+        map.panTo(group[0]);
+    }
 }
 
 function initCharts(deviceId) {

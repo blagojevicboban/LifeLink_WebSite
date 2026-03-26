@@ -470,10 +470,18 @@ header .status-badge {
     font-weight: bold;
     white-space: nowrap;
     position: absolute;
-    top: -25px;
+    bottom: 30px; /* Position above the icon */
     left: 50%;
     transform: translateX(-50%);
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    line-height: 1.1;
+    text-align: center;
+}
+
+.marker-time {
+    font-size: 8px;
+    opacity: 0.8;
+    font-weight: 500;
 }
 
 .marker-watch {
