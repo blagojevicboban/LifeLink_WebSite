@@ -1,13 +1,18 @@
 :root {
-    --bg-color: #020e15;
-    --card-bg: #051923;
+    --bg-color: #010609;
+    --card-bg: rgba(15, 23, 42, 0.7);
     --accent: #00e5ff;
+    --accent-glow: rgba(0, 229, 255, 0.4);
     --danger: #ff1744;
     --warning: #ffea00;
     --success: #00e676;
     --text-primary: #ffffff;
-    --text-secondary: #b0bec5;
-    --border-color: rgba(0, 229, 255, 0.2);
+    --text-secondary: #94a3b8;
+    --border-color: rgba(0, 229, 255, 0.15);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -19,9 +24,13 @@
 
 body {
     background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(68, 138, 255, 0.05) 0%, transparent 40%);
     color: var(--text-primary);
     min-height: 100vh;
     padding: 2rem;
+    background-attachment: fixed;
 }
 
 header {
@@ -124,18 +133,22 @@ header .status-badge {
 }
 
 .device-card {
-    background-color: var(--card-bg);
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    padding: 1.8rem;
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s ease, border-color 0.3s ease;
+    transition: var(--transition);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .device-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px) scale(1.01);
     border-color: var(--accent);
+    box-shadow: 0 20px 40px rgba(0, 229, 255, 0.1);
 }
 
 .device-card::before {
@@ -143,9 +156,10 @@ header .status-badge {
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
+    width: 6px;
     height: 100%;
-    background-color: var(--accent);
+    background: linear-gradient(to bottom, var(--accent), #448aff);
+    box-shadow: 2px 0 10px var(--accent-glow);
 }
 
 .device-card.offline::before {
@@ -185,15 +199,34 @@ header .status-badge {
 .pill-install:hover { background: #e040fb; color: white; }
 
 .status-online {
-    background-color: rgba(0, 230, 118, 0.1);
+    background-color: rgba(0, 230, 118, 0.15);
     color: var(--success);
-    border: 1px solid var(--success);
+    border: 1px solid rgba(0, 230, 118, 0.3);
+    position: relative;
+}
+
+.status-online::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    margin-right: 8px;
+    box-shadow: 0 0 10px var(--success);
+    animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 15px var(--success); }
+    100% { transform: scale(0.8); opacity: 0.8; }
 }
 
 .status-offline {
-    background-color: rgba(176, 190, 197, 0.1);
+    background-color: rgba(148, 163, 184, 0.1);
     color: var(--text-secondary);
-    border: 1px solid var(--text-secondary);
+    border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .metrics-row {
@@ -204,10 +237,27 @@ header .status-badge {
 }
 
 .metric-box {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 1rem;
-    border-radius: 12px;
+    background: var(--glass-bg);
+    padding: 1.2rem;
+    border-radius: var(--radius-md);
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: var(--transition);
+}
+
+.metric-box:hover {
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateY(-2px);
+}
+
+/* Flash animation for UI update feedback */
+.update-flash {
+    animation: flash-border 1.5s ease-out;
+}
+
+@keyframes flash-border {
+    0% { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+    100% { border-color: rgba(255, 255, 255, 0.03); box-shadow: none; }
 }
 
 .metric-label {

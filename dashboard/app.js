@@ -158,9 +158,14 @@ function updateDeviceUI(id, data) {
             </div>
 
 
-            <div class="source-indicator ${sourceClass}">
-                <div class="source-icon"></div>
-                <span>Izvor: ${sourceText}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+                <div class="source-indicator ${sourceClass}" style="margin-top: 0;">
+                    <div class="source-icon"></div>
+                    <span>Izvor: ${sourceText}</span>
+                </div>
+                <div class="last-updated" style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">
+                    <i class="far fa-clock"></i> <span data-field="lastUpdated">--:--</span>
+                </div>
             </div>
             <div class="fall-history">
                 <h3>Nedavni Padovi</h3>
@@ -204,10 +209,25 @@ function updateDeviceUI(id, data) {
         fetchFalls(id);
     }
 
-    card.querySelector('[data-field="pulse"]').innerHTML = `${data.pulse || 0} <small>BPM</small>`;
-    card.querySelector('[data-field="spo2"]').innerHTML = `${data.spo2 || 0}<small>%</small>`;
-    card.querySelector('[data-field="battery"]').innerHTML = `${data.battery || 0}<small>%</small>`;
-    card.querySelector('[data-field="gForce"]').innerHTML = data.gForce ? parseFloat(data.gForce).toFixed(2) : '0.00';
+    const metricFields = ['pulse', 'spo2', 'battery', 'gForce'];
+    metricFields.forEach(field => {
+        const box = card.querySelector(`.metric-${field}`) || card.querySelector(`[data-field="${field}"]`).closest('.metric-box');
+        const el = card.querySelector(`[data-field="${field}"]`);
+        let newValue = data[field];
+        
+        if (field === 'gForce') newValue = newValue ? parseFloat(newValue).toFixed(2) : '0.00';
+        else if (field === 'pulse') newValue = `${newValue || 0} <small>BPM</small>`;
+        else if (field === 'spo2' || field === 'battery') newValue = `${newValue || 0}<small>%</small>`;
+
+        // Apply flash animation to show data is fresh
+        if (el.innerHTML !== newValue || !box.lastUpdate || Date.now() - box.lastUpdate > 10000) {
+            el.innerHTML = newValue;
+            box.classList.remove('update-flash');
+            void box.offsetWidth; // Trigger reflow
+            box.classList.add('update-flash');
+            box.lastUpdate = Date.now();
+        }
+    });
     
     const badge = card.querySelector('.status-badge');
     badge.className = `status-badge ${isOnline ? 'status-online' : 'status-offline'}`;
@@ -216,6 +236,11 @@ function updateDeviceUI(id, data) {
     const sourceInd = card.querySelector('.source-indicator');
     sourceInd.className = `source-indicator ${sourceClass}`;
     sourceInd.querySelector('span').textContent = `Izvor: ${sourceText}`;
+
+    if (data.lastUpdated) {
+        const dt = new Date(data.lastUpdated);
+        card.querySelector('[data-field="lastUpdated"]').textContent = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
 
     updateMarkers(id, data);
 
@@ -389,12 +414,25 @@ function initCharts(deviceId) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             scales: {
-                x: { display: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#78909c', font: { size: 9 }, maxTicksLimit: 6 } },
-                y: { min: 40, max: 180, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#78909c' } },
-                y1: { position: 'right', min: 80, max: 100, ticks: { color: '#78909c' } }
+                x: { display: true, grid: { display: false }, ticks: { color: '#64748b', font: { size: 10, weight: '600' }, maxTicksLimit: 6 } },
+                y: { min: 40, max: 180, grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false }, ticks: { color: '#64748b', font: { weight: '600' } } },
+                y1: { position: 'right', min: 80, max: 100, grid: { display: false }, ticks: { color: '#64748b', font: { weight: '600' } } }
             },
-            plugins: { legend: { display: false } }
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#00e5ff',
+                    bodyColor: '#fff',
+                    borderColor: 'rgba(0, 229, 255, 0.2)',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: true,
+                    cornerRadius: 8
+                }
+            }
         }
     });
 
@@ -430,12 +468,24 @@ function initCharts(deviceId) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             scales: {
-                x: { display: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#78909c', font: { size: 9 }, maxTicksLimit: 6 } },
-                y: { min: 0, max: 5, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#78909c' } },
-                y1: { position: 'right', min: 0, max: 100, ticks: { color: '#78909c' } }
+                x: { display: true, grid: { display: false }, ticks: { color: '#64748b', font: { size: 10, weight: '600' }, maxTicksLimit: 6 } },
+                y: { min: 0, max: 5, grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false }, ticks: { color: '#64748b', font: { weight: '600' } } },
+                y1: { position: 'right', min: 0, max: 100, grid: { display: false }, ticks: { color: '#64748b', font: { weight: '600' } } }
             },
-            plugins: { legend: { display: false } }
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#00e5ff',
+                    bodyColor: '#fff',
+                    borderColor: 'rgba(0, 229, 255, 0.2)',
+                    borderWidth: 1,
+                    padding: 10,
+                    cornerRadius: 8
+                }
+            }
         }
     });
 }
