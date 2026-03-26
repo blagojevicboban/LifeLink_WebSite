@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lifelink-v1';
+const CACHE_NAME = 'lifelink-v2';
 const ASSETS = [
     './',
     './index.html',
@@ -32,11 +32,30 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch events
+// Fetch events: Stale-While-Revalidate strategy
 self.addEventListener('fetch', (event) => {
+    // Only cache GET requests and non-API calls
+    if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+        return event.respondWith(fetch(event.request));
+    }
+
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || fetch(event.request);
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.match(event.request).then((cachedResponse) => {
+                const fetchedResponse = fetch(event.request).then((networkResponse) => {
+                    // Update the cache with the fresh response
+                    if (networkResponse && networkResponse.status === 200) {
+                        cache.put(event.request, networkResponse.clone());
+                    }
+                    return networkResponse;
+                }).catch(() => {
+                    // Fallback to cached response if network fails
+                    return cachedResponse;
+                });
+
+                // Return cached version immediately if available, else wait for network
+                return cachedResponse || fetchedResponse;
+            });
         })
     );
 });
