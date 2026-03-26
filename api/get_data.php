@@ -33,12 +33,12 @@ elseif ($action === 'history' && $deviceId) {
         $interval = "INTERVAL 1 HOUR";
     }
 
+    // Vraćamo DESC redosled jer app.js radi .reverse()
     $stmt = $pdo->prepare("SELECT * FROM health_snapshots 
-                           WHERE device_id = :id AND timestamp >= NOW() - $interval 
-                           ORDER BY timestamp DESC LIMIT 500");
+                           WHERE device_id = :id AND timestamp >= DATE_SUB(NOW(), $interval) 
+                           ORDER BY timestamp DESC");
     $stmt->execute([':id' => $deviceId]);
     
-    // Vraćamo podatke (Dashboard će uraditi reverse() ako treba)
     echo json_encode($stmt->fetchAll());
 }
 
