@@ -16,7 +16,7 @@ if (!$data) {
 
 // === HANDLERI ZA RAZLIČITE TIPOVE PODATAKA ===
 
-// 1. Ažuriranje uređaja (STATUS)
+// 1. Ažuriranje zdravstvenih podataka (STATUS)
 if (isset($data['device_id']) && isset($data['pulse'])) {
     $stmt = $pdo->prepare("INSERT INTO devices (device_id, name, pulse, spo2, battery, gForce, lat, lon, isOnline, source) 
                            VALUES (:id, :name, :p, :s, :b, :g, :lat, :lon, 1, :src)
@@ -25,7 +25,7 @@ if (isset($data['device_id']) && isset($data['pulse'])) {
     
     $stmt->execute([
         ':id' => $data['device_id'],
-        ':name' => $data['name'] ?? 'ESP32_Watcher',
+        ':name' => $data['name'] ?? 'LifeLink_ESP32',
         ':p' => $data['pulse'],
         ':s' => $data['spo2'],
         ':b' => $data['battery'],
@@ -46,6 +46,19 @@ if (isset($data['device_id']) && isset($data['pulse'])) {
         ':g' => $data['gForce'] ?? 0,
         ':lat' => $data['lat'] ?? 0,
         ':lon' => $data['lon'] ?? 0
+    ]);
+}
+
+// 2. Ažuriranje lokacije telefona (Poseban sync ako sat nema GPS)
+if (isset($data['device_id']) && isset($data['phoneLat'])) {
+    $stmt = $pdo->prepare("INSERT INTO devices (device_id, phoneLat, phoneLon, source, isOnline) 
+                           VALUES (:id, :plat, :plon, 'phone_gps', 1)
+                           ON DUPLICATE KEY UPDATE 
+                           phoneLat=:plat, phoneLon=:plon, isOnline=1");
+    $stmt->execute([
+        ':id' => $data['device_id'],
+        ':plat' => $data['phoneLat'],
+        ':plon' => $data['phoneLon']
     ]);
 }
 
