@@ -7,8 +7,8 @@ BEGIN
     DECLARE new_lat DOUBLE;
     DECLARE new_lon DOUBLE;
     
-    -- Pronađi zadnji timestamp za ovaj uređaj, ako ne postoji kreni od pre 24h
-    SELECT IFNULL(MAX(timestamp), DATE_SUB(NOW(), INTERVAL 24 HOUR)) INTO last_ts 
+    -- Pronađi zadnji timestamp za ovaj uređaj, ako ne postoji kreni od pre 30 DANA
+    SELECT IFNULL(MAX(timestamp), DATE_SUB(NOW(), INTERVAL 30 DAY)) INTO last_ts 
     FROM health_snapshots 
     WHERE device_id = target_device_id;
 

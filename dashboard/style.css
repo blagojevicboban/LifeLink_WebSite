@@ -496,6 +496,85 @@ header .status-badge {
     text-shadow: 0 0 10px var(--success);
 }
 
+/* === TIMELINE STYLES === */
+.timeline-section {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-title {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.timeline-info {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.timeline-slider-container {
+    width: 100%;
+    position: relative;
+    padding: 10px 0;
+}
+
+.timeline-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.timeline-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-glow);
+    border: 2px solid var(--bg-color);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.timeline-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px var(--accent);
+}
+
+.timeline-slider:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.leaflet-watch-path {
+    stroke: var(--accent);
+    stroke-opacity: 0.6;
+    stroke-width: 3;
+    stroke-dasharray: 5, 5;
+    filter: drop-shadow(0 0 5px var(--accent-glow));
+}
+
 .monitor-guide {
     margin-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);

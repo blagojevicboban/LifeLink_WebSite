@@ -13,6 +13,9 @@ const deviceCharts = {};
 const deviceEnvCharts = {};
 const deviceMaps = {};
 const deviceMarkers = {};
+const devicePolylines = {};
+const deviceHistoryMarkers = {};
+const deviceHistory = {};
 const deviceRanges = {}; 
 
 window.toggleHelp = function() {
@@ -77,6 +80,9 @@ pollDevices(); // Prvi poziv odmah
 function cleanupDeviceResources(id) {
     if (deviceCharts[id]) deviceCharts[id].destroy();
     if (deviceEnvCharts[id]) deviceEnvCharts[id].destroy();
+    if (devicePolylines[id]) delete devicePolylines[id];
+    if (deviceHistoryMarkers[id]) delete deviceHistoryMarkers[id];
+    if (deviceHistory[id]) delete deviceHistory[id];
     if (deviceMaps[id]) {
         deviceMaps[id].remove();
         delete deviceMaps[id];
@@ -204,6 +210,17 @@ function updateDeviceUI(id, data) {
             <div class="map-section">
                 <h3><i class="fas fa-map-location-dot"></i> Lokacija (Sat i Telefon)</h3>
                 <div id="map-${id}" class="map-container"></div>
+                
+                <!-- Timeline Kontrola -->
+                <div class="timeline-section" id="timeline-sec-${id}">
+                    <div class="timeline-header">
+                        <span class="timeline-title">Istorija kretanja</span>
+                        <span class="timeline-info" id="timeline-info-${id}">--:--</span>
+                    </div>
+                    <div class="timeline-slider-container">
+                        <input type="range" class="timeline-slider" id="slider-${id}" min="0" max="0" value="0">
+                    </div>
+                </div>
             </div>
         `;
         initCharts(id);
@@ -252,6 +269,7 @@ function updateDeviceUI(id, data) {
     }
 
     updateMarkers(id, data);
+    setupTimelineListeners(id);
 
     const timeButtons = card.querySelectorAll('.time-btn');
     timeButtons.forEach(btn => {
@@ -303,6 +321,13 @@ async function fetchHistory(deviceId, range = '1h') {
         deviceEnvCharts[deviceId].data.datasets[0].data = history.map(d => d.gForce);
         deviceEnvCharts[deviceId].data.datasets[1].data = history.map(d => d.battery);
         deviceEnvCharts[deviceId].update('none');
+
+        // Ažuriraj putanju na mapi
+        updateMapPath(deviceId, history);
+        
+        // Sačuvaj istoriju za timeline slider
+        deviceHistory[deviceId] = history;
+        updateSliderRange(deviceId, history);
     } catch (e) {
         console.error("History error:", e);
     }
@@ -350,6 +375,8 @@ function initMap(deviceId, data) {
 
     deviceMaps[deviceId] = map;
     deviceMarkers[deviceId] = { watch: null, phone: null };
+    devicePolylines[deviceId] = L.polyline([], { className: 'leaflet-watch-path' }).addTo(map);
+    deviceHistoryMarkers[deviceId] = null;
     updateMarkers(deviceId, data);
 }
 
@@ -400,10 +427,88 @@ function updateMarkers(deviceId, data) {
     if (group.length > 0 && !map._initialBoundsSet) {
         if (group.length === 1) map.panTo(group[0]);
         else map.fitBounds(L.latLngBounds(group), { padding: [50, 50] });
-        map._initialBoundsSet = true; // Samo prvi put uradi fitBounds da ne bi "skakalo" stalno
+        map._initialBoundsSet = true;
     } else if (group.length === 1) {
         map.panTo(group[0]);
     }
+}
+
+function updateMapPath(deviceId, history) {
+    const polyline = devicePolylines[deviceId];
+    if (!polyline) return;
+
+    const path = history
+        .filter(d => d.lat && d.lon)
+        .map(d => [parseFloat(d.lat), parseFloat(d.lon)]);
+    
+    polyline.setLatLngs(path);
+}
+
+function updateSliderRange(deviceId, history) {
+    const slider = document.getElementById(`slider-${deviceId}`);
+    if (!slider) return;
+
+    if (!history || history.length === 0) {
+        slider.disabled = true;
+        slider.max = 0;
+        return;
+    }
+
+    slider.disabled = false;
+    slider.max = history.length - 1;
+    slider.value = history.length - 1; // Postavi na najnovije
+
+    const lastPoint = history[history.length - 1];
+    updateTimelineInfo(deviceId, lastPoint);
+}
+
+function setupTimelineListeners(deviceId) {
+    const slider = document.getElementById(`slider-${deviceId}`);
+    if (!slider || slider.hasListener) return;
+
+    slider.oninput = (e) => {
+        const index = parseInt(e.target.value);
+        const history = deviceHistory[deviceId];
+        if (!history || !history[index]) return;
+
+        const point = history[index];
+        updateTimelineInfo(deviceId, point);
+        showHistoryMarker(deviceId, point);
+    };
+
+    slider.hasListener = true;
+}
+
+function updateTimelineInfo(deviceId, point) {
+    const info = document.getElementById(`timeline-info-${deviceId}`);
+    if (!info || !point) return;
+    
+    const dt = new Date(point.timestamp);
+    info.textContent = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function showHistoryMarker(deviceId, point) {
+    const map = deviceMaps[deviceId];
+    if (!map || !point.lat || !point.lon) return;
+
+    if (deviceHistoryMarkers[deviceId]) {
+        deviceHistoryMarkers[deviceId].remove();
+    }
+
+    const historyIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div class="marker-history-dot" style="width:12px; height:12px; background:var(--accent); border-radius:50%; box-shadow:0 0 10px var(--accent);"></div>`,
+        iconSize: [12, 12],
+        iconAnchor: [6, 6]
+    });
+
+    deviceHistoryMarkers[deviceId] = L.marker([parseFloat(point.lat), parseFloat(point.lon)], { 
+        icon: historyIcon,
+        zIndexOffset: 1000 
+    }).addTo(map);
+
+    const dt = new Date(point.timestamp);
+    deviceHistoryMarkers[deviceId].bindPopup(`<b>Pozicija u ${dt.toLocaleTimeString()}</b><br>Puls: ${point.pulse} BPM<br>SpO2: ${point.spo2}%`);
 }
 
 function initCharts(deviceId) {
