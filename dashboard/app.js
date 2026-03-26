@@ -210,6 +210,8 @@ function updateDeviceUI(id, data) {
     }
 
     const metricFields = ['pulse', 'spo2', 'battery', 'gForce'];
+    const isNewData = card.lastDbTimestamp !== data.lastUpdated;
+    
     metricFields.forEach(field => {
         const box = card.querySelector(`.metric-${field}`) || card.querySelector(`[data-field="${field}"]`).closest('.metric-box');
         const el = card.querySelector(`[data-field="${field}"]`);
@@ -219,15 +221,17 @@ function updateDeviceUI(id, data) {
         else if (field === 'pulse') newValue = `${newValue || 0} <small>BPM</small>`;
         else if (field === 'spo2' || field === 'battery') newValue = `${newValue || 0}<small>%</small>`;
 
-        // Apply flash animation to show data is fresh
-        if (el.innerHTML !== newValue || !box.lastUpdate || Date.now() - box.lastUpdate > 10000) {
-            el.innerHTML = newValue;
+        el.innerHTML = newValue;
+
+        // Apply flash animation ONLY if data is actually new from the database
+        if (isNewData && isOnline) {
             box.classList.remove('update-flash');
             void box.offsetWidth; // Trigger reflow
             box.classList.add('update-flash');
-            box.lastUpdate = Date.now();
         }
     });
+
+    card.lastDbTimestamp = data.lastUpdated;
     
     const badge = card.querySelector('.status-badge');
     badge.className = `status-badge ${isOnline ? 'status-online' : 'status-offline'}`;
