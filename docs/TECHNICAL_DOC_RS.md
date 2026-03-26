@@ -18,7 +18,7 @@ Srce LifeLinka je moćan dvojezgarni `ESP32-S3` kontroler, gde se operacije dele
 Zbog tight-loop prirode u senzorskim aplikacijama gde `MAX30102` konstantno upisuje podatke o optici na `I2C`, kao i Touch kontroler.
 
 *Upozorenje implementatorima:*
-Moguće je doći do poznatog "Interrupt Watchdog (WDT)" padanja modula, gde BlueTooth (`bt_controller_task`) zbog prevelikog prioriteta i lošije organizacije stare \`driver/i2c\` biblioteke u ESP-IDF v5.x dolazi do ISR preklapanja. Problem se rešava korišćenjem novije iteracije \`driver/i2c_master.h\`, kao i uvođenjem Mutex/Semafora za hardversko deljenje resursa `i2c` ili pauziranja senzorskog brzanja taska.  
+Moguće je doći do poznatog "Interrupt Watchdog (WDT)" padanja modula, gde BlueTooth (`bt_controller_task`) zbog prevelikog prioriteta i lošije organizacije stare `driver/i2c` biblioteke u ESP-IDF v5.x dolazi do ISR preklapanja. Problem se rešava korišćenjem novije iteracije `driver/i2c_master.h`, kao i uvođenjem Mutex/Semafora za hardversko deljenje resursa `i2c` ili pauziranja senzorskog brzanja taska.  
 
 ## Analiza i Otkrivanje Pada (QMI8658 Advanced Logic)
 
@@ -43,22 +43,23 @@ Svi pozivi ka `ui_Label_setText()` za LCD displej MORAJU proći `example_lvgl_lo
 ## Upravljanje Pametnim Napajanjem i Displejom (AXP2101)
 `axp_get_batt_percent` implementiran u `PMU` petlji, a u kombinaciji sa kapacitivnim tasterom proverava statiku ruku na `CST92xx` staklu. Nakon 15s bez ikakvog prekida odozdo, MCU pauzira crtanje sa `esp_lcd_panel_disp_on_off` (AMOLED se "gasi" i resetuje, tako crna boja efektivno gasi pixel), a potom ukida signal na LCD Backlight-u za deep-sleep efekte ekrana.
 
-## Cloud Arhitektura i Remote Praćenje (Firebase & Cloud Dashboard)
+## Cloud Arhitektura i Remote Praćenje (MariaDB & PHP API)
 
-Sistem je proširen integracijom sa Google Firebase platformom, što omogućava lekarima i članovima porodice da prate pacijenta u realnom vremenu sa bilo koje lokacije.
+Sistem se oslanja na prilagođenu MariaDB Cloud infrastrukturu koja omogućava centralizovano praćenje više uređaja u realnom vremenu.
 
-**1. Firebase Cloud Firestore:**
-- **Kolekcija `devices`**: Čuva trenutno stanje uređaja (online/offline status, baterija, puls, SpO2).
-- **Sub-kolekcija `health_snapshots`**: Istorijski podaci vitalnih funkcija koji se šalju svakih 30 sekundi radi praćenja trendova.
-- **Sub-kolekcija `fall_events`**: Specifični zapisi o svakom detektovanom padu, uključujući lokaciju (Google Maps koordinate) i jačinu udarca (G-sila).
+**1. Struktura Baze Podataka (MariaDB):**
+- **Tabela `devices`**: Čuva trenutno "Heartbeat" stanje svakog sata (puls, spo2, baterija, lokacija, online status).
+- **Tabela `device_history`**: Čuva istorijske podatke vitalnih funkcija (logs) za generisanje grafikona.
+- **Tabela `fall_events`**: Arhiva svih kritičnih incidenata sa parametrima u trenutku pada.
 
-**2. Načini prenosa podataka (Dual-Channel Sync):**
-- **Bluetooth (BLE) -> App**: Primarni kanal. Mobilna aplikacija prima podatke od sata i prosleđuje ih u Firebase.
-- **WiFi Direct (Experimental)**: Sat može direktno komunicirati sa Firebase-om putem kućne mreže ako je telefon van dometa.
+**2. Načini prenosa podataka (Data Pipeline):**
+- **Bluetooth (BLE) -> Mobilna App -> API**: Mobilni telefon služi kao gateway. Aplikacija prima podatke od sata preko Bluetooth-a i šalje ih na centralni PHP API preko HTTPS protokola.
+- **WiFi Direct -> API**: Sat može direktno slati podatke na server ako je u dometu poznate WiFi mreže.
 
-**3. Web Dashboard ([lifelink.tsp.edu.rs/dashboard/](https://lifelink.tsp.edu.rs/dashboard/)):**
-- Moderni single-page interfejs baziran na Firebase JS SDK (v11).
-- **Real-time Reaktivnost**: Koristi `onSnapshot` za trenutno osvežavanje metrika bez potrebe za reload-om stranice.
+**3. Web Dashboard Dashboard:**
+- **Frontend**: Single Page Application izgrađena u Vanilla JS, koristi Chart.js za naprednu vizuelizaciju.
+- **Polling Mehanizam**: Dashboard vrši periodično osvežavanje podataka preko API-ja (svakih 5-10 sekundi) kako bi prikazao najsvežije stanje bez opterećenja servera.
+- **PWA Podrška**: Dashboard je konfigurisan kao Progressive Web App sa Service Worker-om za offline pristup i brže učitavanje.
 
 ## Prateća Mobilna Aplikacija (Flutter Companion)
 
@@ -70,23 +71,17 @@ Flutter bazirana cross-platform aplikacija koja se putem BLE SPP protokola povez
 - Format podataka: `STATUS G:<g_force> P:<heartRate> S:<spo2> B:<battery> Lat:<lat> Lon:<lon>`
 
 **Arhitektura:**
-- `BleService` – Singleton za BLE scan/connect/subscribe sa StreamController-ima za reaktivne podatke.
-- `SensorProvider` (ChangeNotifier) – Parsira BLE podatke, upravlja 3-faznim alarmom (Safe/Warning/Alarm), pokreće odbrojavanje i izvršava hitne akcije (Call/SMS/SOS).
-- `DashboardScreen` – Dashboard sa metrikama, mapom i status karticama sa boja-kodiranim stanjima (Cyan/Amber/Red).
-- `SettingsScreen` – Konfiguracija hitnog kontakta, akcije pada, BLE uređaja i dozvola.
-
-**Hitne Akcije po isteku odbrojavanja:**
-- `FallAction.call` → Direktan poziv hitnom kontaktu preko `flutter_phone_direct_caller`
-- `FallAction.sms` → SMS sa GPS koordinatama preko `url_launcher` (`sms:` URI)
-- `FallAction.sos` → Android SOS intent putem `android_intent_plus`
+- `BleService` – Singleton za BLE scan/connect/subscribe. Sadrži mehanizam za automatsko ponovno povezivanje i "persistent" Bluetooth sesiju.
+- `ApiService` – Komponenta zadužena za sinhronizaciju lokalnih podataka sa MariaDB Cloud serverom putem PHP REST API-ja.
+- `SensorProvider` – Parsira BLE podatke, upravlja 3-faznim alarmom i izvršava hitne akcije.
 
 ## Reference i Literatura
 
-1. **ESP-IDF Programming Guide** - Zvanična dokumentacija za ESP32-S3, upravljanje zadacima, nove I2C Master drajvere i Interrupt Watchdog (WDT).
-2. **FreeRTOS API Reference** - Dokumentacija za arhitekturu baziranu na prekidima i mehanizme deljenja (Mutex, Semaphore) pri korišćenju i preklapanju I2C sabirnice i ekrana (`lvgl_mux`).
-3. **LVGL (Light and Versatile Graphics Library)** - Zvanična dokumentacija o portovanju prikaza, radu sa framebuffer-ima, integraciji na ESP32 (LCD kontroler, DMA i uslovi thread-safe interakcije).
-4. **QMI8658 6-Axis IMU Datasheet** - Specifikacija hardvera inercijalne jedinice, analize pragova slobodnog pada ("FREE_FALL") i kalkulisanja promena ugla na osnovu ubrzanja i žiroskopskih vrednosti.
-5. **MAX30102 Datasheet** - Implementacija FIFO bafera, obrade sirovih IR/Red odziva za računanje SpO2 i pulsa u C drajveru uz pomoć prepoznavanja vrhova impulsa.
-6. **SIM800L GSM Module AT Commands** - Priručnik za komandovanje modemom (SMS Text mode `AT+CMGF=1`, slanje lokacija) i adresiranje prekomerne potrošnje pri registraciji u GPRS mrežu (CME Errors i CREG proces). SIM800L radi na 3.7–4.2V i kompatibilan je sa standardnim AT komandama.
-7. **Quectel LC76G GNSS Module Protocol Specification** - Dekodiranje NMEA standardizovanih rečenica (`$GNGGA`, `$GNRMC`) radi vađenja i prosleđivanja preciznih geografskih koordinata i formiranja Google Maps linkova.
-8. **AXP2101 PMIC Datasheet** - Podešavanje limita punjenja, čitanje postotka baterije preko Fuel Gauge algoritama i upravljanje dubokim i sleep gasenjem celog sistema.
+1. **ESP-IDF Programming Guide** - Zvanična dokumentacija za ESP32-S3, upravljanje zadacima i nove I2C Master drajvere.
+2. **FreeRTOS API Reference** - Dokumentacija za arhitekturu baziranu na prekidima i mehanizme deljenja (Mutex, Semaphore).
+3. **LVGL (Light and Versatile Graphics Library)** - Zvanična dokumentacija o portovanju prikaza i radu sa framebuffer-ima.
+4. **QMI8658 6-Axis IMU Datasheet** - Specifikacija hardvera inercijalne jedinice.
+5. **MAX30102 Datasheet** - Implementacija FIFO bafera i obrade PPG signala.
+6. **SIM800L GSM Module AT Commands** - Priručnik za komandovanje modemom i adresiranje potrošnje.
+7. **Quectel LC76G GNSS Module Protocol Specification** - Dekodiranje NMEA standardizovanih rečenica.
+8. **AXP2101 PMIC Datasheet** - Upravljanje napajanjem i postotkom baterije.

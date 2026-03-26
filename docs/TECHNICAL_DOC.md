@@ -40,12 +40,30 @@ Upon a verified fall, the system fires an asynchronous task that delivers a pre-
 All calls to `ui_Label_setText()` must pass through `example_lvgl_lock()` Semaphore calls on `lvgl_mux` due to the framework's rigid nature.
 The `AXP2101` PMIC manages charging and battery reporting. After 15s of inactivity, the MCU pauses rendering via `esp_lcd_panel_disp_on_off` (effectively turning off AMOLED pixels) and cuts the backlight signal for deep-sleep effects.
 
+## Cloud Architecture and Remote Monitoring (MariaDB & PHP API)
+
+The system relies on a custom MariaDB Cloud infrastructure that allows for centralized real-time monitoring of multiple devices.
+
+**1. Data Structure (MariaDB):**
+- **`devices` table**: Stores the current "Heartbeat" state of each watch (pulse, SpO2, battery, location, online status).
+- **`device_history` table**: Stores historical health data (logs) for chart generation.
+- **`fall_events` table**: Archive of all critical incidents with parameters at the time of the fall.
+
+**2. Data Pipeline (Dual-Channel Sync):**
+- **Bluetooth (BLE) -> Mobile App -> API**: The mobile phone serves as a gateway. The application receives data from the watch via Bluetooth and sends it to the central PHP API via HTTPS.
+- **WiFi Direct -> API**: The watch can also send data directly to the server if it is within range of a known WiFi network.
+
+**3. Web Dashboard:**
+- **Frontend**: A Single Page Application built with Vanilla JS, using Chart.js for advanced visualization.
+- **Polling Mechanism**: The dashboard periodically refreshes data via the API (every 5-10 seconds) to display the freshest state without overloading the server.
+- **PWA Support**: The dashboard is configured as a Progressive Web App with a Service Worker for offline access and faster loading.
+
 ## Companion Mobile App (Flutter Companion)
 
 A cross-platform app connects via BLE SPP to extend the bracelet's capabilities.
 - **Service UUID**: `4fafc201-1fb5-459e-8fcc-c5c9c331914b`
 - **Data Format**: `STATUS G:<g_force> P:<heartRate> S:<spo2> B:<battery> Lat:<lat> Lon:<lon>`
-- **Features**: Live dashboard with color-coded states, 3-phase alarm mirroring, countdown cancellation, and automatic phone calls/SMS/SOS intents upon expiry.
+- **Features**: Live dashboard with color-coded states, 3-phase alarm mirroring, persistent Bluetooth connectivity, and automatic phone calls/SMS/SOS intents.
 
 ## References
 

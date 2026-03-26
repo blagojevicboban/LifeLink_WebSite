@@ -43,9 +43,10 @@ Instalirajte aplikaciju na vaš Android telefon kako biste:
 - **Pronašli sat**: Ako ga zagubite, aplikacija vam može pokazati poslednju poznatu GPS lokaciju.
 
 ### 2. LifeLink Cloud Dashboard (Web stranica)
-Vaši najbliži (članovi porodice ili lekari) mogu pratiti vaše stanje sa bilo kog kompjutera ili telefona putem interneta:
+Vaši najbliži (članovi porodice ili lekari) mogu pratiti vaše stanje sa bilo kod kompjutera ili telefona putem interneta na adresi `lifelink.tsp.edu.rs/dashboard/`:
+- **Dvostruki grafikoni (Dual Y-Axis)**: Svaki grafikon prati dva parametra istovremeno (npr. Puls i SpO2) radi lakšeg poređenja trendova.
+- **Vremenski opsezi**: Klikom na dugmad iznad grafikona možete birati prikaz za poslednjih **1h, Danas, 7 dana ili 30 dana**. 
 - **Notifikacije o padu**: Čak i ako nisu pored vas, dobiće zvučno i tekstualno obaveštenje na svom uređaju čim sat detektuje pad.
-- **Istorija zdravlja**: Pregledni grafikoni pokazuju kako se vaš puls i zasićenost kiseonikom menjala tokom poslednjih sati, dana ili čak mesec dana.
-- **Interaktivna Mapa**: Tačan prikaz gde se nalazite u svakom trenutku.
+- **Interaktivna Mapa**: Tačan prikaz gde se nalazite u svakom trenutku (plavi marker je sat, zeleni je telefon).
 
 Uživajte u saznanju da vas tehnologija ne samo posmatra, već aktivno čuva i povezuje sa vašim najbližima.

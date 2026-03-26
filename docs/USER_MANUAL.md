@@ -31,4 +31,25 @@ When the device (or simulated you) triggers a fall — an ominous **Red "DID YOU
 
 On this window, the bracelet counts down 15 seconds to disaster — a call to action! Why 15 seconds? If you didn't fall but dropped the bracelet, you can calmly swipe your finger across the red screen once and it will immediately stop the countdown, dampen the drama, and the bracelet returns to the safe Main Home screen to continue measuring without fear! Otherwise, "CALLING FOR HELP!!!" messages will be fired automatically to the preconfigured numbers on the SIM network.
 
-Enjoy knowing that technology is not watching you but guarding you.
+---
+
+## Mobile Application and Cloud Dashboard
+
+Your bracelet is no longer alone! Now you can use additional tools for even greater security:
+
+### 1. LifeLink Companion App
+Install the application on your Android phone to:
+- **See live data**: Pulse, SpO2, and G-force are transmitted to the phone screen in real time.
+- **Set up the bracelet**: Easily enter phone numbers and change settings via Bluetooth.
+- **Find the watch**: If you misplace it, the app can show you the last known GPS location.
+
+### 2. LifeLink Cloud Dashboard (Web page)
+Your loved ones (family members or doctors) can monitor your state from any computer or phone via the internet at `lifelink.tsp.edu.rs/dashboard/`:
+- **Dual Y-Axis Charts**: Each chart tracks two parameters simultaneously for easier comparison:
+    - **Top Chart**: Tracks **Pulse** (red line, left y-axis) and **SpO2** (blue line, right y-axis).
+    - **Bottom Chart**: Tracks **G-Force** (cyan line, left y-axis) and **Battery** (green line, right y-axis).
+- **Time Ranges**: Use the buttons above the charts to select the view for the last **1h, Today, 7 days, or 30 days**.
+- **Fall Notifications**: Even if they are not with you, they will receive an audible and text notification on their device as soon as the watch detects a fall.
+- **Interactive Map**: Precise display of your location at any moment (blue marker is the watch, green marker is the phone).
+
+Enjoy knowing that technology is not just watching you, but actively guarding you and connecting you with your loved ones.
