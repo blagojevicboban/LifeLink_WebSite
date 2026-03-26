@@ -135,7 +135,8 @@ function updateDeviceUI(id, data) {
 
             <div class="history-section">
                 <div class="section-header">
-                    <h3 style="flex-shrink: 0;"><span style="color: #ff5252">Puls</span> (Levo) & <span style="color: #448aff">SpO2</span> (Desno)</h3>
+                    <h3 style="color: #ff5252">Puls</h3>
+                    <h3 style="color: #448aff">SpO2</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="chart-${id}"></canvas>
@@ -153,7 +154,8 @@ function updateDeviceUI(id, data) {
 
             <div class="history-section">
                 <div class="section-header">
-                    <h3><span style="color: #00e5ff">G-Sila</span> (Levo) & <span style="color: #00e676">Baterija</span> (Desno)</h3>
+                    <h3 style="color: #00e5ff">G-Sila</h3>
+                    <h3 style="color: #00e676">Baterija</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="chart-env-${id}"></canvas>
