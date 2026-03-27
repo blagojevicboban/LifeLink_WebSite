@@ -17,6 +17,7 @@ const devicePolylines = {};
 const deviceHistoryMarkers = {};
 const deviceHistory = {};
 const deviceRanges = {}; 
+const deviceLastFalls = {}; 
 
 window.toggleHelp = function() {
     const modal = document.getElementById('help-modal');
@@ -76,6 +77,7 @@ async function pollDevices() {
 // Pokreni polling svakih 5 sekundi
 setInterval(pollDevices, 5000);
 pollDevices(); // Prvi poziv odmah
+updateNotifyStatus(); // Provera statusa pri učitavanju
 
 function cleanupDeviceResources(id) {
     if (deviceCharts[id]) deviceCharts[id].destroy();
@@ -344,6 +346,13 @@ async function fetchFalls(deviceId) {
             fallContainer.innerHTML = '<div style="opacity: 0.3; font-size: 0.8rem;">Nema zabeleženih padova</div>';
             return;
         }
+
+        // Provera za nove padove i slanje notifikacije
+        const latestFall = falls[0];
+        if (deviceLastFalls[deviceId] && deviceLastFalls[deviceId] !== latestFall.id) {
+            triggerNotification(deviceId, latestFall);
+        }
+        deviceLastFalls[deviceId] = latestFall.id;
 
         fallContainer.innerHTML = '';
         falls.forEach((fall) => {
@@ -620,10 +629,60 @@ function initCharts(deviceId) {
     });
 }
 
-// === PUSH NOTIFICATIONS ===
+// === NATIVE BROWSER NOTIFICATIONS ===
 window.requestNotifications = async function() {
-    alert("Notifikacije trenutno nisu dostupne nakon migracije sa Firebase-a.");
+    if (!("Notification" in window)) {
+        alert("Ovaj browser ne podržava desktop notifikacije");
+        return;
+    }
+
+    if (Notification.permission === "granted") {
+        new Notification("LifeLink", {
+            body: "Notifikacije su već aktivne.",
+            icon: "../img/lifelink_logo.png"
+        });
+        updateNotifyStatus();
+        return;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+        updateNotifyStatus();
+        new Notification("LifeLink", {
+            body: "Notifikacije su uspešno aktivirane!",
+            icon: "../img/lifelink_logo.png"
+        });
+    }
 };
+
+function updateNotifyStatus() {
+    const notifyPill = document.getElementById('notify-pill');
+    if (!notifyPill) return;
+    
+    if (Notification.permission === "granted") {
+        notifyPill.innerHTML = '<i class="fas fa-bell"></i> Notifikacije: OK';
+        notifyPill.classList.add('active');
+        notifyPill.style.background = "rgba(0, 230, 118, 0.15)";
+        notifyPill.style.color = "#00e676";
+        notifyPill.style.borderColor = "rgba(0, 230, 118, 0.3)";
+    }
+}
+
+function triggerNotification(deviceId, fall) {
+    if (Notification.permission !== "granted") return;
+    
+    // Zvučni alarm (Siren)
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    audio.play().catch(e => console.log("Audio play blocked. Interaction required."));
+
+    const dt = new Date(fall.timestamp);
+    new Notification(`❗️ DETEKTOVAN PAD - LifeLink`, {
+        body: `Uređaj [${deviceId}] je detektovao pad u ${dt.toLocaleTimeString()}!`,
+        icon: "../img/lifelink_logo.png",
+        vibrate: [300, 100, 300, 100, 300],
+        requireInteraction: true 
+    });
+}
 
 
 // === PWA INSTALL PROMPT ===
